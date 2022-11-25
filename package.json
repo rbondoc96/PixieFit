@@ -1,0 +1,23 @@
+{
+    "name": "@pxeeio/kratos",
+    "version": "1.0.0",
+    "description": "## Domain Names * flexx.pxee.io",
+    "license": "MIT",
+    "author": "Rodrigo Bondoc",
+    "keywords": [],
+    "main": "index.js",
+    "directories": {
+        "doc": "docs"
+    },
+    "scripts": {
+        "client": "npm -w packages/client",
+        "client:run": "npm -w packages/client run",
+        "server": "npm -w packages/server",
+        "server:run": "npm -w packages/server run",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "workspaces": [
+        "packages/client",
+        "packages/server"
+    ]
+}
