@@ -4,10 +4,10 @@ export interface ResourceObject {
     data: Record<string, any> | Array<Record<string, any>>;
 }
 
-export default class Resource<T extends {}> {
-    protected data: DataTransferObject<T> | Array<DataTransferObject<T>>;
+export default class Resource<D extends DataTransferObject> {
+    protected data: D;
 
-    constructor(data: DataTransferObject<T> | Array<DataTransferObject<T>>) {
+    constructor(data: D) {
         this.data = data;
     }
 
@@ -15,9 +15,9 @@ export default class Resource<T extends {}> {
         return {};
     }
 
-    static make<A extends {}, B extends Resource<A>>(
-        this: new (arg: DataTransferObject<A>) => B,
-        datum: DataTransferObject<A>,
+    static make<D extends DataTransferObject, R extends Resource<D>>(
+        this: new (arg: D) => R,
+        datum: D,
     ): ResourceObject {
         const instance = new this(datum);
 
@@ -26,9 +26,9 @@ export default class Resource<T extends {}> {
         };
     }
 
-    static list<A extends {}, B extends Resource<A>>(
-        this: new (arg: DataTransferObject<A>) => B,
-        data: Array<DataTransferObject<A>>,
+    static list<D extends DataTransferObject, R extends Resource<D>>(
+        this: new (arg: D) => R,
+        data: D[],
     ): ResourceObject {
         const resources = [];
 

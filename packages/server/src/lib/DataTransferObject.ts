@@ -1,18 +1,18 @@
-export default class DataTransferObject<T extends {}> {
-    private readonly data: T;
+export default class DataTransferObject {
+    private readonly data: Record<string, any>;
 
-    constructor(data: T) {
+    constructor(data: Record<string, any>) {
         for (const [key, value] of Object.entries(data)) {
-            (this as Record<string, any> & DataTransferObject<T>)[key] = value;
+            (this as Record<string, any> & DataTransferObject)[key] = value;
         }
         this.data = data;
     }
 
-    toJSON(): T {
+    toJSON(): Record<string, any> {
         return this.data;
     }
 
-    toObject(): T {
+    toObject(): Record<string, any> {
         return this.data;
     }
 }
