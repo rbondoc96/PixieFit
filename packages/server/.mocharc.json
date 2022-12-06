@@ -7,5 +7,8 @@
   "timeout": "2000",
   "ui": "bdd",
   "watch-files": ["test/**/*.ts"],
-  "watch-ignore": ["lib/vendor"]
+  "watch-ignore": ["lib/vendor"],
+  "require": [
+    "./test/setup.ts"
+  ]
 }

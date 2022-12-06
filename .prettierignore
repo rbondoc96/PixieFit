@@ -3,6 +3,11 @@
 .eslintrc.json
 .vscode
 jest.config.js
+package.json
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+.mocharc.json
 
 # Output files
 build
@@ -16,3 +21,7 @@ public
 
 # Dependencies
 node_modules
+
+# Miscellaneous
+docs
+*.md

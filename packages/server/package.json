@@ -7,13 +7,14 @@
         "dev": "nodemon -q --watch \"src/**\" --ext .ts --exec \"ts-node -r tsconfig-paths/register src/index.ts \"",
         "lint": "eslint ./src --ext .ts",
         "start": "ts-node -r tsconfig-paths/register --transpile-only src/index.ts",
-        "test": "ts-mocha -r tsconfig-paths/register",
+        "test": "ts-mocha --paths test/**/*.test.ts",
         "typecheck": "tsc --noEmit"
     },
     "keywords": [],
     "author": "Rodrigo Bondoc",
     "license": "ISC",
     "dependencies": {
+        "axios": "^1.2.0",
         "connect-mongo": "^4.6.0",
         "cors": "^2.8.5",
         "dotenv": "^16.0.3",
@@ -26,6 +27,7 @@
         "passport-local": "^1.0.0"
     },
     "devDependencies": {
+        "@faker-js/faker": "^7.6.0",
         "@types/chai": "^4.3.4",
         "@types/cors": "^2.8.12",
         "@types/express": "^4.17.14",
@@ -35,6 +37,7 @@
         "@types/passport": "^1.0.11",
         "@types/passport-google-oauth": "^1.0.42",
         "@types/passport-local": "^1.0.34",
+        "@types/sinon": "^10.0.13",
         "@typescript-eslint/eslint-plugin": "^5.44.0",
         "@typescript-eslint/parser": "^5.44.0",
         "chai": "^4.3.7",
@@ -51,6 +54,7 @@
         "mocha": "^10.1.0",
         "nodemon": "^2.0.20",
         "prettier": "^2.8.0",
+        "sinon": "^15.0.0",
         "ts-mocha": "^10.0.0",
         "ts-node": "^10.9.1",
         "tsconfig-paths": "^4.1.0",
