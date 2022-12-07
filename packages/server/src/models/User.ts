@@ -1,4 +1,5 @@
 import {HydratedDocument, model, Schema} from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 import emailValidator from '@/lib/validators/email';
 
@@ -31,12 +32,12 @@ const UserSchema: Schema = new Schema<UserProperties>({
     },
     email: {
         type: String,
-        required: true,
-        unique: true,
         validate: {
             validator: emailValidator,
             message: 'Please provide a valid e-mail address.',
         },
+        required: true,
+        unique: true,
     },
     facebookId: {
         type: String,
@@ -59,6 +60,8 @@ const UserSchema: Schema = new Schema<UserProperties>({
         default: true,
     },
 });
+
+UserSchema.plugin(uniqueValidator);
 
 export {UserDocument, UserProperties};
 export default model<UserProperties>('User', UserSchema);
