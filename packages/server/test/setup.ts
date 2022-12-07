@@ -1,23 +1,25 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-import {clearDatabase, connect, disconnect} from '@mocks/config/database';
+import * as database from '@mocks/config/database';
+
+process.env.NODE_ENV = 'test';
 
 async function mochaGlobalSetup() {
     dotenv.config({
         path: path.resolve(__dirname, '../.env.test'),
     });
 
-    await connect();
+    await database.connect();
 }
 
 async function mochaGlobalTeardown() {
-    await disconnect();
+    await database.disconnect();
 }
 
 const mochaHooks = {
     afterEach: async () => {
-        await clearDatabase();
+        await database.clear();
     },
 };
 
