@@ -1,4 +1,8 @@
 import '@/core/env';
 import Server from '@/core/Server';
 
-new Server().start();
+const server = new Server();
+
+server.start();
+
+export default server.app;

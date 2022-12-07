@@ -23,7 +23,7 @@ export async function connect() {
     }
 }
 
-export async function clearDatabase() {
+export async function clear() {
     try {
         await mongoose.connection.dropDatabase();
     } catch (error) {

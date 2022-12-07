@@ -1,31 +1,21 @@
 import {expect} from 'chai';
 import {Error} from 'mongoose';
-import {spy} from 'sinon';
+import sinon, {createSandbox} from 'sinon';
 
-import * as UserFactory from '@mocks/factories/UserFactory';
 import User from '@/models/User';
 
 describe('User model tests', () => {
-    describe('UserFactory tests', () => {
-        it('create()', async () => {
-            await UserFactory.create();
-            await UserFactory.create();
-
-            expect((await User.find()).length).to.equal(2);
-        });
-
-        it('createMany()', async () => {
-            await UserFactory.createMany(4);
-
-            expect((await User.find()).length).to.equal(4);
-        });
-    });
-
     describe('User model validation', () => {
-        const userCreateSpy = spy(User, 'create');
+        let sandbox: sinon.SinonSandbox;
+        let userCreateSpy: sinon.SinonSpy;
 
         beforeEach(() => {
-            userCreateSpy.resetHistory();
+            sandbox = createSandbox();
+            userCreateSpy = sandbox.spy(User, 'create');
+        });
+
+        afterEach(() => {
+            sandbox.restore();
         });
 
         const uniquenessTests = [
@@ -51,10 +41,21 @@ describe('User model tests', () => {
 
         uniquenessTests.forEach(({title, payload}) => {
             it(title, async () => {
-                await UserFactory.create(payload);
+                await User.create({
+                    admin: false,
+                    firstName: 'John',
+                    lastName: 'Smith',
+                    email: 'john.smith@example.com',
+                    facebookId: 'facebook-1234',
+                    googleId: 'google-1234',
+                    password: '&*__)+(#D',
+                    salt: '3',
+                    usesImperialUnits: true,
+                    ...payload,
+                });
 
                 try {
-                    await UserFactory.create(payload);
+                    await User.create(payload);
                 } catch (error: unknown) {
                     expect(error).to.be.instanceOf(Error.ValidationError);
                 } finally {
@@ -94,7 +95,7 @@ describe('User model tests', () => {
         validationTests.forEach(({title, payload}) => {
             it(title, async () => {
                 try {
-                    await UserFactory.create(payload);
+                    await User.create(payload);
                 } catch (error: unknown) {
                     expect(error).to.be.instanceOf(Error.ValidationError);
                 } finally {

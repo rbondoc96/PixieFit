@@ -24,6 +24,10 @@ class Server {
         this.port = config.server.port;
     }
 
+    public get app(): Express {
+        return this.driver;
+    }
+
     public start(): void {
         this.setup()
             .then(() => {
