@@ -1,32 +1,107 @@
 import {expect} from 'chai';
-
-import User from '@/models/User';
+import {Error} from 'mongoose';
+import {spy} from 'sinon';
 
 import * as UserFactory from '@mocks/factories/UserFactory';
+import User from '@/models/User';
 
 describe('User model tests', () => {
-    it('test 1', async () => {
-        let users = await User.find();
+    describe('UserFactory tests', () => {
+        it('create()', async () => {
+            await UserFactory.create();
+            await UserFactory.create();
 
-        expect(users.length).to.equal(0);
+            expect((await User.find()).length).to.equal(2);
+        });
 
-        await UserFactory.create();
-        await UserFactory.create();
+        it('createMany()', async () => {
+            await UserFactory.createMany(4);
 
-        users = await User.find();
-
-        expect(users.length).to.equal(2);
+            expect((await User.find()).length).to.equal(4);
+        });
     });
 
-    it('test 2', async () => {
-        let users = await User.find();
+    describe('User model validation', () => {
+        const userCreateSpy = spy(User, 'create');
 
-        expect(users.length).to.equal(0);
+        beforeEach(() => {
+            userCreateSpy.resetHistory();
+        });
 
-        await UserFactory.createMany(4);
+        const uniquenessTests = [
+            {
+                title: 'Email must be unique',
+                payload: {
+                    email: 'test@email.com',
+                },
+            },
+            {
+                title: 'Facebook ID must be unique',
+                payload: {
+                    facebookId: 'facebook1234',
+                },
+            },
+            {
+                title: 'Google ID must be unique',
+                payload: {
+                    googleId: 'google1234',
+                },
+            },
+        ];
 
-        users = await User.find();
+        uniquenessTests.forEach(({title, payload}) => {
+            it(title, async () => {
+                await UserFactory.create(payload);
 
-        expect(users.length).to.equal(4);
+                try {
+                    await UserFactory.create(payload);
+                } catch (error: unknown) {
+                    expect(error).to.be.instanceOf(Error.ValidationError);
+                } finally {
+                    expect(userCreateSpy.callCount).to.equal(2);
+                    expect(await User.estimatedDocumentCount()).to.equal(1);
+                }
+            });
+        });
+
+        const validationTests = [
+            {
+                title: 'First Name is required',
+                payload: {
+                    firstName: undefined,
+                },
+            },
+            {
+                title: 'Last Name is required',
+                payload: {
+                    lastName: undefined,
+                },
+            },
+            {
+                title: 'Email is required',
+                payload: {
+                    email: undefined,
+                },
+            },
+            {
+                title: 'Email must be a valid email string',
+                payload: {
+                    email: 'bademail123_gmail.com',
+                },
+            },
+        ];
+
+        validationTests.forEach(({title, payload}) => {
+            it(title, async () => {
+                try {
+                    await UserFactory.create(payload);
+                } catch (error: unknown) {
+                    expect(error).to.be.instanceOf(Error.ValidationError);
+                } finally {
+                    expect(userCreateSpy.callCount).to.equal(1);
+                    expect(await User.estimatedDocumentCount()).to.equal(0);
+                }
+            });
+        });
     });
 });
