@@ -1,22 +1,25 @@
 import {faker} from '@faker-js/faker';
 
+import {generatePassword} from '@/lib/auth/passwords';
 import User, {UserDocument, UserProperties} from '@/models/User';
 
 export async function create(
     overrides: Partial<UserProperties> = {},
 ): Promise<UserDocument> {
-    return await User.create({
+    const data = {
         admin: false,
         firstName: faker.name.firstName(),
         lastName: faker.name.lastName(),
         email: faker.internet.email(),
-        facebookId: faker.datatype.uuid(),
-        googleId: faker.datatype.uuid(),
-        password: faker.internet.password(),
-        salt: faker.datatype.string(),
         usesImperialUnits: true,
         ...overrides,
-    });
+    };
+    const password = overrides.password ?? faker.internet.password();
+    const {hash, salt} = generatePassword(password);
+    data.password = hash;
+    data.salt = salt;
+
+    return await User.create(data);
 }
 
 export async function createMany(
