@@ -38,5 +38,5 @@
         "project": ["./tsconfig.json"],
         "sourceType": "module"
       },
-      "plugins": ["import"]
+      "plugins": ["import", "chai-friendly"]
 }

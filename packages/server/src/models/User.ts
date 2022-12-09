@@ -5,8 +5,8 @@ import emailValidator from '@/lib/validators/email';
 
 interface UserProperties {
     admin: boolean;
-    firstName?: string;
-    lastName?: string;
+    firstName: string;
+    lastName: string;
     email: string;
     facebookId?: string;
     googleId?: string;
