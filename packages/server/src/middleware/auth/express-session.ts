@@ -1,8 +1,8 @@
 import MongoStore from 'connect-mongo';
 import session from 'express-session';
 
-import {options, url} from '@/config/database';
-import server from '@/config/server';
+import config from '@/core/config';
+import {ConnectOptions} from 'mongoose';
 
 /**
  * In `express-session`, using default is deprecated, since default may change.
@@ -24,10 +24,13 @@ import server from '@/config/server';
  *      - Help with race condition where a client makes multiple parallel requests without a session
  */
 export default session({
-    secret: server.sessionSecret ?? 'not_a_secret',
+    secret: config('server.sessionSecret', 'not_a_secret'),
     store: MongoStore.create({
-        mongoUrl: url,
-        mongoOptions: options,
+        mongoUrl: config('database.mongoose.url', ''),
+        mongoOptions: config(
+            'database.mongoose.options',
+            {},
+        ) as ConnectOptions,
     }),
     resave: false,
     saveUninitialized: true,

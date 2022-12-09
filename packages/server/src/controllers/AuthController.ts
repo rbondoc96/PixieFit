@@ -2,11 +2,20 @@ import {NextFunction, Response, Request} from 'express';
 import passport from 'passport';
 
 import {createUser} from '@/actions/user';
+import Http from '@/core/enums/Http';
 
 const login = passport.authenticate('local', {
     failureRedirect: '/login-failed',
     successRedirect: '/login-success',
 });
+
+const loginSuccess = (req: Request, res: Response) => {
+    res.status(200).send('Login success.');
+};
+
+const loginFailure = (req: Request, res: Response) => {
+    res.status(401).send('Login failed.');
+};
 
 const logout = (req: Request, res: Response, next: NextFunction) => {
     req.logout((error: unknown) => {
@@ -35,8 +44,8 @@ const register = (req: Request, res: Response) => {
             res.redirect('/');
         })
         .catch((error: unknown) => {
-            res.status(500).json({error});
+            res.status(Http.UNPROCESSABLE_ENTITY).json({error});
         });
 };
 
-export default {login, logout, register};
+export default {login, loginSuccess, loginFailure, logout, register};
