@@ -1,9 +1,39 @@
-import {expect} from 'chai';
+import chai, {expect} from 'chai';
 import sinon, {createSandbox} from 'sinon';
-import request from 'supertest';
+import sinonChai from 'sinon-chai';
 
-import app from '@/index';
-import * as UserActions from '@/actions/user';
+import * as UserFactory from '@mocks/factories/UserFactory';
+import User from '@/models/User';
+import TestRequest from 'test/helpers/TestRequest';
+import type TestResponse from 'test/helpers/TestResponse';
+
+chai.use(sinonChai);
+
+interface LoginCredentials {
+    email: string;
+    firstName: string;
+    lastName: string;
+    password: string;
+}
+
+async function registerUser(
+    overrides: Partial<LoginCredentials> = {},
+): Promise<TestResponse> {
+    const credentials = {
+        email: 'grant@gmail.com',
+        firstName: 'Grant',
+        lastName: 'Smith',
+        password: 'password1234',
+        ...overrides,
+    };
+
+    return await TestRequest.postForm('/register', {
+        email: credentials.email,
+        first_name: credentials.firstName,
+        last_name: credentials.lastName,
+        password: credentials.password,
+    });
+}
 
 describe('/register tests', () => {
     let sandbox: sinon.SinonSandbox;
@@ -11,7 +41,7 @@ describe('/register tests', () => {
 
     beforeEach(() => {
         sandbox = createSandbox();
-        userCreateSpy = sandbox.spy(UserActions, 'createUser');
+        userCreateSpy = sandbox.spy(User, 'create');
     });
 
     afterEach(() => {
@@ -19,13 +49,23 @@ describe('/register tests', () => {
     });
 
     it('Registers a new user', async () => {
-        const response = await request(app)
-            .post('/register')
-            .send(
-                'email=grant@gmail.com&password=password1234&first_name=Grant&last_name=Hoe',
-            );
+        const response = await registerUser();
 
-        expect(response.status).to.equal(302);
-        expect(userCreateSpy.callCount).to.equal(1);
+        response.assertRedirect('/');
+        expect(userCreateSpy).to.have.been.calledOnce;
+    });
+
+    it('Cannot register a user with a duplicate email', async () => {
+        const email = 'grant@test.com';
+
+        await UserFactory.create({
+            email,
+        });
+
+        const response = await registerUser({
+            email,
+        });
+
+        response.assertUnprocessable();
     });
 });
