@@ -1,9 +1,7 @@
 import express, {Express, json, urlencoded} from 'express';
-import mongoose from 'mongoose';
 import passport from 'passport';
 
-import '@/config/auth';
-import config from '@/config';
+import config from '@/core/config';
 import * as Logger from '@/lib/Logger';
 import requestLogger from '@/middleware/requestLogger';
 import auth from '@/middleware/auth';
@@ -21,38 +19,23 @@ class Server {
 
     constructor() {
         this.driver = express();
-        this.port = config.server.port;
+        this.port = config('server.port', 4000);
     }
 
-    public get app(): Express {
+    public start(): Express {
+        this.setup();
+
+        this.driver.listen(this.port, () => {
+            Logger.info(`Server is running at http://localhost:${this.port}`);
+        });
+
         return this.driver;
     }
 
-    public start(): void {
-        this.setup()
-            .then(() => {
-                this.driver.listen(this.port, () => {
-                    Logger.info(
-                        `Server is running at http://localhost:${this.port}`,
-                    );
-                });
-            })
-            .catch(() => {});
-    }
-
-    private async setup(): Promise<void> {
-        try {
-            await mongoose.connect(
-                config.database.url,
-                config.database.options,
-            );
-
-            this.setUpMiddleware();
-            this.setUpRoutes();
-            this.setUpErrorHandlers();
-        } catch (error: unknown) {
-            Logger.error(error);
-        }
+    private setup(): void {
+        this.setUpMiddleware();
+        this.setUpRoutes();
+        this.setUpErrorHandlers();
     }
 
     private setUpMiddleware(): void {
@@ -78,7 +61,11 @@ class Server {
             );
         });
 
-        this.driver.get('/ping', auth, (req, res) => {
+        this.driver.get('/ping', (req, res) => {
+            res.status(200).json({message: 'pong'});
+        });
+
+        this.driver.get('/auth-ping', auth, (req, res) => {
             res.status(200).json({message: 'pong'});
         });
 
