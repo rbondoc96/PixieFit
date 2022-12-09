@@ -1,8 +1,13 @@
-import '@/core/env';
+import mongoose, {ConnectOptions} from 'mongoose';
+
+import config from '@/core/config';
 import Server from '@/core/Server';
 
-const server = new Server();
-
-server.start();
-
-export default server.app;
+mongoose
+    .connect(
+        config('database.mongoose.url', ''),
+        config('database.mongoose.options') as ConnectOptions,
+    )
+    .then(() => {
+        new Server().start();
+    });
