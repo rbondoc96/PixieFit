@@ -5,6 +5,7 @@ export class UserResource extends Resource<UserData> {
     base(): Record<string, any> {
         return {
             id: this.data.id,
+            admin: this.data.admin,
             email: this.data.email,
             first_name: this.data.firstName,
             last_name: this.data.lastName,

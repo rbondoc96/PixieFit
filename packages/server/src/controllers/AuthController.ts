@@ -27,17 +27,12 @@ const logout = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const register = (req: Request, res: Response) => {
-    const {
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        password,
-    } = req.body;
+    const {email, first_name, last_name, password} = req.body;
 
     createUser({
         email,
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         password,
     })
         .then((userData) => {

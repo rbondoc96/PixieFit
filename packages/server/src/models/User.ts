@@ -1,18 +1,17 @@
-import {HydratedDocument, model, Schema} from 'mongoose';
+import {model, Schema} from 'mongoose';
+import type {HydratedDocument} from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
 
 import emailValidator from '@/lib/validators/email';
 
 interface UserProperties {
     admin: boolean;
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     email: string;
-    facebookId?: string;
-    googleId?: string;
     password?: string;
     salt?: string;
-    usesImperialUnits?: boolean;
+    uses_imperial_units?: boolean;
 }
 
 type UserDocument = HydratedDocument<UserProperties>;
@@ -22,11 +21,11 @@ const UserSchema: Schema = new Schema<UserProperties>({
         type: Boolean,
         default: false,
     },
-    firstName: {
+    first_name: {
         type: String,
         required: true,
     },
-    lastName: {
+    last_name: {
         type: String,
         required: true,
     },
@@ -39,23 +38,13 @@ const UserSchema: Schema = new Schema<UserProperties>({
         required: true,
         unique: true,
     },
-    facebookId: {
-        type: String,
-        unique: true,
-        sparse: true,
-    },
-    googleId: {
-        type: String,
-        unique: true,
-        sparse: true,
-    },
     password: {
         type: String,
     },
     salt: {
         type: String,
     },
-    usesImperialUnits: {
+    uses_imperial_units: {
         type: Boolean,
         default: true,
     },
@@ -63,5 +52,5 @@ const UserSchema: Schema = new Schema<UserProperties>({
 
 UserSchema.plugin(uniqueValidator);
 
-export {UserDocument, UserProperties};
+export type {UserDocument, UserProperties};
 export default model<UserProperties>('User', UserSchema);

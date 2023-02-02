@@ -5,17 +5,12 @@ import {readUserById, readAllUsers} from '@/actions/user/readUser';
 import {UserResource} from '@/http/resources/UserResource';
 
 const create = (req: Request, res: Response) => {
-    const {
-        email,
-        first_name: firstName,
-        last_name: lastName,
-        password,
-    } = req.body;
+    const {email, first_name, last_name, password} = req.body;
 
     createUser({
         email,
-        firstName,
-        lastName,
+        first_name,
+        last_name,
         password,
     })
         .then((userData) => {
@@ -33,13 +28,13 @@ const read = (req: Request, res: Response) => {
         .then((userData) => {
             res.status(200).json(UserResource.make(userData));
         })
-        .catch((error: unknown) => {
-            res.status(404).json({error});
+        .catch((error: Error) => {
+            res.status(404).json({error: error.message});
         });
 };
 
 const readAll = (req: Request, res: Response) => {
-    void readAllUsers().then((userData) => {
+    readAllUsers().then((userData) => {
         res.status(200).json(UserResource.list(userData));
     });
 };

@@ -3,7 +3,7 @@ import User, {UserDocument, UserProperties} from '@/models/User';
 import UserData from '@/data-objects/UserData';
 
 export default async (data: Partial<UserProperties>): Promise<UserData> => {
-    const {admin, email, firstName, lastName, password} = data;
+    const {admin, email, first_name, last_name, password} = data;
 
     if (password === undefined) {
         throw new Error();
@@ -13,9 +13,9 @@ export default async (data: Partial<UserProperties>): Promise<UserData> => {
 
     const user: UserDocument = await User.create({
         admin: admin === undefined ? false : admin,
-        firstName,
+        first_name,
         email,
-        lastName,
+        last_name,
         password: hash,
         salt,
     });
