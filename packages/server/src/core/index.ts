@@ -16,16 +16,15 @@ export default function env(
     });
 
     const value = process.env[key];
+    const valueAsNumber = Number(value);
 
-    switch (true) {
-        case !isNaN(Number(value)): {
-            return Number(value);
-        }
-        case value !== undefined: {
-            return value!;
-        }
-        default: {
-            return fallback;
-        }
+    if (!isNaN(valueAsNumber)) {
+        return valueAsNumber;
     }
+
+    if (value !== undefined) {
+        return value;
+    }
+
+    return fallback;
 }

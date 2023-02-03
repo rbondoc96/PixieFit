@@ -8,7 +8,7 @@ export async function readUserById(id: string): Promise<UserData> {
         return UserData.createFromModel(user);
     }
 
-    throw new Error();
+    throw new Error(`A user with ID ${id} was not found.`);
 }
 
 export async function readAllUsers(): Promise<UserData[]> {
