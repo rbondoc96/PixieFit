@@ -23,5 +23,5 @@ export default function config(key: string, fallback: any = null): any {
     const subKey = tokens.slice(1).join('.');
     const config = configs[tokens[0]];
 
-    return get(config, subKey, null);
+    return get(config, subKey, fallback);
 }
