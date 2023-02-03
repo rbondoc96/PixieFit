@@ -51,7 +51,11 @@ const options: ConnectOptions = {
 const database = env('DB_NAME', 'test');
 const username = env('MONGO_USERNAME', '');
 const password = env('MONGO_PASSWORD', '');
-const url = `mongodb+srv://${username}:${password}@cluster0.ouffdaw.mongodb.net/${database}`;
+// MongoDB Atlas
+// const url = `mongodb+srv://${username}:${password}@cluster0.ouffdaw.mongodb.net/${database}`;
+
+// Local MongoDB
+const url = `mongodb://localhost:27017/${database}`;
 
 export = {
     mongoose: {
