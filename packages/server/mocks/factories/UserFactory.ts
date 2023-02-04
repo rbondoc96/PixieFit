@@ -8,10 +8,10 @@ export async function create(
 ): Promise<UserDocument> {
     const data = {
         admin: false,
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
+        first_name: faker.name.firstName(),
+        last_name: faker.name.lastName(),
         email: faker.internet.email(),
-        usesImperialUnits: true,
+        uses_imperial_units: true,
         ...overrides,
     };
     const password = overrides.password ?? faker.internet.password();

@@ -1,7 +1,8 @@
 import mongoose, {ConnectOptions} from 'mongoose';
 
 export async function connect() {
-    const {DB_NAME, MONGO_USERNAME, MONGO_PASSWORD} = process.env;
+    // const {DB_NAME, MONGO_USERNAME, MONGO_PASSWORD} = process.env;
+    const {DB_NAME} = process.env;
 
     const options: ConnectOptions = {
         keepAlive: true,
@@ -11,10 +12,14 @@ export async function connect() {
         w: 'majority',
     };
 
-    const dbName = DB_NAME ?? 'test';
-    const username = MONGO_USERNAME ?? '';
-    const password = MONGO_PASSWORD ?? '';
-    const url = `mongodb+srv://${username}:${password}@cluster0.ouffdaw.mongodb.net/${dbName}`;
+    const database = DB_NAME ?? 'test';
+    // MongoDB Atlas
+    // const username = MONGO_USERNAME ?? '';
+    // const password = MONGO_PASSWORD ?? '';
+    // const url = `mongodb+srv://${username}:${password}@cluster0.ouffdaw.mongodb.net/${database}`;
+
+    // Local MongoDB
+    const url = `mongodb://localhost:27017/${database}`;
 
     try {
         await mongoose.connect(url, options);

@@ -3,71 +3,52 @@ import sinonChai from 'sinon-chai';
 
 import * as UserFactory from '@mocks/factories/UserFactory';
 import TestRequest from 'test/helpers/TestRequest';
-import type TestResponse from 'test/helpers/TestResponse';
 
 chai.use(sinonChai);
 
-interface LoginCredentials {
-    email: string;
-    password: string;
-}
+describe('[unit/routes/auth] login', () => {
+    before(async () => {
+        const credentials = {
+            email: 'user@test.com',
+            password: 'password1234',
+        };
 
-interface CreateUserAndLoginOptions {
-    registerCredentials: Partial<LoginCredentials>;
-    loginCredentials: Partial<LoginCredentials>;
-}
-
-async function createUserAndLogin(
-    options: Partial<CreateUserAndLoginOptions> = {
-        registerCredentials: {},
-        loginCredentials: {},
-    },
-): Promise<TestResponse> {
-    const credentials = {
-        email: 'grant@test.com',
-        password: 'password1234',
-        ...options.registerCredentials,
-    };
-
-    await UserFactory.create(credentials);
-
-    return await TestRequest.postForm('/login', {
-        ...credentials,
-        ...options.loginCredentials,
+        await UserFactory.create(credentials);
     });
-}
 
-describe('/login tests', () => {
     it('Login is successful', async () => {
-        const response = await createUserAndLogin();
+        const response = await TestRequest.postForm('/login', {
+            email: 'user@test.com',
+            password: 'password1234',
+        });
+
         response.assertRedirect('/login-success');
     });
 
     it('Cannot login with incorrect email', async () => {
-        const response = await createUserAndLogin({
-            loginCredentials: {
-                email: 'wrong.email@test.com',
-            },
+        const response = await TestRequest.postForm('/login', {
+            email: 'wrong.email@test.com',
+            password: 'password1234',
         });
+
         response.assertRedirect('/login-failed');
     });
 
     it('Cannot login with incorrect password', async () => {
-        const response = await createUserAndLogin({
-            loginCredentials: {
-                password: 'wrong_password',
-            },
+        const response = await TestRequest.postForm('/login', {
+            email: 'user@test.com',
+            password: 'wrong.password',
         });
+
         response.assertRedirect('/login-failed');
     });
 
     it('Cannot login with non-existent user', async () => {
-        const response = await createUserAndLogin({
-            loginCredentials: {
-                email: 'wrong.email@test.com',
-                password: 'wrong_password',
-            },
+        const response = await TestRequest.postForm('/login', {
+            email: 'wrong.email@test.com',
+            password: 'wrong.password',
         });
+
         response.assertRedirect('/login-failed');
     });
 });

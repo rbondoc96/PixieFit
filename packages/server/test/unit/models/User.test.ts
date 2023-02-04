@@ -4,7 +4,7 @@ import sinon, {createSandbox} from 'sinon';
 
 import User from '@/models/User';
 
-describe('User model tests', () => {
+describe('[unit/models] User', () => {
     describe('User model validation', () => {
         let sandbox: sinon.SinonSandbox;
         let userCreateSpy: sinon.SinonSpy;
@@ -18,64 +18,47 @@ describe('User model tests', () => {
             sandbox.restore();
         });
 
-        const uniquenessTests = [
-            {
-                title: 'Email must be unique',
-                payload: {
-                    email: 'test@email.com',
-                },
-            },
-            {
-                title: 'Facebook ID must be unique',
-                payload: {
-                    facebookId: 'facebook1234',
-                },
-            },
-            {
-                title: 'Google ID must be unique',
-                payload: {
-                    googleId: 'google1234',
-                },
-            },
-        ];
+        it('Email must be unique', async () => {
+            const email = 'test@email.com';
 
-        uniquenessTests.forEach(({title, payload}) => {
-            it(title, async () => {
+            await User.create({
+                email,
+                admin: false,
+                first_name: 'John',
+                last_name: 'Smith',
+                password: '&*__)+(#D',
+                salt: '3',
+                uses_imperial_units: true,
+            });
+
+            try {
                 await User.create({
                     admin: false,
-                    firstName: 'John',
-                    lastName: 'Smith',
-                    email: 'john.smith@example.com',
-                    facebookId: 'facebook-1234',
-                    googleId: 'google-1234',
-                    password: '&*__)+(#D',
-                    salt: '3',
-                    usesImperialUnits: true,
-                    ...payload,
+                    first_name: 'Adam',
+                    last_name: 'Smith',
+                    password: 'password1234',
+                    salt: 'a9dc',
+                    uses_imperial_units: true,
                 });
-
-                try {
-                    await User.create(payload);
-                } catch (error: unknown) {
-                    expect(error).to.be.instanceOf(Error.ValidationError);
-                } finally {
-                    expect(userCreateSpy.callCount).to.equal(2);
-                    expect(await User.estimatedDocumentCount()).to.equal(1);
-                }
-            });
+            } catch (error: unknown) {
+                expect(error).to.be.instanceOf(Error.ValidationError);
+            } finally {
+                expect(userCreateSpy.callCount).to.equal(2);
+                expect(await User.estimatedDocumentCount()).to.equal(1);
+            }
         });
 
         const validationTests = [
             {
                 title: 'First Name is required',
                 payload: {
-                    firstName: undefined,
+                    first_name: undefined,
                 },
             },
             {
                 title: 'Last Name is required',
                 payload: {
-                    lastName: undefined,
+                    last_name: undefined,
                 },
             },
             {

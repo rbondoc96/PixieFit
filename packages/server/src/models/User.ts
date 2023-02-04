@@ -16,39 +16,47 @@ interface UserProperties {
 
 type UserDocument = HydratedDocument<UserProperties>;
 
-const UserSchema: Schema = new Schema<UserProperties>({
-    admin: {
-        type: Boolean,
-        default: false,
-    },
-    first_name: {
-        type: String,
-        required: true,
-    },
-    last_name: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        validate: {
-            validator: emailValidator,
-            message: 'Please provide a valid e-mail address.',
+const UserSchema: Schema = new Schema<UserProperties>(
+    {
+        admin: {
+            type: Boolean,
+            default: false,
         },
-        required: true,
-        unique: true,
+        first_name: {
+            type: String,
+            required: true,
+        },
+        last_name: {
+            type: String,
+            required: true,
+        },
+        email: {
+            type: String,
+            validate: {
+                validator: emailValidator,
+                message: 'Please provide a valid e-mail address.',
+            },
+            required: true,
+            unique: true,
+        },
+        password: {
+            type: String,
+        },
+        salt: {
+            type: String,
+        },
+        uses_imperial_units: {
+            type: Boolean,
+            default: true,
+        },
     },
-    password: {
-        type: String,
+    {
+        timestamps: {
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+        },
     },
-    salt: {
-        type: String,
-    },
-    uses_imperial_units: {
-        type: Boolean,
-        default: true,
-    },
-});
+);
 
 UserSchema.plugin(uniqueValidator);
 
