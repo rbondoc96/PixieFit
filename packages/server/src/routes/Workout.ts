@@ -102,7 +102,7 @@ router.post(path, async (req: CreateWorkoutRequest, res: Response) => {
                 model: 'Set',
                 select: '-__v -user_id -exercise_id -workout_id -created_at -updated_at',
                 match: {
-                    workout: workout._id,
+                    workout_id: workout._id,
                 },
             },
         },
