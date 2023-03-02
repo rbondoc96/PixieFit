@@ -1,12 +1,17 @@
 import {expect} from 'chai';
 import sinon, {createSandbox} from 'sinon';
 
-import * as UserFactory from '@mocks/factories/UserFactory';
+import UserFactory from '@mocks/factories/UserFactory';
 import User from '@/models/User';
 
-describe('UserFactory tests', () => {
+describe('UserFactory', () => {
     let sandbox: sinon.SinonSandbox;
     let userCreateSpy: sinon.SinonSpy;
+    let userFactory: UserFactory;
+
+    before(() => {
+        userFactory = new UserFactory();
+    });
 
     beforeEach(() => {
         sandbox = createSandbox();
@@ -18,14 +23,14 @@ describe('UserFactory tests', () => {
     });
 
     it('create()', async () => {
-        await UserFactory.create();
-        await UserFactory.create();
+        await userFactory.create();
+        await userFactory.create();
 
         expect(userCreateSpy.callCount).to.equal(2);
     });
 
     it('createMany()', async () => {
-        await UserFactory.createMany(4);
+        await userFactory.createMany(4);
 
         expect(userCreateSpy.callCount).to.equal(4);
     });

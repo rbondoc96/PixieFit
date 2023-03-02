@@ -1,13 +1,19 @@
 import {expect} from 'chai';
-import {Error} from 'mongoose';
+import {Error as MongooseError} from 'mongoose';
 import sinon, {createSandbox} from 'sinon';
 
 import User from '@/models/User';
+import UserFactory from '@mocks/factories/UserFactory';
 
 describe('[unit/models] User', () => {
     describe('User model validation', () => {
         let sandbox: sinon.SinonSandbox;
         let userCreateSpy: sinon.SinonSpy;
+        let factory: UserFactory;
+
+        before(() => {
+            factory = new UserFactory();
+        });
 
         beforeEach(() => {
             sandbox = createSandbox();
@@ -21,27 +27,10 @@ describe('[unit/models] User', () => {
         it('Email must be unique', async () => {
             const email = 'test@email.com';
 
-            await User.create({
-                email,
-                admin: false,
-                first_name: 'John',
-                last_name: 'Smith',
-                password: '&*__)+(#D',
-                salt: '3',
-                uses_imperial_units: true,
-            });
-
             try {
-                await User.create({
-                    admin: false,
-                    first_name: 'Adam',
-                    last_name: 'Smith',
-                    password: 'password1234',
-                    salt: 'a9dc',
-                    uses_imperial_units: true,
-                });
+                await factory.createMany(2, {email});
             } catch (error: unknown) {
-                expect(error).to.be.instanceOf(Error.ValidationError);
+                expect(error).to.be.instanceOf(MongooseError.ValidationError);
             } finally {
                 expect(userCreateSpy.callCount).to.equal(2);
                 expect(await User.estimatedDocumentCount()).to.equal(1);
@@ -80,7 +69,9 @@ describe('[unit/models] User', () => {
                 try {
                     await User.create(payload);
                 } catch (error: unknown) {
-                    expect(error).to.be.instanceOf(Error.ValidationError);
+                    expect(error).to.be.instanceOf(
+                        MongooseError.ValidationError,
+                    );
                 } finally {
                     expect(userCreateSpy.callCount).to.equal(1);
                     expect(await User.estimatedDocumentCount()).to.equal(0);
