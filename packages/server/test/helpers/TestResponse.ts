@@ -2,8 +2,6 @@
 import {expect} from 'chai';
 import {Response} from 'supertest';
 
-import Http from '@/core/enums/Http';
-
 export default class TestResponse {
     private readonly headers: Record<string, string>;
     private readonly response: Response;
@@ -20,43 +18,43 @@ export default class TestResponse {
     }
 
     assertOk(): void {
-        expect(this.response.status).to.equal(Http.OK);
+        expect(this.response.status).to.equal(200);
     }
 
     assertCreated(): void {
-        expect(this.response.status).to.equal(Http.CREATED);
+        expect(this.response.status).to.equal(201);
     }
 
     assertNoContent(): void {
-        expect(this.response.status).to.equal(Http.NO_CONTENT);
+        expect(this.response.status).to.equal(204);
     }
 
     assertRedirect(redirectTarget: string): void {
-        expect(this.response.status).to.equal(Http.MOVED_TEMPORARILY);
+        expect(this.response.status).to.equal(302);
         expect(this.headers.location).to.equal(redirectTarget);
     }
 
     assertBadRequest(): void {
-        expect(this.response.status).to.equal(Http.BAD_REQUEST);
+        expect(this.response.status).to.equal(400);
     }
 
     assertUnauthenticated(): void {
-        expect(this.response.status).to.equal(Http.UNAUTHORIZED);
+        expect(this.response.status).to.equal(401);
     }
 
     assertUnauthorized(): void {
-        expect(this.response.status).to.equal(Http.FORBIDDEN);
+        expect(this.response.status).to.equal(403);
     }
 
     assertNotFound(): void {
-        expect(this.response.status).to.equal(Http.NOT_FOUND);
+        expect(this.response.status).to.equal(404);
     }
 
     assertUnprocessable(): void {
-        expect(this.response.status).to.equal(Http.UNPROCESSABLE_ENTITY);
+        expect(this.response.status).to.equal(422);
     }
 
     assertServerError(): void {
-        expect(this.response.status).to.equal(Http.INTERNAL_SERVER_ERROR);
+        expect(this.response.status).to.equal(500);
     }
 }
