@@ -1,12 +1,23 @@
-import {NextFunction, Request, Response} from 'express';
-import Http from '@/core/enums/Http';
+import type {NextFunction, Request, Response} from 'express';
 
-export default (req: Request, res: Response, next: NextFunction) => {
-    if (req.isAuthenticated()) {
+import {verifyJwtToken} from '@/lib/auth/tokens';
+import User from '@/models/User';
+
+export default async (req: Request, res: Response, next: NextFunction) => {
+    const jwt = req.cookies.jwt;
+
+    try {
+        const payload = verifyJwtToken(jwt);
+        if (typeof payload === 'string') {
+            next(payload);
+            return;
+        }
+
+        req.user = (await User.findById(payload.id)) ?? undefined;
         next();
-    } else {
-        res.status(Http.UNAUTHORIZED).json({
-            message: 'Unauthenticated.',
+    } catch (error: unknown) {
+        res.status(401).json({
+            errors: [],
         });
     }
 };

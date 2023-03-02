@@ -1,46 +1,118 @@
-import {NextFunction, Response, Request} from 'express';
-import passport from 'passport';
+import bcrypt from 'bcrypt';
+import type {NextFunction, Response, Request} from 'express';
+import {Error as MongooseError} from 'mongoose';
 
-import {createUser} from '@/actions/user';
-import Http from '@/core/enums/Http';
+import config from '@/core/config';
+import UserLoginData from '@/data/user/UserLoginData';
+import UserAuthenticationError from '@/errors/user/UserAuthenticationError';
+import UserRegistrationError from '@/errors/user/UserRegistrationError';
+import {createJwtToken} from '@/lib/auth/tokens';
+import * as Logger from '@/lib/Logger';
+import UnexpectedServerError from '@/errors/UnexpectedServerError';
+import User from '@/models/User';
 
-const login = passport.authenticate('local', {
-    failureRedirect: '/login-failed',
-    successRedirect: '/login-success',
-});
+interface LoginUserRequest extends Request {
+    body: {
+        email: string;
+        password: string;
+    };
+}
 
-const loginSuccess = (req: Request, res: Response) => {
-    res.status(200).send('Login success.');
-};
+interface RegisterUserRequest extends Request {
+    body: {
+        birthday: string;
+        email: string;
+        first_name: string;
+        goal?: string;
+        height: number;
+        last_name: string;
+        password: string;
+        sex: string;
+    };
+}
 
-const loginFailure = (req: Request, res: Response) => {
-    res.status(401).send('Login failed.');
-};
+const login = async (req: LoginUserRequest, res: Response) => {
+    const {email, password} = req.body;
 
-const logout = (req: Request, res: Response, next: NextFunction) => {
-    req.logout((error: unknown) => {
-        if (error !== undefined && error !== null) {
-            return next(error);
+    try {
+        const user = await User.findOne({email});
+
+        if (user === null) {
+            res.sendApiError(new UserAuthenticationError());
+            return;
         }
-        res.status(200).send('You have been signed out.');
+
+        if (!(await bcrypt.compare(password, user.password))) {
+            res.sendApiError(new UserAuthenticationError());
+            return;
+        }
+
+        const token = createJwtToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: config('auth.jwt.maxAge') * 1000,
+        });
+        res.sendApiData(new UserLoginData(user));
+    } catch (error: unknown) {
+        Logger.error(error);
+
+        if (error instanceof Error) {
+            res.sendApiError(new UnexpectedServerError(error));
+        }
+    }
+};
+
+// TODO: Implement jwt_blacklist table
+const logout = (req: Request, res: Response, next: NextFunction) => {
+    res.cookie('jwt', '');
+    res.status(200).json({
+        message: 'Logout successful.',
     });
 };
 
-const register = (req: Request, res: Response) => {
-    const {email, first_name, last_name, password} = req.body;
-
-    createUser({
+const register = async (
+    req: RegisterUserRequest,
+    res: Response,
+): Promise<void> => {
+    const {
+        birthday,
         email,
         first_name,
+        goal,
+        height,
         last_name,
         password,
-    })
-        .then((userData) => {
-            res.redirect('/');
-        })
-        .catch((error: unknown) => {
-            res.status(Http.UNPROCESSABLE_ENTITY).json({error});
+        sex,
+    } = req.body;
+
+    try {
+        const user = await User.create({
+            birthday,
+            email,
+            first_name,
+            goal,
+            height_cm: height,
+            last_name,
+            password,
+            sex,
         });
+
+        const token = createJwtToken(user._id);
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            maxAge: config('auth.jwt.maxAge') * 1000,
+        });
+        res.sendApiData(new UserLoginData(user));
+    } catch (error: unknown) {
+        if (error instanceof MongooseError.ValidationError) {
+            res.sendApiError(new UserRegistrationError(error));
+            return;
+        }
+
+        if (error instanceof Error) {
+            res.sendApiError(new UnexpectedServerError(error));
+        }
+    }
 };
 
-export default {login, loginSuccess, loginFailure, logout, register};
+export default {login, logout, register};

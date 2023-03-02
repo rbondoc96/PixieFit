@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import {model, Schema} from 'mongoose';
 import type {HydratedDocument} from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
@@ -6,17 +7,23 @@ import emailValidator from '@/lib/validators/email';
 
 interface UserProperties {
     admin: boolean;
-    first_name: string;
-    last_name: string;
+    birthday: string;
     email: string;
-    password?: string;
-    salt?: string;
-    uses_imperial_units?: boolean;
+    first_name: string;
+    goal?: string;
+    height_cm: number;
+    last_name: string;
+    password: string;
+    sex: string;
+    use_metric_units: boolean;
+    email_verified_at: Date;
+    created_at: Date;
+    updated_at: Date;
 }
 
 type UserDocument = HydratedDocument<UserProperties>;
 
-const UserSchema: Schema = new Schema<UserProperties>(
+const userSchema: Schema = new Schema<UserProperties>(
     {
         admin: {
             type: Boolean,
@@ -36,18 +43,41 @@ const UserSchema: Schema = new Schema<UserProperties>(
                 validator: emailValidator,
                 message: 'Please provide a valid e-mail address.',
             },
-            required: true,
+            required: [true, 'An e-mail address is required.'],
             unique: true,
         },
         password: {
             type: String,
+            required: true,
+            minLength: [6, 'Password must be at least 6 characters long.'],
         },
-        salt: {
+        sex: {
             type: String,
+            required: true,
+            enum: ['Male', 'Female'],
         },
-        uses_imperial_units: {
+        birthday: {
+            type: String,
+            required: true,
+        },
+        height_cm: {
+            type: Number,
+            required: true,
+        },
+        goal: {
+            type: String,
+            required: false,
+        },
+        use_metric_units: {
             type: Boolean,
-            default: true,
+            default: false,
+            required: true,
+        },
+        email_verified_at: {
+            type: Date,
+            nullable: true,
+            default: null,
+            required: false,
         },
     },
     {
@@ -58,7 +88,12 @@ const UserSchema: Schema = new Schema<UserProperties>(
     },
 );
 
-UserSchema.plugin(uniqueValidator);
+userSchema.plugin(uniqueValidator);
+
+userSchema.pre('save', async function (next) {
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
 
 export type {UserDocument, UserProperties};
-export default model<UserProperties>('User', UserSchema);
+export default model<UserProperties>('User', userSchema);

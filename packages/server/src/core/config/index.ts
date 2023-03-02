@@ -1,13 +1,14 @@
 import get from 'lodash.get';
 
-import '@/core/config/auth';
 import api from '@/core/config/api';
+import auth from '@/core/config/auth';
 import database from '@/core/config/database';
 import services from '@/core/config/services';
 import server from '@/core/config/server';
 
 const configs: Record<string, any> = {
     api,
+    auth,
     database,
     services,
     server,
