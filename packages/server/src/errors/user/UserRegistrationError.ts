@@ -3,7 +3,7 @@ import {Error as MongooseError} from 'mongoose';
 import ApiError, {type ApiErrorData} from '@/errors/ApiError';
 
 export default class UserRegistrationError extends ApiError {
-    readonly httpStatus: number = 400;
+    readonly httpStatus: number = 422;
     readonly name: string = 'UserRegistrationError';
     readonly message: string = 'An error occurred during user registration.';
 
