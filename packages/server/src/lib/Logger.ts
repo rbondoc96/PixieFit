@@ -1,29 +1,31 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 
-const info = (args: any) => {
-    console.log(
-        chalk.blue(`[${new Date().toLocaleString()}] [INFO]`),
-        typeof args === 'string' ? chalk.blueBright(args) : args,
-    );
-};
+export default class Logger {
+    static info(args: any): void {
+        if (process.env.NODE_ENV !== 'test') {
+            console.log(
+                chalk.blue(`[${new Date().toLocaleString()}] [INFO]`),
+                typeof args === 'string' ? chalk.blueBright(args) : args,
+            );
+        }
+    }
 
-const warn = (args: any) => {
-    console.log(
-        chalk.yellow(`[${new Date().toLocaleString()}] [INFO]`),
-        typeof args === 'string' ? chalk.yellowBright(args) : args,
-    );
-};
+    static warn(args: any): void {
+        console.log(
+            chalk.yellow(`[${new Date().toLocaleString()}] [INFO]`),
+            typeof args === 'string' ? chalk.yellowBright(args) : args,
+        );
+    }
 
-const error = (args: any) => {
-    console.log(
-        chalk.red(`[${new Date().toLocaleString()}] [INFO]`),
-        typeof args === 'string' ? chalk.redBright(args) : args,
-    );
-};
+    static error(args: any): void {
+        console.log(
+            chalk.red(`[${new Date().toLocaleString()}] [INFO]`),
+            typeof args === 'string' ? chalk.redBright(args) : args,
+        );
+    }
 
-const log = (args: any) => {
-    info(args);
-};
-
-export {info, warn, error, log};
+    static log(args: any): void {
+        Logger.info(args);
+    }
+}

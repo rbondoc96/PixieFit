@@ -1,7 +1,6 @@
 import {Router} from 'express';
 import type {Request, Response} from 'express';
 
-import UserController from '@/controllers/UserController';
 import Exercise from '@/models/Exercise';
 import Workout from '@/models/Workout';
 
@@ -22,9 +21,6 @@ interface GetUserSetsByExerciseRequest extends Request {
         exercise_id: string;
     };
 }
-
-router.get(path + '/:id', UserController.read);
-router.get(path, UserController.readAll);
 
 router.get(
     path + '/:id/workouts',

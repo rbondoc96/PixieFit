@@ -7,7 +7,7 @@ import UserLoginData from '@/data/user/UserLoginData';
 import UserAuthenticationError from '@/errors/user/UserAuthenticationError';
 import UserRegistrationError from '@/errors/user/UserRegistrationError';
 import {createJwtToken} from '@/lib/auth/tokens';
-import * as Logger from '@/lib/Logger';
+import Logger from '@/lib/Logger';
 import UnexpectedServerError from '@/errors/UnexpectedServerError';
 import User from '@/models/User';
 

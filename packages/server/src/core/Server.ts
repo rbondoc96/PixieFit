@@ -2,12 +2,12 @@ import cookieParser from 'cookie-parser';
 import express, {Express, json, urlencoded} from 'express';
 
 import config from '@/core/config';
-import * as Logger from '@/lib/Logger';
+import Logger from '@/lib/Logger';
 import requestLogger from '@/middleware/requestLogger';
 import preflight from '@/middleware/preflight';
 import response from '@/middleware/response';
 import catcher from '@/middleware/errors/catch';
-import routes from '@/routes';
+import Router from '@/routes';
 
 export default class Server {
     private readonly driver: Express;
@@ -30,7 +30,7 @@ export default class Server {
 
     private setup(): void {
         this.setUpMiddleware();
-        this.driver.use(routes);
+        this.driver.use(Router);
         this.setUpErrorHandlers();
     }
 

@@ -2,9 +2,9 @@ import {Router} from 'express';
 
 import auth from '@/middleware/auth';
 import error404 from '@/middleware/errors/404';
-import authRoutes from '@/routes/auth';
-import userRoutes from '@/routes/User';
-import workoutRoutes from '@/routes/Workout';
+import AuthRouter from '@/routes/AuthRouter';
+import UserRouter from '@/routes/UserRouter';
+import WorkoutRouter from '@/routes/WorkoutRouter';
 
 const router = Router();
 
@@ -36,8 +36,8 @@ router.get('/me', auth, (req, res) => {
     }
 });
 
-router.use('/auth', authRoutes);
-router.use('/api', userRoutes, workoutRoutes);
+router.use('/auth', AuthRouter);
+router.use('/api', UserRouter, WorkoutRouter);
 
 router.use(error404);
 
