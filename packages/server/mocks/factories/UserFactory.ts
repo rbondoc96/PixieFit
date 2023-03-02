@@ -1,35 +1,39 @@
 import {faker} from '@faker-js/faker';
 
-import {generatePassword} from '@/lib/auth/passwords';
-import User, {UserDocument, UserProperties} from '@/models/User';
+import Factory from '@mocks/factories/Factory';
+import User from '@/models/User';
+import type {UserDocument, UserProperties} from '@/models/User';
 
-export async function create(
-    overrides: Partial<UserProperties> = {},
-): Promise<UserDocument> {
-    const data = {
-        admin: false,
-        first_name: faker.name.firstName(),
-        last_name: faker.name.lastName(),
-        email: faker.internet.email(),
-        uses_imperial_units: true,
-        ...overrides,
-    };
-    const password = overrides.password ?? faker.internet.password();
-    const {hash, salt} = generatePassword(password);
-    data.password = hash;
-    data.salt = salt;
+export default class UserFactory extends Factory<
+    UserProperties,
+    UserDocument
+> {
+    async create(
+        overrides: Partial<UserProperties> = {},
+    ): Promise<UserDocument> {
+        const data = {
+            birthday: faker.date.past(),
+            email: faker.internet.email(),
+            first_name: faker.name.firstName(),
+            height_cm: Math.round(Math.random() * 100),
+            last_name: faker.name.lastName(),
+            password: faker.internet.password(),
+            sex: 'Male',
+            ...overrides,
+        };
 
-    return await User.create(data);
-}
-
-export async function createMany(
-    count: number = 1,
-    overrides: Partial<UserProperties> = {},
-): Promise<UserDocument[]> {
-    const users: UserDocument[] = [];
-    for (let n = 0; n < count; n++) {
-        users.push(await create(overrides));
+        return await User.create(data);
     }
 
-    return users;
+    async createMany(
+        count: number,
+        overrides: Partial<UserProperties> = {},
+    ): Promise<UserDocument[]> {
+        const users: UserDocument[] = [];
+        for (let n = 0; n < count; n++) {
+            users.push(await this.create(overrides));
+        }
+
+        return users;
+    }
 }
