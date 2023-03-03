@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from 'express';
 
 import Logger from '@/lib/Logger';
 
-export default (req: Request, res: Response, next: NextFunction) => {
+export default (_req: Request, res: Response, _next: NextFunction) => {
     const notFoundError = new Error('not found');
     Logger.error(notFoundError);
 

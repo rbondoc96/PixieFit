@@ -1,6 +1,6 @@
 import {ConnectOptions} from 'mongoose';
 
-import env from '@/core';
+import env from '@/core/env';
 
 /**
  * Mongoose connection options
@@ -49,15 +49,11 @@ const options: ConnectOptions = {
 };
 
 const database = env('DB_NAME', 'test') as string;
-const username = env('MONGO_USERNAME', '');
-const password = env('MONGO_PASSWORD', '');
-// MongoDB Atlas
-// const url = `mongodb+srv://${username}:${password}@cluster0.ouffdaw.mongodb.net/${database}`;
-
-// Local MongoDB
+const username = env('DB_USERNAME', '');
+const password = env('DB_PASSWORD', '');
 const url = `mongodb://localhost:27017/${database}`;
 
-export = {
+export default {
     mongoose: {
         database,
         username,
