@@ -22,6 +22,9 @@ public
 # Dependencies
 node_modules
 
+# GitHub Action Workflows
+.github/workflows/*.yml
+
 # Miscellaneous
 docs
 *.md

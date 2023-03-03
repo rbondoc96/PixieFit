@@ -4,7 +4,7 @@ import type {ConnectOptions} from 'mongoose';
 import config from '@/core/config';
 import Server from '@/core/Server';
 
-mongoose
+void mongoose
     .connect(
         config('database.mongoose.url', ''),
         config('database.mongoose.options') as ConnectOptions,

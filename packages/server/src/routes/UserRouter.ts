@@ -52,8 +52,6 @@ router.get(
                 ),
             );
 
-            console.log(populatedWorkouts);
-
             res.status(200).json(populatedWorkouts);
         } catch (error: unknown) {
             res.status(400).json({});

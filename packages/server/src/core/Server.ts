@@ -23,7 +23,9 @@ export default class Server {
         this.setup();
 
         this.driver.listen(this.port, () => {
-            Logger.info(`Server is running at http://localhost:${this.port}`);
+            Logger.info(
+                `Server is running at http://localhost:${String(this.port)}`,
+            );
         });
 
         return this.driver;

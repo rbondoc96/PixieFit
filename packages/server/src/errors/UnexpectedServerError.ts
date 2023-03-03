@@ -1,3 +1,4 @@
+/* eslint-disable n/handle-callback-err */
 import ApiError, {type ApiErrorData} from '@/errors/ApiError';
 
 export default class UnexpectedServerError extends ApiError {

@@ -48,7 +48,7 @@ const options: ConnectOptions = {
     w: 'majority',
 };
 
-const database = env('DB_NAME', 'test');
+const database = env('DB_NAME', 'test') as string;
 const username = env('MONGO_USERNAME', '');
 const password = env('MONGO_PASSWORD', '');
 // MongoDB Atlas

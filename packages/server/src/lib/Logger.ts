@@ -13,16 +13,18 @@ export default class Logger {
 
     static warn(args: any): void {
         console.log(
-            chalk.yellow(`[${new Date().toLocaleString()}] [INFO]`),
+            chalk.yellow(`[${new Date().toLocaleString()}] [WARN]`),
             typeof args === 'string' ? chalk.yellowBright(args) : args,
         );
     }
 
     static error(args: any): void {
-        console.log(
-            chalk.red(`[${new Date().toLocaleString()}] [INFO]`),
-            typeof args === 'string' ? chalk.redBright(args) : args,
-        );
+        if (process.env.NODE_ENV !== 'test') {
+            console.log(
+                chalk.red(`[${new Date().toLocaleString()}] [ERROR]`),
+                typeof args === 'string' ? chalk.redBright(args) : args,
+            );
+        }
     }
 
     static log(args: any): void {

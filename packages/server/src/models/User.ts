@@ -91,6 +91,7 @@ const userSchema: Schema = new Schema<UserProperties>(
 userSchema.plugin(uniqueValidator);
 
 userSchema.pre('save', async function (next) {
+    // eslint-disable-next-line no-invalid-this
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });

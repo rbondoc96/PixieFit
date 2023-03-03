@@ -5,17 +5,24 @@
     },
     "extends": [
         "eslint:recommended",
+        "plugin:chai-friendly/recommended",
         "plugin:import/recommended",
         "standard-with-typescript",
         "google",
         "eslint-config-prettier"
     ],
     "rules": {
+        "camelcase": "off",
         "import/no-unresolved": "error",
-        "no-console": "error",
+        "no-console": "warn",
+        "no-useless-escape": "off",
         "object-curly-spacing": ["error", "never"],
         "require-jsdoc": "off",
-        "@typescript-eslint/explicit-function-return-type": "off"
+        "@typescript-eslint/array-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/naming-convention": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-misused-promises": "off"
     },    
     "settings": {
         "import/parsers": {
@@ -32,7 +39,14 @@
           }
         }
       },
-      "overrides": [],
+      "overrides": [
+        {
+          "files": ["*.test.ts"],
+          "rules": {
+            "@typescript-eslint/no-unused-expressions": "off"
+          }
+        }
+      ],
       "parserOptions": {
         "ecmaVersion": "latest",
         "project": ["./tsconfig.json"],
