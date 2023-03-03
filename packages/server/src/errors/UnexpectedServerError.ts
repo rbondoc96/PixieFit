@@ -6,20 +6,25 @@ export default class UnexpectedServerError extends ApiError {
     readonly message: string =
         'An unexpected error occurred while processing the request. Please contact an administrator.';
 
-    constructor(readonly error: Error) {
+    constructor(readonly error?: Error) {
         super();
-        this.error = error;
     }
 
     public toJSON(): ApiErrorData {
+        if (this.error !== undefined) {
+            return {
+                name: this.name,
+                message: this.message,
+                data: {
+                    errorName: this.error.name,
+                    errorMessage: this.error.message,
+                    errorStack: this.error.stack,
+                },
+            };
+        }
         return {
             name: this.name,
             message: this.message,
-            data: {
-                errorName: this.error.name,
-                errorMessage: this.error.message,
-                errorStack: this.error.stack,
-            },
         };
     }
 }

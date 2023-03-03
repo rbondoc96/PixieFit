@@ -13,7 +13,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
             return;
         }
 
-        req.user = (await User.findById(payload.id)) ?? undefined;
+        req.user = await User.findById(payload.id);
         next();
     } catch (error: unknown) {
         res.status(401).json({

@@ -6,6 +6,7 @@ import Logger from '@/lib/Logger';
 import requestLogger from '@/middleware/requestLogger';
 import preflight from '@/middleware/preflight';
 import response from '@/middleware/response';
+import request from '@/middleware/request';
 import catcher from '@/middleware/errors/catch';
 import Router from '@/routes';
 
@@ -36,6 +37,7 @@ export default class Server {
 
     private setUpMiddleware(): void {
         this.driver.use(response);
+        this.driver.use(request);
         this.driver.use(requestLogger);
         this.driver.use(urlencoded({extended: true}));
         this.driver.use(json());

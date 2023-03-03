@@ -13,7 +13,7 @@ export interface ApiErrorData {
     data?: Record<string, unknown> | string;
 }
 
-interface ApiErrorResponse {
+interface ApiResponseError {
     /**
      * Will always be false
      */
@@ -25,18 +25,18 @@ interface ApiErrorResponse {
     /**
      * Error data
      */
-    error: ApiErrorData;
+    error?: ApiErrorData;
 }
 
 abstract class ApiError extends Error {
-    protected abstract readonly error: Error | null;
+    protected abstract readonly error?: Error;
     public abstract readonly httpStatus: number;
     public abstract readonly name: string;
     public abstract readonly message: string;
 
     public abstract toJSON(): ApiErrorData;
 
-    public toJSONError(): ApiErrorResponse {
+    public toJSONError(): ApiResponseError {
         return {
             success: false,
             httpStatus: this.httpStatus,

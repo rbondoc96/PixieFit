@@ -1,4 +1,4 @@
-interface ApiDataResponse<T extends {}, D = Partial<T>> {
+interface ApiResponseData<T extends {}, D = Partial<T>> {
     /**
      * Will always be true
      */
@@ -13,9 +13,9 @@ abstract class ApiData<T extends {} = {}> {
     protected abstract readonly data: T | T[] | null;
     protected abstract readonly dataKey: string | null;
 
-    protected abstract toJSON(): Partial<T> | Partial<T>[];
+    public abstract toJSON(): Partial<T> | Partial<T>[];
 
-    public toJSONResponse(): ApiDataResponse<T> {
+    public toJSONData(): ApiResponseData<T> {
         if (this.dataKey !== null) {
             return {
                 success: true,
