@@ -11,10 +11,12 @@
     },
     "scripts": {
         "client": "npm -w packages/client",
+        "client:dev": "npm -w packages/client run dev",
         "client:run": "npm -w packages/client run",
         "server": "npm -w packages/server",
-        "server:run": "npm -w packages/server run",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "server:check": "npm -w packages/server run lint && npm -w packages/server run check-types",
+        "server:dev": "npm -w packages/server run dev",
+        "server:run": "npm -w packages/server run"
     },
     "workspaces": [
         "packages/client",

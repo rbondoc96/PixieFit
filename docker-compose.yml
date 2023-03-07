@@ -1,0 +1,67 @@
+version: '3.0'
+
+services:
+  web:
+    container_name: kratos-client
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - WORKSPACE=client
+    command: npm run client:dev
+    volumes:
+      - type: bind
+        source: ./packages/client
+        target: /root/code/packages/client
+      - /root/code/node_modules
+    ports:
+      - 3000:3000
+    networks:
+      - pxee-internal
+
+  api:
+    container_name: kratos-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - WORKSPACE=server
+    command: npm run server:dev
+    volumes:
+      - type: bind
+        source: ./packages/server
+        target: /root/code/packages/server
+      - /root/code/node_modules
+    ports:
+      - 4000:4000
+    environment:
+        NODE_ENV: development
+    networks:
+      - pxee-internal
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    env_file: ./packages/server/.env
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - pxee-internal
+
+  mongodb_test:
+    container_name: mongodb_test
+    image: mongo:latest
+    command: mongod --port 27018
+    env_file: ./packages/server/.env.test
+    ports:
+      - '27018:27018'
+    networks:
+      - pxee-internal
+
+volumes:
+  mongodb:
+
+networks:
+    pxee-internal:

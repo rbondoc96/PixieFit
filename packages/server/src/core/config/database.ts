@@ -2,6 +2,11 @@ import {ConnectOptions} from 'mongoose';
 
 import env from '@/core/env';
 
+const database = env('DB_NAME', 'test') as string;
+const username = env('DB_USERNAME', '') as string;
+const password = env('DB_PASSWORD', '') as string;
+const url = `mongodb://${username}:${password}@mongodb:27017`;
+
 /**
  * Mongoose connection options
  * https://mongoosejs.com/docs/connections.html
@@ -46,12 +51,8 @@ const options: ConnectOptions = {
     retryWrites: true,
     socketTimeoutMS: 30000,
     w: 'majority',
+    dbName: database,
 };
-
-const database = env('DB_NAME', 'test') as string;
-const username = env('DB_USERNAME', '');
-const password = env('DB_PASSWORD', '');
-const url = `mongodb://localhost:27017/${database}`;
 
 export default {
     mongoose: {
