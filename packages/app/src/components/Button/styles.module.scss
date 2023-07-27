@@ -1,0 +1,30 @@
+.button {
+    @apply relative;
+    @apply inline-block;
+
+    @apply rounded-lg;
+    @apply px-6 py-3;
+
+    @apply outline-none;
+    @apply hover:ring-2;
+    @apply focus-visible:ring-4;
+    @apply disabled:pointer-events-none;
+
+    @apply text-center;
+
+    @apply disabled:bg-opacity-60;
+}
+
+.button--primary {
+    @apply bg-indigo-500;
+    @apply text-white;
+}
+
+.button--secondary {
+    @apply bg-indigo-400;
+    @apply text-white;
+}
+
+.button--loading {
+    @apply text-transparent;
+}

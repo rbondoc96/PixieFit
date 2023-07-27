@@ -1,0 +1,44 @@
+{
+    "name": "api",
+    "private": true,
+    "version": "0.1.0",
+    "type": "module",
+    "author": "Rodrigo Bondoc",
+    "scripts": {
+        "check:types": "tsc --noEmit --skipLibCheck",
+        "dev": "nodemon -q -w \"src/**\" --ext .ts --exec \"tsx src/main.ts \"",
+        "drop": "drizzle-kit drop --out=\"./src/database/migrations\"",
+        "lint": "eslint src --ext ts --max-warnings 0",
+        "make:migrations": "drizzle-kit generate:pg --config=drizzle.config.ts",
+        "migrate": "tsx -r ./src/globals.ts ./scripts/migrate.ts",
+        "start": "tsx src/main.ts"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.0",
+        "connect-pg-simple": "^9.0.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.3.1",
+        "drizzle-orm": "^0.27.0",
+        "express": "4.18.2",
+        "express-async-handler": "^1.2.0",
+        "express-session": "^1.17.3",
+        "luxon": "^3.3.0",
+        "password-validator": "^5.3.0",
+        "postgres": "^3.3.5",
+        "winston": "^3.10.0",
+        "zod": "^3.21.4"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^5.0.0",
+        "@types/connect-pg-simple": "^7.0.0",
+        "@types/cors": "^2.8.13",
+        "@types/express": "^4.17.17",
+        "@types/express-session": "^1.17.7",
+        "@types/luxon": "^3.3.0",
+        "common": "workspace:*",
+        "drizzle-kit": "^0.19.3",
+        "eslint-plugin-n": "^16.0.1",
+        "nodemon": "^3.0.1",
+        "tsx": "^3.12.7"
+    }
+}

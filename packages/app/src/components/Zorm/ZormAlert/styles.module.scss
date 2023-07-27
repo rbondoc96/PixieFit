@@ -1,0 +1,68 @@
+.zorm-alert {
+    @apply self-stretch;
+    @apply flex;
+    @apply gap-4;
+
+    @apply border-2;
+    @apply rounded-lg;
+    @apply bg-white;
+    @apply px-4 py-4;
+}
+
+.zorm-alert--error {
+    @apply border-red-600;
+    @apply text-red-600;
+}
+
+.zorm-alert--info {
+    @apply border-red-600;
+    @apply bg-red-300;
+}
+
+.zorm-alert--success {
+    @apply border-red-600;
+    @apply bg-red-300;
+}
+
+.zorm-alert--warning {
+    @apply border-red-600;
+    @apply bg-red-300;
+}
+
+.zorm-alert__icon,
+.zorm-alert__clear-icon {
+    @apply flex;
+    @apply items-center;
+
+    @apply text-lg;
+}
+
+.zorm-alert__clear-icon {
+    @apply hover:text-gray-400;
+}
+
+.zorm-alert__content {
+    @apply flex flex-col;
+    @apply flex-1;
+    @apply gap-2;
+
+    & > .zorm-alert__content__title {
+        @apply text-sm;
+        @apply font-bold;
+    }
+
+    & .zorm-alert__content__message {
+        @apply text-sm;
+    }
+}
+
+.zorm-alert__content > .zorm-alert__content__details {
+    @apply flex flex-col;
+    @apply gap-0.5;
+
+    @apply pl-2;
+
+    & > .zorm-alert__content__details__message {
+        @apply text-sm;
+    }
+}

@@ -1,0 +1,54 @@
+.main {
+    @apply flex flex-col;
+    @apply flex-1;
+    @apply items-center justify-center;
+
+    @apply p-8;
+    @apply mx-auto;
+
+    @apply w-full;
+    @apply max-w-md;
+}
+
+.form-container {
+    @apply flex flex-col;
+    @apply justify-center items-center;
+    @apply self-stretch;
+    @apply gap-10;
+
+    @apply rounded-md;
+}
+
+.form-heading {
+    @apply flex flex-col;
+    @apply gap-3;
+
+    @apply text-center;
+
+    & > h1 {
+        @apply text-3xl;
+        @apply font-medium;
+        @apply tracking-tighter;
+        @apply text-black dark:text-white;
+    }
+}
+
+.form {
+    @apply flex flex-col;
+    @apply self-stretch;
+    @apply gap-4;
+}
+
+.form__input-row {
+    @apply flex;
+    @apply justify-between;
+}
+
+.form-footer {
+    @apply text-sm;
+
+    & > a {
+        @apply text-indigo-500;
+        @apply font-medium;
+    }
+}

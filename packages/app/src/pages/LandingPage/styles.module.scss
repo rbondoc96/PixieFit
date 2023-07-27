@@ -1,0 +1,73 @@
+.header {
+    @apply absolute;
+    @apply z-10;
+
+    @apply w-full;
+
+    & > .header__container {
+        @apply flex;
+        @apply justify-between items-center;
+
+        @apply px-8 py-6;
+    }
+
+    & > .header__container > .header-links {
+        @apply flex;
+        @apply gap-12;
+
+        & > nav {
+            @apply flex;
+            @apply items-center;
+            @apply gap-8 md:gap-12;
+        }
+    }
+}
+
+.main {
+    @apply flex flex-col;
+    @apply flex-1;
+
+    @apply p-8;
+}
+
+.hero {
+    @apply relative;
+    @apply flex;
+    @apply justify-center items-center;
+    @apply h-full;
+
+    & > .hero__content {
+        @apply flex flex-col;
+        @apply justify-center items-center;
+        @apply gap-8;
+    }
+
+    & > .hero__content > .hero__content__title {
+        @apply flex flex-col;
+        @apply gap-2;
+    }
+}
+
+.hero > .hero__content {
+    & h1 {
+        @apply font-bold;
+        @apply tracking-tighter;
+        @apply text-center;
+
+        @apply text-5xl;
+        @apply sm:text-6xl;
+        @apply md:text-7xl;
+
+        line-height: 1.1;
+    }
+
+    & h2 {
+        @apply text-lg;
+        @apply text-center;
+    }
+
+    & h3 {
+        @apply text-base;
+        @apply text-center;
+    }
+}

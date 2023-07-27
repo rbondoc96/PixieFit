@@ -1,0 +1,45 @@
+.zorm-input {
+    @apply flex flex-col;
+    @apply gap-1.5;
+}
+
+.zorm-input > label {
+    @apply relative;
+    @apply flex flex-col;
+    @apply items-start;
+
+    & > input {
+        @apply text-sm;
+        @apply text-black dark:text-white;
+
+        @apply self-stretch;
+        @apply rounded-lg;
+        @apply px-3 py-2.5;
+
+        @apply outline-none;
+        @apply border border-gray-900;
+        @apply dark:border-white;
+
+        @apply hover:ring-2;
+        @apply hover:ring-primary/50;
+
+        @apply focus-within:ring-2;
+        @apply focus-within:ring-primary/50;
+    }
+
+    & > button {
+        @apply absolute;
+        @apply right-0;
+
+        @apply h-full;
+        @apply pr-2.5;
+
+        @apply text-gray-500;
+    }
+}
+
+.zorm-input > .zorm-input__error {
+    @apply text-sm;
+    @apply font-medium;
+    @apply text-red-400;
+}
