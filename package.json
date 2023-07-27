@@ -1,12 +1,11 @@
 {
-    "name": "@pxeeio/kratos",
+    "name": "kratos",
     "private": true,
-    "version": "1.0.0",
-    "description": "## Domain Names * flexx.pxee.io",
+    "version": "0.1.0",
+    "description": "A PWA Exercise Tracker",
     "license": "MIT",
     "author": "Rodrigo Bondoc",
     "keywords": [],
-    "main": "index.js",
     "engines": {
         "node": ">=18.15.0"
     },
