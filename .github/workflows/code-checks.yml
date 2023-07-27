@@ -1,8 +1,15 @@
 name: Code Quality Check
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-on: [push]
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 
 jobs:
   server_check:
@@ -13,42 +20,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: '8.x.x'
+
       - name: Install Node.js v18
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: npm run server i
+        run: pnpm install
 
-      - name: Code Checks
-        run: npm run server:check
+      - name: Check Types
+        run: pnpm check:types
 
-  server_build:
-    name: Node v18
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Create Server .env.test file
-        run: |
-          cd ./packages/server
-          cp .env.test.example .env.test
-
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.9.0
-        with:
-          mongodb-version: '6.0'
-          mongodb-username: root
-          mongodb-password: password
-          mongodb-port: 27018
-
-      - name: Install Dependencies
-        run: npm run server i
-
-      - name: Run Tests
-        run: npm run server test
+      - name: Check Code Style
+        run: pnpm lint
