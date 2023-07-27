@@ -6,6 +6,7 @@
     "author": "Rodrigo Bondoc",
     "scripts": {
         "check:types": "tsc --noEmit --skipLibCheck",
+        "db:seed": "tsx -r ./src/globals.ts ./scripts/seed.ts",
         "dev": "nodemon -q -w \"src/**\" --ext .ts --exec \"tsx src/main.ts \"",
         "drop": "drizzle-kit drop --out=\"./src/database/migrations\"",
         "lint": "eslint src --ext ts --max-warnings 0",
