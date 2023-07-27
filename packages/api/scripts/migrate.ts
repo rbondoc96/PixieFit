@@ -8,7 +8,9 @@ const DB_HOST = env('DB_HOST');
 const DB_PORT = env('DB_PORT');
 const DB_DATABASE = env('DB_DATABASE');
 
-const connectionString = `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
+// prettier-ignore
+const connectionString = 
+    `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
 
 const client = postgres(connectionString, {max: 1});
 const db: PostgresJsDatabase = drizzle(client);
