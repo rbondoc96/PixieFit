@@ -1,25 +1,35 @@
 {
     "name": "@pxeeio/kratos",
+    "private": true,
     "version": "1.0.0",
     "description": "## Domain Names * flexx.pxee.io",
     "license": "MIT",
     "author": "Rodrigo Bondoc",
     "keywords": [],
     "main": "index.js",
+    "engines": {
+        "node": ">=18.15.0"
+    },
     "directories": {
         "doc": "docs"
     },
     "scripts": {
-        "client": "npm -w packages/client",
-        "client:dev": "npm -w packages/client run dev",
-        "client:run": "npm -w packages/client run",
-        "server": "npm -w packages/server",
-        "server:check": "npm -w packages/server run lint && npm -w packages/server run check-types",
-        "server:dev": "npm -w packages/server run dev",
-        "server:run": "npm -w packages/server run"
+        "check:types": "turbo run check:types",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint --continue"
     },
-    "workspaces": [
-        "packages/client",
-        "packages/server"
-    ]
+    "devDependencies": {
+        "@types/node": "^20.3.1",
+        "@typescript-eslint/eslint-plugin": "^5.60.0",
+        "@typescript-eslint/parser": "^5.60.0",
+        "concurrently": "^8.2.0",
+        "eslint": "^8.43.0",
+        "eslint-define-config": "^1.20.0",
+        "eslint-plugin-import": "^2.27.5",
+        "eslint-plugin-promise": "^6.1.1",
+        "eslint-plugin-simple-import-sort": "^10.0.0",
+        "prettier": "^2.8.8",
+        "turbo": "^1.10.7",
+        "typescript": "^5.1.6"
+    }
 }

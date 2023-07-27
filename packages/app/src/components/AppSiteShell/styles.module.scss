@@ -1,0 +1,27 @@
+.app {
+    @apply flex flex-col;
+    @apply h-screen;
+    @apply overflow-y-hidden;
+}
+
+.header {
+    @apply flex;
+    @apply justify-center items-center;
+
+    @apply px-6 py-4;
+
+    @apply shadow-md;
+}
+
+.main {
+    @apply relative;
+    @apply flex flex-col;
+    @apply justify-center;
+
+    @apply flex-1;
+    @apply overflow-y-hidden;
+
+    & > * {
+        @apply overflow-y-auto;
+    }
+}

@@ -1,0 +1,38 @@
+.nav {
+    @apply grid grid-cols-5;
+    @apply md:hidden;
+    @apply items-center;
+    @apply justify-items-center;
+
+    @apply h-12 w-full;
+
+    box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.4);
+}
+
+.nav-container {
+    @apply h-full;
+    @apply grid grid-cols-5;
+    @apply items-center;
+    @apply justify-items-center;
+}
+
+.tab-button {
+    @apply flex flex-col;
+    @apply justify-center items-center;
+    @apply space-y-1;
+
+    @apply h-full;
+    @apply w-full;
+
+    @apply py-2;
+
+    & > span {
+        @apply text-center;
+
+        font-size: 10px;
+    }
+}
+
+.tab-button--active {
+    @apply text-indigo-500;
+}

@@ -1,0 +1,47 @@
+// // Smallest text size is 12px
+// $base-xs: 0.75rem;
+// // 14px
+// $base-sm: 0.875rem;
+// // Base text size should be 16px
+// $base-md: 1rem; // p
+// $base-lg: 1.125rem; // h6
+// $base-xl: 1.25rem; // h5
+// $base-2xl: 1.5rem; // h4
+// $base-3xl: 1.6rem; // h3
+// $base-4xl: 1.7rem; // h2
+// $base-5xl: 2rem; //h1
+
+// .text {
+// }
+
+h1.text {
+    @apply text-4xl;
+    @apply xs:text-5xl;
+    @apply sm:text-[3.35rem];
+    @apply md:text-6xl;
+    @apply lg:text-7xl;
+}
+
+h2.text {
+    @apply text-3xl;
+}
+
+h3.text {
+    @apply text-2xl;
+}
+
+h4.text {
+    @apply text-xl;
+}
+
+h5.text {
+    @apply text-lg;
+}
+
+h6.text {
+    @apply text-base;
+}
+
+p.text {
+    @apply text-base;
+}

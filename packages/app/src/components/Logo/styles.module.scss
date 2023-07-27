@@ -1,0 +1,9 @@
+.logo {
+    @apply flex;
+}
+
+.logo__version {
+    @apply text-xs;
+    @apply px-1 py-0.5;
+    @apply border border-black;
+}

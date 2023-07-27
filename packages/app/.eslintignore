@@ -1,0 +1,16 @@
+# Project directories
+node_modules/
+dist/
+build/
+
+# Bundler configs
+vite.config.ts
+
+# TailwindCSS configs
+tailwind.config.cjs
+postcss.config.cjs
+jest.config.ts
+
+# Declaration files
+env.d.ts
+vite-env.d.ts

@@ -1,7 +1,8 @@
 {
-  "eslint.workingDirectories": [
-    "./packages/client", 
-    "./packages/server"
-],
-"css.lint.unknownAtRules": "ignore"
+    "eslint.workingDirectories": ["./packages/api", "./packages/app"],
+    "css.lint.unknownAtRules": "ignore",
+    "scss.lint.unknownAtRules": "ignore",
+    "editor.formatOnSave": true,
+    "prettier.configPath": ".prettierrc.json",
+    "tailwindCSS.experimental.classRegex": [["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]]
 }
