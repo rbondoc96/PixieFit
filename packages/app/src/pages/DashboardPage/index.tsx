@@ -10,57 +10,6 @@ const DashboardPage: Component = () => {
     return (
         <section class={styles.dashboardPage}>
             <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
-            <h1>Welcome, {user.name.full}</h1>
         </section>
     );
 };

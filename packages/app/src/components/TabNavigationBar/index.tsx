@@ -15,7 +15,7 @@ import {
     UserDashboard,
     UserProgress,
     UserSettings,
-    UserWorkoutTracker,
+    UserTracker,
 } from '@/constants/Routes';
 import type {Route} from '@/lib/Route';
 
@@ -46,7 +46,7 @@ const TabNavigationBar: Component = () => {
             <TabButton icon={faList} label="Dashboard" route={UserDashboard} />
             <TabButton icon={faDumbbell} label="Exercises" route={Exercises} />
             <Link
-                href={UserWorkoutTracker.fullPath}
+                href={UserTracker.fullPath}
                 activeClass={styles.middleTabActive}
                 class={styles.middleTab}
             >

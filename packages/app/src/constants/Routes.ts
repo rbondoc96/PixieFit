@@ -9,7 +9,7 @@ const Routes = {
     UserDashboard: Route({name: Symbol('user-dashboard'), pathName: 'dashboard', parents: ['app']}),
     UserProgress: Route({name: Symbol('user-progress'), pathName: 'progress', parents: ['app']}),
     UserSettings: Route({name: Symbol('user-settings'), pathName: 'settings', parents: ['app']}),
-    UserWorkoutTracker: Route({
+    UserTracker: Route({
         name: Symbol('user-workout-tracker'),
         pathName: 'tracker',
         parents: ['app'],
@@ -24,6 +24,6 @@ export const PageNotFound = Routes.PageNotFound;
 export const UserDashboard = Routes.UserDashboard;
 export const UserProgress = Routes.UserProgress;
 export const UserSettings = Routes.UserSettings;
-export const UserWorkoutTracker = Routes.UserWorkoutTracker;
+export const UserTracker = Routes.UserTracker;
 
 export default Routes;
