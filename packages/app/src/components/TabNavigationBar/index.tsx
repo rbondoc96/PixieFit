@@ -1,14 +1,14 @@
 import {
-    faChartSimple,
+    faChartColumn,
     faDumbbell,
-    faGears,
+    faGear,
+    faList,
     faStopwatch,
-    faUserNinja,
     type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import {A as Link} from '@solidjs/router';
 import FontAwesomeIcon from 'solid-fa';
-import {type Component, Index} from 'solid-js';
+import {type Component} from 'solid-js';
 
 import {
     Exercises,
@@ -27,49 +27,32 @@ type Tab = {
     route: Route;
 };
 
-const tabs: Tab[] = [
-    {
-        icon: faUserNinja,
-        label: 'Home',
-        route: UserDashboard,
-    },
-    {
-        icon: faDumbbell,
-        label: 'Exercises',
-        route: Exercises,
-    },
-    {
-        icon: faStopwatch,
-        label: 'Tracker',
-        route: UserWorkoutTracker,
-    },
-    {
-        icon: faChartSimple,
-        label: 'Progress',
-        route: UserProgress,
-    },
-    {
-        icon: faGears,
-        label: 'Settings',
-        route: UserSettings,
-    },
-];
+const TabButton: Component<Tab> = props => {
+    return (
+        <Link
+            href={props.route.fullPath}
+            activeClass={styles.tabButtonActive}
+            class={styles.tabButton}
+        >
+            <FontAwesomeIcon icon={props.icon} size="lg" />
+            <span>{props.label}</span>
+        </Link>
+    );
+};
 
 const TabNavigationBar: Component = () => {
     return (
         <nav class={styles.nav}>
-            <Index each={tabs}>
-                {tab => (
-                    <Link
-                        href={tab().route.fullPath}
-                        activeClass={styles.tabButtonActive}
-                        class={styles.tabButton}
-                    >
-                        <FontAwesomeIcon icon={tab().icon} />
-                        <span>{tab().label}</span>
-                    </Link>
-                )}
-            </Index>
+            <TabButton icon={faList} label="Dashboard" route={UserDashboard} />
+            <TabButton icon={faDumbbell} label="Exercises" route={Exercises} />
+            <Link href={UserWorkoutTracker.fullPath} class={styles.middleTab}>
+                <div class={styles.middleTabButton}>
+                    <FontAwesomeIcon icon={faStopwatch} size="1x" />
+                </div>
+                <span class={styles.middleTabLabel}>Tracker</span>
+            </Link>
+            <TabButton icon={faChartColumn} label="Progress" route={UserProgress} />
+            <TabButton icon={faGear} label="Settings" route={UserSettings} />
         </nav>
     );
 };

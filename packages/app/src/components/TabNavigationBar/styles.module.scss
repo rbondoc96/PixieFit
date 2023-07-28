@@ -4,7 +4,7 @@
     @apply items-center;
     @apply justify-items-center;
 
-    @apply h-12 w-full;
+    @apply w-full;
 
     box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.4);
 }
@@ -27,10 +27,39 @@
     @apply py-2;
 
     & > span {
+        @apply font-medium;
         @apply text-center;
-
-        font-size: 10px;
+        @apply text-xs;
     }
+}
+
+.middle-tab {
+    @apply flex flex-col;
+    @apply items-center;
+}
+
+.middle-tab > .middle-tab__button {
+    @apply relative;
+    @apply bottom-5;
+    @apply flex;
+    @apply justify-center items-center;
+
+    @apply h-10 w-10;
+    @apply scale-150;
+    @apply rounded-full;
+
+    @apply bg-indigo-500;
+
+    & > svg {
+        @apply text-white;
+    }
+}
+
+.middle-tab > .middle-tab__label {
+    @apply relative;
+    @apply bottom-1.5;
+    @apply font-medium;
+    @apply text-xs;
 }
 
 .tab-button--active {
