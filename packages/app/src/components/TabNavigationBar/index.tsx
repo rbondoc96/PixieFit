@@ -45,7 +45,11 @@ const TabNavigationBar: Component = () => {
         <nav class={styles.nav}>
             <TabButton icon={faList} label="Dashboard" route={UserDashboard} />
             <TabButton icon={faDumbbell} label="Exercises" route={Exercises} />
-            <Link href={UserWorkoutTracker.fullPath} class={styles.middleTab}>
+            <Link
+                href={UserWorkoutTracker.fullPath}
+                activeClass={styles.middleTabActive}
+                class={styles.middleTab}
+            >
                 <div class={styles.middleTabButton}>
                     <FontAwesomeIcon icon={faStopwatch} size="1x" />
                 </div>

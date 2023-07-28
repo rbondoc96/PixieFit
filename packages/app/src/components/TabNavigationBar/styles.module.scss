@@ -1,3 +1,5 @@
+$tabLabelFontSize: 11px;
+
 .nav {
     @apply grid grid-cols-5;
     @apply md:hidden;
@@ -7,13 +9,6 @@
     @apply w-full;
 
     box-shadow: 0 -1px 5px 0 rgba(0, 0, 0, 0.4);
-}
-
-.nav-container {
-    @apply h-full;
-    @apply grid grid-cols-5;
-    @apply items-center;
-    @apply justify-items-center;
 }
 
 .tab-button {
@@ -26,11 +21,18 @@
 
     @apply py-2;
 
+    @apply text-gray-500;
+
     & > span {
-        @apply font-medium;
+        @apply font-semibold;
         @apply text-center;
-        @apply text-xs;
+
+        font-size: $tabLabelFontSize;
     }
+}
+
+.tab-button--active {
+    @apply text-indigo-500;
 }
 
 .middle-tab {
@@ -47,8 +49,9 @@
     @apply h-10 w-10;
     @apply scale-150;
     @apply rounded-full;
+    @apply drop-shadow-lg;
 
-    @apply bg-indigo-500;
+    @apply bg-gray-500;
 
     & > svg {
         @apply text-white;
@@ -58,10 +61,19 @@
 .middle-tab > .middle-tab__label {
     @apply relative;
     @apply bottom-1.5;
-    @apply font-medium;
-    @apply text-xs;
+
+    @apply font-semibold;
+    @apply text-gray-500;
+
+    font-size: $tabLabelFontSize;
 }
 
-.tab-button--active {
-    @apply text-indigo-500;
+.middle-tab--active {
+    & > .middle-tab__button {
+        @apply bg-indigo-500;
+    }
+
+    & > .middle-tab__label {
+        @apply text-indigo-500;
+    }
 }
