@@ -13,6 +13,9 @@ export default defineConfig({
             localsConvention: 'camelCase',
         },
     },
+    optimizeDeps: {
+        include: ['@kratos/common'],
+    },
     plugins: [
         ...undestructurePlugin('ts'),
         devtools({
