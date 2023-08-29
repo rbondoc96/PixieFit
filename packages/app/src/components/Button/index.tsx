@@ -27,6 +27,7 @@ type LinkProps = {
 type ButtonVariant = 'primary' | 'secondary';
 
 type ButtonProps = {
+    class?: string;
     disabled?: boolean;
     isLoading?: boolean;
     label: string;
@@ -67,12 +68,20 @@ const Button: Component<ButtonProps> = props => {
 
     const shouldDisable = createMemo(() => split.disabled || split.isLoading);
 
-    const classList = createMemo(() => ({
-        [styles.button]: true,
-        [styles.buttonPrimary]: split.variant === 'primary',
-        [styles.buttonSecondary]: split.variant === 'secondary',
-        [styles.buttonLoading]: split.isLoading,
-    }));
+    const classList = createMemo(() => {
+        const classProp = props.class;
+
+        // prettier-ignore
+        return classProp !== undefined
+            ? {
+                [classProp]: true,
+            } : {
+                [styles.button]: true,
+                [styles.buttonPrimary]: split.variant === 'primary',
+                [styles.buttonSecondary]: split.variant === 'secondary',
+                [styles.buttonLoading]: split.isLoading,
+            };
+    });
 
     return (
         <Switch>

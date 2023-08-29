@@ -55,7 +55,7 @@ const TabNavigationBar: Component = () => {
                 </div>
                 <span class={styles.middleTabLabel}>Tracker</span>
             </Link>
-            <TabButton icon={faChartColumn} label="Progress" route={UserProgress} />
+            <TabButton icon={faChartColumn} label="Activities" route={UserProgress} />
             <TabButton icon={faGear} label="Settings" route={UserSettings} />
         </nav>
     );
