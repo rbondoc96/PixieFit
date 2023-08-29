@@ -35,6 +35,7 @@ const envParser = object({
     DB_MAX_POOL: string(),
     DB_MIN_POOL: string(),
     DB_MIGRATIONS_TABLE: string(),
+    WGER_API_URL: string(),
 });
 
 export type Env = output<typeof envParser>;

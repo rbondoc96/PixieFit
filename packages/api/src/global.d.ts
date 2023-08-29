@@ -3,7 +3,7 @@ import type {Env} from './globals';
 declare global {
     function env<TKey extends keyof Env>(key: TKey): Env[TKey];
 
-    type EmptyObject = Record<string, never>;
+    type EmptyObject = Record<number | string | symbol, never>;
 
     type JSONResponse = {
         success: boolean;
