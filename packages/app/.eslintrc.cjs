@@ -16,7 +16,7 @@ module.exports = defineConfig({
     plugins: ['@typescript-eslint', 'import', 'simple-import-sort', 'solid'],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        ecmaVersion: 'latest',
+        ecmaVersion: 2020,
         sourceType: 'module',
     },
     settings: {
@@ -105,9 +105,6 @@ module.exports = defineConfig({
                 ],
             },
         ],
-
-        // Disabled since destructuring is handled by babel-plugin-solid-undestructure
-        'solid/no-destructure': 'off',
 
         '@typescript-eslint/ban-ts-comment': 'error',
         '@typescript-eslint/explicit-module-boundary-types': [
