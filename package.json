@@ -13,6 +13,8 @@
         "doc": "docs"
     },
     "scripts": {
+        "api": "pnpm --filter=\"./packages/api\"",
+        "app": "pnpm --filter=\"./packages/app\"",
         "check:types": "turbo run check:types",
         "dev": "turbo run dev",
         "lint": "turbo run lint --continue"
