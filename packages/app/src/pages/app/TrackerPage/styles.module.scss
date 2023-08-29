@@ -1,0 +1,67 @@
+.section {
+    @apply flex flex-col;
+    @apply gap-8;
+
+    @apply h-full;
+    @apply px-12 py-8;
+    // @apply mx-auto;
+}
+
+.section > h1 {
+    @apply text-4xl;
+    @apply tracking-tighter;
+    @apply font-semibold;
+}
+
+.section > .buttons {
+    @apply flex;
+    @apply gap-2;
+
+    > * {
+        @apply flex-1;
+    }
+}
+
+.button {
+    @apply flex;
+    @apply justify-center items-center;
+    @apply text-center;
+    @apply bg-transparent;
+    @apply border-2 border-indigo-500;
+    @apply rounded-lg;
+    @apply text-indigo-500;
+    @apply transition-colors duration-300 ease-in-out;
+
+    @apply px-2 py-4;
+    @apply sm:px-4 sm:py-6;
+
+    @apply text-sm;
+    @apply sm:text-base;
+
+    &:hover {
+        @apply bg-indigo-500;
+        @apply text-white;
+    }
+}
+
+.workouts {
+    @apply flex flex-col;
+    @apply gap-10;
+
+    & > .workout {
+        @apply flex flex-col;
+
+        & > h2 {
+            @apply text-xl;
+            @apply font-medium;
+
+            @apply pb-1;
+            @apply mb-4;
+            @apply border-b-2 border-b-indigo-300;
+        }
+    }
+}
+
+.exercise-list {
+    @apply flex flex-col;
+}

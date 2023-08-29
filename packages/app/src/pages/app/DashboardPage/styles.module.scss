@@ -1,0 +1,52 @@
+.section {
+    @apply flex flex-col;
+    @apply gap-8;
+
+    @apply h-full;
+    @apply px-6 py-4;
+
+    & > h1 {
+        @apply text-4xl;
+        @apply tracking-tighter;
+        @apply font-semibold;
+    }
+}
+
+.user-info {
+    @apply flex;
+    @apply gap-4;
+    @apply py-2;
+
+    & > .user-image {
+        @apply flex;
+        @apply justify-center items-center;
+    }
+
+    & > .user-image > img {
+        width: 40px;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    & > .user-greeting {
+        @apply flex flex-col;
+        @apply gap-1;
+        @apply text-sm;
+    }
+
+    & > .user-greeting > .user-welcome {
+        @apply text-gray-500;
+    }
+
+    & > .user-greeting > .user-name {
+        @apply font-medium;
+    }
+}
+
+.activity {
+    @apply flex flex-col;
+
+    & > h2 {
+        @apply text-lg;
+    }
+}

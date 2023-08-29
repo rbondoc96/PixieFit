@@ -22,23 +22,23 @@ export default [
         children: [
             {
                 path: Routes.UserDashboard.path,
-                component: lazy(() => import('@/pages/DashboardPage')),
+                component: lazy(() => import('@/pages/app/DashboardPage')),
             },
             {
                 path: Routes.Exercises.path,
-                component: lazy(() => import('@/pages/ExercisesPage')),
+                component: lazy(() => import('@/pages/app/ExercisesPage')),
             },
             {
                 path: Routes.UserTracker.path,
-                component: lazy(() => import('@/pages/TrackerPage')),
+                component: lazy(() => import('@/pages/app/TrackerPage')),
             },
             {
                 path: Routes.UserProgress.path,
-                component: lazy(() => import('@/pages/ProgressPage')),
+                component: lazy(() => import('@/pages/app/ProgressPage')),
             },
             {
                 path: Routes.UserSettings.path,
-                component: lazy(() => import('@/pages/SettingsPage')),
+                component: lazy(() => import('@/pages/app/SettingsPage')),
             },
             {
                 path: '/*',
