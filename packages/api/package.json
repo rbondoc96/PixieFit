@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@kratos/common": "workspace:*",
+        "@pxeeio/express-async-controller": "^0.1.0",
         "axios": "^1.4.0",
         "bcrypt": "^5.1.0",
         "connect-pg-simple": "^9.0.0",
