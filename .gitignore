@@ -19,9 +19,8 @@ lerna-debug.log*
 
 # General
 .DS_Store
-.env
-.env.local
-.env.test
+.env*
+!.env.example
 
 # Backend
 pocketbase

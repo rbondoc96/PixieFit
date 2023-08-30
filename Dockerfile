@@ -17,7 +17,6 @@ COPY pnpm-workspace.yaml .
 FROM base AS api
 WORKDIR /app/packages/api
 COPY ./packages/api .
-COPY ./packages/api/.env.alpha ./.env
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm migrate
