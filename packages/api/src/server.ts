@@ -43,7 +43,7 @@ export async function start(): Promise<void> {
     server.use(errorHandler);
 
     server.listen(port, () => {
-        if (env('NODE_ENV') === 'development') {
+        if (env('NODE_ENV') !== 'production') {
             import('../package.json').then(pkg => {
                 console.log(`\n  KRATOS Server v${pkg.version}  (running)\n`);
                 console.log(`  ➜  Local:  http://localhost:${port}/\n`);
