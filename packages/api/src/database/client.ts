@@ -5,7 +5,7 @@ import config from '@/config/database';
 
 const connectionString = config.connectionString();
 
-const client = postgres(connectionString, {max: 1});
+const client = postgres(connectionString, {max: 1, ssl: true});
 export const DB: PostgresJsDatabase = drizzle(client);
 
 export default DB;

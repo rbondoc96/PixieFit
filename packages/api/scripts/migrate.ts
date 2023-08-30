@@ -12,7 +12,7 @@ const DB_DATABASE = env('DB_DATABASE');
 const connectionString = 
     `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
 
-const client = postgres(connectionString, {max: 1});
+const client = postgres(connectionString, {max: 1, ssl: true});
 const db: PostgresJsDatabase = drizzle(client);
 
 const main = async () => {
