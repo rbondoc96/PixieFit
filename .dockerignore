@@ -1,6 +1,12 @@
-/.vscode
-/docker
-/docs
-/node_modules
+.github
+.vscode
+docs
+node_modules
 
+packages/app
+packages/common
+packages/server
+
+.prettierignore
+.prettierrc.json
 npm-debug.log
