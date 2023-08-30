@@ -33,4 +33,4 @@ const executeFilesInDirectory = async () => {
     process.exit(0);
 };
 
-await executeFilesInDirectory();
+executeFilesInDirectory().then();
