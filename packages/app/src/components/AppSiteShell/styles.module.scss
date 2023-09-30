@@ -6,11 +6,25 @@
 
 .header {
     @apply flex;
-    @apply justify-center items-center;
-
     @apply px-6 py-4;
 
     @apply shadow-md;
+
+    & > .header-container {
+        @apply flex flex-1;
+        @apply justify-between items-center;
+
+        & > .user-image {
+            @apply flex;
+            @apply justify-center items-center;
+        }
+
+        & > .user-image > img {
+            width: 40px;
+            height: auto;
+            aspect-ratio: 1;
+        }
+    }
 }
 
 .main {

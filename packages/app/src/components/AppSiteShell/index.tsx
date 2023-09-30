@@ -1,6 +1,7 @@
 import {Outlet} from '@solidjs/router';
 import {type Component, ErrorBoundary} from 'solid-js';
 
+import UserIcon from '@/assets/images/user.png';
 import Helmet from '@/components/Helmet';
 import Logo from '@/components/Logo';
 import TabNavigationBar from '@/components/TabNavigationBar';
@@ -17,7 +18,13 @@ const AppSiteShell: Component = () => {
             <Helmet title="PixieFit" />
             <div class={styles.app}>
                 <header class={styles.header}>
-                    <Logo />
+                    <div class={styles.headerContainer}>
+                        <div />
+                        <Logo />
+                        <div class={styles.userImage}>
+                            <img src={UserIcon} alt="user icon" />
+                        </div>
+                    </div>
                 </header>
                 <main class={styles.main}>
                     <ErrorBoundary fallback={GeneralErrorPage}>

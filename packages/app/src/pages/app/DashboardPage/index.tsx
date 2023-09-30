@@ -1,6 +1,5 @@
 import {type Component} from 'solid-js';
 
-import UserIcon from '@/assets/images/user.png';
 import {useAuthenticatedUser} from '@/stores/auth.store';
 
 import styles from './styles.module.scss';
@@ -11,9 +10,6 @@ const DashboardPage: Component = () => {
     return (
         <div class={styles.section}>
             <div class={styles.userInfo}>
-                <div class={styles.userImage}>
-                    <img src={UserIcon} alt="user icon" />
-                </div>
                 <div class={styles.userGreeting}>
                     <span class={styles.userWelcome}>Welcome back,</span>
                     <span class={styles.userName}>{user.name.full}</span>
