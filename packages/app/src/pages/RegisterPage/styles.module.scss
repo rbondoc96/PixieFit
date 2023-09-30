@@ -41,7 +41,11 @@
 
 .form__input-row {
     @apply flex;
-    @apply justify-between;
+    @apply gap-3;
+
+    > * {
+        @apply flex-1;
+    }
 }
 
 .form-footer {

@@ -1,17 +1,17 @@
 import {type Accessor, createSignal} from 'solid-js';
 
 import {AuthAPI} from '@/api';
-import {type AuthenticatedUser} from '@/parsers/authParsers';
+import {type User} from '@/parsers/authParsers';
 
 interface AuthStore {
     fetchUser: () => Promise<void>;
     login: (payload: AuthAPI.LoginUserPayload) => Promise<void>;
     logout: () => Promise<void>;
     register: (payload: AuthAPI.RegisterUserPayload) => Promise<void>;
-    user: Accessor<AuthenticatedUser | null>;
+    user: Accessor<User | null>;
 }
 
-const [user, setUser] = createSignal<AuthenticatedUser | null>(null);
+const [user, setUser] = createSignal<User | null>(null);
 
 export async function fetchUser(): Promise<void> {
     try {
@@ -38,7 +38,7 @@ export async function register(payload: AuthAPI.RegisterUserPayload): Promise<vo
     setUser(user);
 }
 
-export function useAuthenticatedUser(): AuthenticatedUser {
+export function useAuthenticatedUser(): User {
     const authenticatedUser = user();
 
     if (authenticatedUser === null) {

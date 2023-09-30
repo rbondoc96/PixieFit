@@ -47,17 +47,34 @@ const RegisterPage: Component = () => {
                                     placeholder="Last name"
                                 />
                             </div>
-                            <Zorm.Input
-                                label="Email Address"
-                                name="email"
-                                placeholder="Email address"
-                            />
-                            <Zorm.Input
-                                label="Birthday"
-                                name="birthday"
-                                placeholder="Birthday"
-                                type="date"
-                            />
+
+                            <div class={styles.formInputRow}>
+                                <Zorm.Input
+                                    label="Email Address"
+                                    name="email"
+                                    placeholder="Email address"
+                                />
+                            </div>
+
+                            <div class={styles.formInputRow}>
+                                <Zorm.Input
+                                    label="Birthday"
+                                    name="birthday"
+                                    placeholder="Birthday"
+                                    type="date"
+                                />
+                                <Zorm.Select
+                                    label="Gender"
+                                    name="gender"
+                                    initialValue="male"
+                                >
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="non_binary">Non-Binary</option>
+                                    <option value="other">Other</option>
+                                </Zorm.Select>
+                            </div>
+
                             <div class={styles.formInputRow}>
                                 <Zorm.Input
                                     label="Password"
@@ -72,9 +89,11 @@ const RegisterPage: Component = () => {
                                     type="password"
                                 />
                             </div>
+
                             <Zorm.Submit label="Register" />
                         </Zorm.Form>
                     </Zorm.Provider>
+
                     <div class={styles.formFooter}>
                         <span>Already have an account?&nbsp;</span>
                         <RouterLink href="/login" label="Log in." />

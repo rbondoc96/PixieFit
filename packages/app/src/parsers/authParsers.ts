@@ -1,30 +1,27 @@
-import {object, type output, string} from 'zod';
+import {nativeEnum, nullable, object, optional, type output, string} from 'zod';
 
+import Gender from '@/enums/Gender';
+import Role from '@/enums/Role';
 import {createGetResponseParser} from '@/parsers/responseParsers';
+import {iso8601DateTime} from '@/parsers/transforms';
 
-const authenticatedUserSchema = object({
+const userSchema = object({
     email: string().email(),
     name: object({
         first: string(),
         last: string(),
         full: string(),
     }),
-    created_at: string(),
-    updated_at: string(),
+    role: nativeEnum(Role),
+    profile: optional(object({
+        id: string(),
+        gender: nativeEnum(Gender),
+        birthday: iso8601DateTime,
+    })),
+    last_logged_in_at: nullable(iso8601DateTime),
+    created_at: iso8601DateTime,
+    updated_at: iso8601DateTime,
 });
 
-const registeredUserSchema = object({
-    id: string(),
-    first_name: string(),
-    last_name: string(),
-}).transform(raw => ({
-    id: raw.id,
-    name: `${raw.first_name} ${raw.last_name}`,
-    firstName: raw.first_name,
-    lastName: raw.last_name,
-}));
-
-export type AuthenticatedUser = output<typeof authenticatedUserSchema>;
-export type RegisteredUser = output<typeof registeredUserSchema>;
-export const authenticatedUserParser = createGetResponseParser(authenticatedUserSchema);
-export const registeredUserParser = createGetResponseParser(registeredUserSchema);
+export type User = output<typeof userSchema>;
+export const userParser = createGetResponseParser(userSchema);
