@@ -4,7 +4,7 @@ import {type Component} from 'solid-js';
 import Button from '@/components/Button';
 import Logo from '@/components/Logo';
 import RouterLink from '@/components/RouterLink';
-import Routes from '@/constants/Routes';
+import {Login, Register} from '@/constants/Routes';
 
 import styles from './styles.module.scss';
 
@@ -21,7 +21,7 @@ const LandingPage: Component = () => {
                             <RouterLink label="FAQ" href="#faq" />
                             <RouterLink label="Contact" href="#contact" />
                         </nav>
-                        <Button as={Link} label="Sign In" href={Routes.Login.fullPath} />
+                        <Button as={Link} label="Sign In" href={Login.fullPath} />
                     </div>
                 </div>
             </header>
@@ -35,7 +35,7 @@ const LandingPage: Component = () => {
                                 journey.
                             </h1>
                         </div>
-                        <Button as={Link} label="Get Started" href={Routes.Register.fullPath} />
+                        <Button as={Link} label="Get Started" href={Register.fullPath} />
                         <h2>Free. Forever.</h2>
                     </div>
                 </div>
