@@ -1,0 +1,22 @@
+{
+    "_version": 1,
+    "errors": {
+        "auth": {
+            "invalidCredentials": "Invalid credentials.",
+            "notAuthenticated": "Not authenticated."
+        },
+        "general": {
+            "resourceNotFound": "The requested resource was not found."
+        },
+        "user": {
+            "emailAlreadyExists": "A user with this email already exists.",
+            "invalidPasswordFormat": "The given password does not meet the required format.",
+            "passwordMismatch": "Passwords do not match."
+        },
+        "unexpectedServiceError": "Unexpected service error.",
+        "validation": {
+            "invalidPasswordFormat": "The given password does not meet the required format.",
+            "passwordMismatch": "Passwords do not match."
+        }
+    }
+}

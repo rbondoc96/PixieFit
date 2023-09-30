@@ -1,0 +1,19 @@
+{
+    "name": "rust-api",
+    "private": true,
+    "author": "Rodrigo Bondoc",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "cargo build",
+        "db:up": "sqlx database create",
+        "db:down": "sqlx database drop",
+        "db:fresh": "pnpm db:down && pnpm db:up",
+        "dev": "cargo watch -q -c -w ./src -x 'run'",
+        "make:migration": "sqlx migrate add",
+        "migrate": "sqlx migrate run",
+        "migrate:fresh": "pnpm db:fresh && pnpm migrate",
+        "shell:pg": "docker exec -it pxee_postgres15 psql -U postgres",
+        "test:watch": "cargo watch -q -c -w ./tests -x 'test -q dev -- --nocapture'",
+        "tree": "cargo modules generate tree"
+    }
+}

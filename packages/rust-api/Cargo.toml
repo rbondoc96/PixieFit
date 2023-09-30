@@ -1,0 +1,32 @@
+[package]
+name = "rust_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1.73"
+axum = "0.6.20"
+axum_session = { version = "0.5.0", features = [ "postgres-rustls"] }
+bcrypt = "0.15.0"
+chrono = { version = "0.4.28", features = ["serde"] }
+dotenvy = "0.15.7"
+dotenvy_macro = "0.15.7"
+futures = "0.3.28"
+log = "0.4.20"
+rust-i18n = "2.2.1"
+serde = "1.0.188"
+serde_as = "0.0.1"
+serde_derive = "1.0.188"
+serde_json = { version = "1.0.105", features = ["preserve_order"] }
+serde_with = "3.3.0"
+simple_logger = "4.2.0"
+sqlx = { version = "0.7.1", features = ["macros", "runtime-tokio", "tls-rustls", "postgres", "chrono", "time"]}
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25"
+tokio = { version = "1.32.0", features = ["full"] }
+tower-http = { version = "0.4.4", features = ["cors"] }
+ulid = "1.1.0"
+
+[dev-dependencies]
+anyhow = "1.0.75"
+httpc-test = "0.1.5"

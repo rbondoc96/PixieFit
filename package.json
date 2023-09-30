@@ -13,11 +13,15 @@
         "doc": "docs"
     },
     "scripts": {
-        "api": "pnpm --filter=\"./packages/api\"",
+        "api": "pnpm --filter=\"./packages/rust-api\"",
         "app": "pnpm --filter=\"./packages/app\"",
+        "api:dev": "pnpm api dev",
+        "app:dev": "pnpm app dev",
         "check:types": "turbo run check:types",
+        "cargo": "cd packages/rust-api && cargo",
         "dev": "turbo run dev",
-        "lint": "turbo run lint --continue"
+        "lint": "turbo run lint --continue",
+        "rust-api": "pnpm --filter=\"./packages/rust-api\""
     },
     "devDependencies": {
         "@types/node": "^20.3.1",
