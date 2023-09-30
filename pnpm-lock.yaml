@@ -156,6 +156,9 @@ importers:
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
+      luxon:
+        specifier: ^3.3.0
+        version: 3.3.0
       solid-fa:
         specifier: ^0.2.0
         version: 0.2.0(solid-js@1.7.6)
@@ -166,6 +169,9 @@ importers:
         specifier: ^3.21.4
         version: 3.21.4
     devDependencies:
+      '@types/luxon':
+        specifier: ^3.3.0
+        version: 3.3.0
       autoprefixer:
         specifier: ^10.4.14
         version: 10.4.14(postcss@8.4.24)
@@ -208,6 +214,8 @@ importers:
       tsup:
         specifier: ^7.1.0
         version: 7.1.0(typescript@5.1.6)
+
+  packages/rust-api: {}
 
 packages:
 
