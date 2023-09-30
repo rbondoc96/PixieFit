@@ -67,12 +67,13 @@ const RegisterPage: Component = () => {
                                     label="Gender"
                                     name="gender"
                                     initialValue="male"
-                                >
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="non_binary">Non-Binary</option>
-                                    <option value="other">Other</option>
-                                </Zorm.Select>
+                                    options={[
+                                        {label: 'Male', value: 'male'},
+                                        {label: 'Female', value: 'female'},
+                                        {label: 'Non-Binary', value: 'non_binary'},
+                                        {label: 'Other', value: 'other'},
+                                    ]}
+                                />
                             </div>
 
                             <div class={styles.formInputRow}>

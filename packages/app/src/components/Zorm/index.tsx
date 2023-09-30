@@ -6,6 +6,7 @@ import {
     createContext,
     createMemo,
     createSignal,
+    For,
     type JSX,
     mergeProps,
     onMount,
@@ -51,6 +52,7 @@ type ZormInputProps<TSchema extends ZormSchema> = Omit<
     type?: 'date' | 'password' | 'text';
 };
 
+// FIXME: Not getting type safety for `initialValue` and `options.*.value`
 type ZormSelectProps<TSchema extends ZormSchema> = Omit<
     JSX.IntrinsicElements['select'],
     'id' | 'name' | 'value' | 'onChange' | 'onInput'
@@ -58,6 +60,10 @@ type ZormSelectProps<TSchema extends ZormSchema> = Omit<
     initialValue?: ZormValues<TSchema>[keyof ZormValues<TSchema>];
     label?: string;
     name: keyof ZormValues<TSchema>;
+    options: ReadonlyArray<{
+        label: string;
+        value: ZormValues<TSchema>[keyof ZormValues<TSchema>];
+    }>;
 };
 
 type ZormSubmitProps = {
@@ -92,7 +98,7 @@ type Zorm<TSchema extends ZormSchema> = {
     Form: ParentComponent<ZormFormProps<TSchema>>;
     Input: Component<ZormInputProps<TSchema>>;
     Provider: ParentComponent;
-    Select: ParentComponent<ZormSelectProps<TSchema>>;
+    Select: Component<ZormSelectProps<TSchema>>;
     Submit: Component<ZormSubmitProps>;
 };
 
@@ -326,8 +332,8 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
         );
     };
 
-    const Select: ParentComponent<ZormSelectProps<TSchema>> = baseProps => {
-        const [split, rest] = splitProps(baseProps, ['initialValue', 'label', 'name']);
+    const Select: Component<ZormSelectProps<TSchema>> = baseProps => {
+        const [split, rest] = splitProps(baseProps, ['initialValue', 'label', 'name', 'options']);
 
         const zormContext = useContext(Context);
 
@@ -366,7 +372,9 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
                         onInput={zormContext.onSelectChange}
                         {...rest}
                     >
-                        {rest.children}
+                        <For each={split.options}>
+                            {option => <option value={option.value}>{option.label}</option>}
+                        </For>
                     </select>
                 </label>
                 <Show when={error() !== undefined}>
