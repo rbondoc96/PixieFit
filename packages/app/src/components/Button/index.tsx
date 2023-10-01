@@ -102,7 +102,9 @@ const Button: Component<ButtonProps> = props => {
                         onClick={item().onClick}
                     >
                         <Show when={split.isLoading}>
-                            <Spinner />
+                            <span class={styles.buttonSpinner}>
+                                <Spinner />
+                            </span>
                         </Show>
                         {split.label}
                     </button>

@@ -1,8 +1,9 @@
 import {Outlet} from '@solidjs/router';
-import {type Component, ErrorBoundary} from 'solid-js';
+import {type Component, ErrorBoundary, Suspense} from 'solid-js';
 
 import UserIcon from '@/assets/images/user.png';
 import Helmet from '@/components/Helmet';
+import LoadingView from '@/components/LoadingView';
 import Logo from '@/components/Logo';
 import TabNavigationBar from '@/components/TabNavigationBar';
 import useAuthGuard from '@/hooks/useAuthGuard';
@@ -27,9 +28,11 @@ const AppSiteShell: Component = () => {
                     </div>
                 </header>
                 <main class={styles.main}>
-                    <ErrorBoundary fallback={GeneralErrorPage}>
-                        <Outlet />
-                    </ErrorBoundary>
+                    <Suspense fallback={<LoadingView />}>
+                        <ErrorBoundary fallback={GeneralErrorPage}>
+                            <Outlet />
+                        </ErrorBoundary>
+                    </Suspense>
                 </main>
                 <TabNavigationBar />
             </div>

@@ -13,6 +13,12 @@
     @apply text-center;
 
     @apply disabled:bg-opacity-60;
+
+    & > .button-spinner {
+        @apply absolute;
+        @apply top-1/2 left-1/2;
+        @apply transform -translate-x-1/2 -translate-y-1/2;
+    }
 }
 
 .button--primary {

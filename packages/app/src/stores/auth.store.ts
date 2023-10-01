@@ -1,25 +1,21 @@
-import {type Accessor, createSignal} from 'solid-js';
+import {createResource, type Resource} from 'solid-js';
 
 import {AuthAPI} from '@/api';
 import {type User} from '@/parsers/authParsers';
 
-interface AuthStore {
-    fetchUser: () => Promise<void>;
-    login: (payload: AuthAPI.LoginUserPayload) => Promise<void>;
-    logout: () => Promise<void>;
-    register: (payload: AuthAPI.RegisterUserPayload) => Promise<void>;
-    user: Accessor<User | null>;
-}
+const [userResource, {mutate: setUser}] = createResource(fetchUser, {
+    initialValue: null,
+});
 
-const [user, setUser] = createSignal<User | null>(null);
+export const useUser = (): Resource<User | null> => userResource;
 
-export async function fetchUser(): Promise<void> {
+export async function fetchUser(): Promise<User|null> {
     try {
-        const user = await AuthAPI.fetchUser();
-        setUser(user);
-    } catch (error) {
-        setUser(null);
-        throw error;
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        return await AuthAPI.fetchUser();
+    } catch (_error) {
+        console.log('returning null user');
+        return null;
     }
 }
 
@@ -30,6 +26,7 @@ export async function login(payload: AuthAPI.LoginUserPayload): Promise<void> {
 
 export async function logout(): Promise<void> {
     await AuthAPI.logout();
+    console.log('logged out');
     setUser(null);
 }
 
@@ -37,21 +34,3 @@ export async function register(payload: AuthAPI.RegisterUserPayload): Promise<vo
     const user = await AuthAPI.register(payload);
     setUser(user);
 }
-
-export function useAuthenticatedUser(): User {
-    const authenticatedUser = user();
-
-    if (authenticatedUser === null) {
-        throw new Error('User is not authenticated');
-    }
-
-    return authenticatedUser;
-}
-
-export default {
-    fetchUser,
-    login,
-    logout,
-    register,
-    user,
-} satisfies AuthStore;

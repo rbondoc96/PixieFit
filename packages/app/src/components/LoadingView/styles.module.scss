@@ -1,0 +1,11 @@
+.loading-view {
+    @apply flex-1;
+
+    @apply flex flex-col;
+    @apply justify-center items-center;
+    @apply gap-4;
+}
+
+.loading-view-label {
+    @apply text-lg;
+}
