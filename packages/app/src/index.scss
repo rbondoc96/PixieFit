@@ -26,6 +26,8 @@ body {
     @apply min-w-[320px];
 
     line-height: inherit;
+    /* Prevent overscroll/bounce behavior when scrolling at the bounds of a page */
+    overscroll-behavior: none;
 }
 
 #root {
