@@ -21,7 +21,7 @@ export class Route<TPath extends string = string> {
         return `/${this.pathName}`;
     }
 
-    public get fullPath(): `/${TPath}` | `/${string}/${TPath}` {
+    public get href(): `/${TPath}` | `/${string}/${TPath}` {
         if (this.parents.length > 0) {
             return `/${this.parents.join('/')}/${this.pathName}`;
         }

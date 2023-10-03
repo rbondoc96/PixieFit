@@ -10,7 +10,7 @@ export default function useUnauthGuard(): void {
 
     createRenderEffect(() => {
         if (user() !== null && !user.loading) {
-            router.replace(UserDashboard.fullPath);
+            router.replace(UserDashboard.href);
         }
     });
 }

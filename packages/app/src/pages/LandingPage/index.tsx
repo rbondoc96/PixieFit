@@ -21,7 +21,7 @@ const LandingPage: Component = () => {
                             <RouterLink label="FAQ" href="#faq" />
                             <RouterLink label="Contact" href="#contact" />
                         </nav>
-                        <Button as={Link} label="Sign In" href={Login.fullPath} />
+                        <Button as={Link} label="Sign In" href={Login.href} />
                     </div>
                 </div>
             </header>
@@ -35,7 +35,7 @@ const LandingPage: Component = () => {
                                 journey.
                             </h1>
                         </div>
-                        <Button as={Link} label="Get Started" href={Register.fullPath} />
+                        <Button as={Link} label="Get Started" href={Register.href} />
                         <h2>Free. Forever.</h2>
                     </div>
                 </div>

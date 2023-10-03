@@ -30,7 +30,7 @@ type Tab = {
 const TabButton: Component<Tab> = props => {
     return (
         <Link
-            href={props.route.fullPath}
+            href={props.route.href}
             activeClass={styles.tabButtonActive}
             class={styles.tabButton}
         >
@@ -46,7 +46,7 @@ const TabNavigationBar: Component = () => {
             <TabButton icon={faList} label="Dashboard" route={UserDashboard} />
             <TabButton icon={faDumbbell} label="Exercises" route={Exercises} />
             <Link
-                href={UserTracker.fullPath}
+                href={UserTracker.href}
                 activeClass={styles.middleTabActive}
                 class={styles.middleTab}
             >
