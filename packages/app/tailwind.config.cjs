@@ -16,7 +16,9 @@ module.exports = {
                     300: '#F9F7F3',
                     500: '#C2C2C2',
                 },
-                primary: '#4CF0C4',
+                primary: {
+                    DEFAULT: '#4CF0C4',
+                },
             },
             screens: {
                 xs: '480px',

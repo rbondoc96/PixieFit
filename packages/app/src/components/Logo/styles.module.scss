@@ -1,9 +1,38 @@
 .logo {
-    @apply flex;
+    position: relative;
+    display: flex;
+    @apply gap-x-4;
+
+    &.logo--dark svg .logo__text {
+        fill: #fff;
+    }
+
+    &.logo--light svg .logo__text {
+        fill: #000;
+    }
 }
 
-.logo__version {
-    @apply text-xs;
+.logo__text {
+    transform-origin: left;
+
+    &.logo__text--visible {
+        transform: scale(1);
+        transition-duration: 200ms;
+    }
+
+    &.logo__text--invisible {
+        transform: scale(0);
+    }
+}
+
+.logo__tag span {
+    display: flex;
+    align-items: center;
+    font-size: 8px;
+
+    @apply border border-primary;
     @apply px-1 py-0.5;
-    @apply border border-black;
+    @apply rounded-md;
+    @apply text-primary;
+    @apply tracking-wide;
 }

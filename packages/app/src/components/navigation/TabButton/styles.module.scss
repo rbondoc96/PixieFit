@@ -1,0 +1,29 @@
+.tab-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    @apply gap-y-1;
+
+    @apply bg-gray-900;
+    @apply py-3;
+
+    @apply text-gray-500;
+
+    &:hover,
+    &.tab-button--active {
+        @apply bg-gray-800;
+        @apply text-primary;
+    }
+
+    &:not(:last-child) {
+        @apply border-r border-gray-500/50;
+    }
+
+    & > span {
+        @apply font-semibold;
+        @apply text-center;
+
+        font-size: 10px;
+    }
+}

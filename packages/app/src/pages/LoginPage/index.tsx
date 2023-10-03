@@ -28,7 +28,7 @@ const LoginPage: Component = () => {
             <Helmet title="Login - PixieFit" />
             <main class={styles.main}>
                 <div class={styles.formContainer}>
-                    <Logo size="lg" />
+                    <Logo theme="dark" />
                     <div class={styles.formHeading}>
                         <h1>Welcome back!</h1>
                         <h2>Log in to your account</h2>

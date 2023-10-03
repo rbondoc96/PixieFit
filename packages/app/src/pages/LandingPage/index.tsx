@@ -13,7 +13,7 @@ const LandingPage: Component = () => {
         <>
             <header class={styles.header}>
                 <div class={styles.headerContainer}>
-                    <Logo />
+                    <Logo theme="dark" />
                     <div class={styles.headerLinks}>
                         <nav>
                             <RouterLink label="Features" href="#features" />
