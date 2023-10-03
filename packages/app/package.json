@@ -21,6 +21,7 @@
         "luxon": "^3.3.0",
         "solid-fa": "^0.2.0",
         "solid-js": "^1.7.6",
+        "solid-transition-group": "^0.2.3",
         "zod": "^3.21.4"
     },
     "devDependencies": {
