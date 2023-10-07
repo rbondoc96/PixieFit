@@ -1,19 +1,19 @@
-INSERT INTO muscles (group_id, name, simple_name, image_source) VALUES
-    ((SELECT id FROM muscle_groups WHERE name = 'Arms'), 'Biceps Brachii', 'Biceps', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Arms'), 'Triceps Brachii', 'Triceps', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Calves'), 'Calves', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Chest'), 'Pectoralis', 'Pecs', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Core'), 'Abdominals', 'Abs', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Forearms'), 'Forearms', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Glutes'), 'Glutes', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Hamstrings'), 'Hamstrings', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Hands'), 'Palmar Fascia', 'Hands', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Lats'), 'Latissimus Dorsi', 'Lats', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Lower Back'), 'Lower Back', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Shoulders'), 'Shoulders', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Quadriceps'), 'Quadriceps', 'Quads', 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), 'Rhomboids', NULL, 'https://picsum.photos/400/500'),
-    ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), 'Trapezius', 'Traps', 'https://picsum.photos/400/500');
+INSERT INTO muscles (group_id, name, simple_name) VALUES
+    ((SELECT id FROM muscle_groups WHERE name = 'Arms'), 'Biceps Brachii', 'Biceps'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Arms'), 'Triceps Brachii', 'Triceps'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Calves'), 'Calves', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Chest'), 'Pectoralis', 'Pecs'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Core'), 'Abdominals', 'Abs'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Forearms'), 'Forearms', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Glutes'), 'Glutes', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Hamstrings'), 'Hamstrings', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Hands'), 'Palmar Fascia', 'Hands'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Lats'), 'Latissimus Dorsi', 'Lats'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Lower Back'), 'Lower Back', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Shoulders'), 'Shoulders', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Quadriceps'), 'Quadriceps', 'Quads'),
+    ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), 'Rhomboids', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), 'Trapezius', 'Traps');
 
 INSERT INTO muscles (group_id, parent_id, name, simple_name) VALUES
     ((SELECT id FROM muscle_groups WHERE name = 'Arms'), (SELECT id FROM muscles WHERE name = 'Biceps Brachii'), 'Biceps Brachii, Long Head', 'Biceps (Inner Head)'),
@@ -24,6 +24,7 @@ INSERT INTO muscles (group_id, parent_id, name, simple_name) VALUES
     ((SELECT id FROM muscle_groups WHERE name = 'Calves'), (SELECT id FROM muscles WHERE name = 'Calves'), 'Tibialis', NULL),
     ((SELECT id FROM muscle_groups WHERE name = 'Calves'), (SELECT id FROM muscles WHERE name = 'Calves'), 'Soleus', NULL),
     ((SELECT id FROM muscle_groups WHERE name = 'Calves'), (SELECT id FROM muscles WHERE name = 'Calves'), 'Gastrocnemius', NULL),
+    ((SELECT id FROM muscle_groups WHERE name = 'Core'), (SELECT id FROM muscles WHERE name = 'Abdominals'), 'Obliques', NULL),
     ((SELECT id FROM muscle_groups WHERE name = 'Core'), (SELECT id FROM muscles WHERE name = 'Abdominals'), 'Rectus Abdominis', 'Upper Abs'),
     ((SELECT id FROM muscle_groups WHERE name = 'Core'), (SELECT id FROM muscles WHERE name = 'Abdominals'), 'Transversus Abdominis', 'Lower Abs'),
     ((SELECT id FROM muscle_groups WHERE name = 'Chest'), (SELECT id FROM muscles WHERE name = 'Chest'), 'Pectoralis Major, Sternocostal Head', 'Chest (Upper)'),
@@ -44,9 +45,6 @@ INSERT INTO muscles (group_id, parent_id, name, simple_name) VALUES
     ((SELECT id FROM muscle_groups WHERE name = 'Shoulders'), (SELECT id FROM muscles WHERE name = 'Shoulders'), 'Posterior Deltoid', 'Rear Delts'),
     ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), (SELECT id FROM muscles WHERE name = 'Trapezius'), 'Trapezius, Superior', 'Upper Traps'),
     ((SELECT id FROM muscle_groups WHERE name = 'Upper Back'), (SELECT id FROM muscles WHERE name = 'Trapezius'), 'Trapezius, Inferior', 'Lower Traps');
-
-INSERT INTO muscles (group_id, parent_id, name, simple_name, image_source) VALUES
-    ((SELECT id FROM muscle_groups WHERE name = 'Core'), (SELECT id FROM muscles WHERE name = 'Abdominals'), 'Obliques', NULL, 'https://cdn.muscleandstrength.com/sites/default/files/taxonomy/image/videos/obliques.jpg');
 
 -- INSERT INTO muscles (group_id, name, simple_name) VALUES
 --     ('back', 'Erector Spinae', 'Lower Back'),
