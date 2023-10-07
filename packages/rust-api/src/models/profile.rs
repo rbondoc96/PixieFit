@@ -1,7 +1,10 @@
-use super::{Error, User};
-use crate::enums::Gender;
-use crate::sys::DatabaseManager;
-use crate::types::ISO8601DateTimeUTC;
+use super::{Error, Model, User};
+use crate::{
+    enums::Gender,
+    sys::DatabaseManager,
+    types::ISO8601DateTimeUTC,
+};
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use ulid::Ulid;
@@ -28,7 +31,8 @@ pub struct Profile {
     data: UserProfileRecord,
 }
 
-impl super::Model for Profile {
+#[async_trait]
+impl Model for Profile {
     const TABLE_NAME: &'static str = "user_profiles";
     type Attributes = UserProfileRecord;
 

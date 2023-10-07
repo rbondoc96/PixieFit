@@ -1,11 +1,13 @@
 mod link;
 mod muscle;
+mod muscle_group;
 mod name;
 mod profile;
 mod user;
 
 pub use link::LinkResource;
 pub use muscle::MuscleResource;
+pub use muscle_group::MuscleGroupResource;
 pub use name::NameResource;
 pub use profile::ProfileResource;
 pub use user::UserResource;

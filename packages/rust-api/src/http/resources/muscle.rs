@@ -1,6 +1,5 @@
 use super::{LinkResource, ModelResource};
 use crate::{
-    enums::MuscleGroup,
     models::{Link, Muscle},
 };
 use async_trait::async_trait;
@@ -8,11 +7,14 @@ use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct MuscleResource {
-    id: i64,
-    muscle_group: MuscleGroup,
+    id: String,
+    muscle_group: String,
     name: String,
     simple_name: Option<String>,
-
+    description: Option<String>,
+    image_source: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    parent: Option<Box<MuscleResource>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     links: Option<Vec<LinkResource>>,
 }
@@ -27,21 +29,37 @@ impl ModelResource for MuscleResource {
             Err(_) => vec![],
         };
 
+        let group = muscle.muscle_group().await.unwrap();
+        let parent = muscle.parent().await;
+
         Self {
-            id: muscle.id(),
-            muscle_group: muscle.muscle_group(),
+            id: muscle.ulid(),
+            muscle_group: group.name(),
             name: muscle.name(),
             simple_name: muscle.simple_name(),
+            description: muscle.description(),
+            image_source: muscle.image_source(),
+            parent: match parent {
+                Some(parent) => Some(
+                    Box::new(MuscleResource::simple(parent).await)
+                ),
+                None => None,
+            },
             links: Some(LinkResource::list(links).await),
         }
     }
 
     async fn simple(muscle: Muscle) -> Self {
+        let group = muscle.muscle_group().await.unwrap();
+
         Self {
-            id: muscle.id(),
-            muscle_group: muscle.muscle_group(),
+            id: muscle.ulid(),
+            muscle_group: group.name(),
             name: muscle.name(),
             simple_name: muscle.simple_name(),
+            description: muscle.description(),
+            image_source: muscle.image_source(),
+            parent: None,
             links: None,
         }
     }

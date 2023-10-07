@@ -1,9 +1,10 @@
-use super::Error;
+use super::{Error, Model};
 use crate::{
     enums::{LinkFormat, LinkType, Table},
     sys::DatabaseManager,
     types::ISO8601DateTimeUTC,
 };
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use ulid::Ulid;
@@ -41,7 +42,8 @@ pub struct Link {
     data: LinkRecord,
 }
 
-impl super::Model for Link {
+#[async_trait]
+impl Model for Link {
     const TABLE_NAME: &'static str = "links";
     type Attributes = LinkRecord;
 

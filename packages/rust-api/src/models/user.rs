@@ -1,7 +1,10 @@
-use super::{Error, Profile};
-use crate::enums::Role;
-use crate::sys::DatabaseManager;
-use crate::types::ISO8601DateTimeUTC;
+use super::{Error, Model, Profile};
+use crate::{
+    enums::Role,
+    sys::DatabaseManager,
+    types::ISO8601DateTimeUTC,
+};
+use async_trait::async_trait;
 use bcrypt::{hash, verify, DEFAULT_COST};
 use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -35,7 +38,8 @@ pub struct User {
     data: UserRecord,
 }
 
-impl super::Model for User {
+#[async_trait]
+impl Model for User {
     const TABLE_NAME: &'static str = "users";
     type Attributes = UserRecord;
 

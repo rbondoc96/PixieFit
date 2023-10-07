@@ -1,5 +1,5 @@
 use super::controllers::{
-    AuthController, Controller, DevController, LinkController, MuscleController,
+    AuthController, Controller, DevController, LinkController, MuscleController, MuscleGroupController,
 };
 use crate::{
     actions,
@@ -63,6 +63,11 @@ pub async fn init() -> Result<Router> {
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest(
+            "/api/muscle-groups",
+            MuscleGroupController::router(db_manager.clone())
+                .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
+        )
+        .nest(
             "/api/muscles",
             MuscleController::router(db_manager.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
@@ -122,7 +127,7 @@ async fn session(database: DatabaseManager) -> Result<SessionLayer<SessionPgPool
      */
     let session_config = SessionConfig::default()
         .with_cookie_name(auth_config.session_cookie_name())
-        .with_lifetime(Duration::minutes(30))
+        .with_lifetime(Duration::seconds(auth_config.session_cookie_max_age_seconds()))
         .with_max_age(Some(Duration::seconds(
             auth_config.session_cookie_max_age_seconds(),
         )))

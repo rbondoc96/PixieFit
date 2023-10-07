@@ -2,7 +2,7 @@ use super::Controller;
 use crate::{
     http::resources::{ModelResource, MuscleResource},
     http::response::JsonResponse,
-    models::{CreateMuscleData, Muscle},
+    models::{CreateMuscleData, Model, Muscle},
     sys::DatabaseManager,
     Error, Result,
 };
@@ -52,9 +52,9 @@ impl MuscleController {
 
     pub async fn read(
         State(database): State<DatabaseManager>,
-        Path(id): Path<i64>,
+        Path(ulid): Path<String>,
     ) -> Result<JsonResponse<MuscleResource>> {
-        let muscle = Muscle::find_by_id(id, &database).await?;
+        let muscle = Muscle::find_by_ulid(ulid, &database).await?;
 
         Ok(JsonResponse::success(
             Some(MuscleResource::default(muscle).await),
