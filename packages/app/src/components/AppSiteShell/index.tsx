@@ -9,18 +9,18 @@ import {Outlet} from '@solidjs/router';
 import {type Component, createSignal} from 'solid-js';
 
 import UserIcon from '@/assets/images/user.png';
+import AuthenticatedView from '@/components/AuthenticatedView';
 import Helmet from '@/components/Helmet';
 import LoadingView from '@/components/LoadingView';
 import CollapsibleSideBar from '@/components/navigation/CollapsibleSideBar';
-import TabBar from '@/components/navigation/TabBar';
 import SuspensefulErrorBoundary from '@/components/SuspensefulErrorBoundary';
+import TabBar from '@/components/navigation/TabBar';
 import {
     Exercises,
     UserDashboard,
     UserProgress,
     UserTracker,
 } from '@/constants/Routes';
-import useAuthGuard from '@/hooks/useAuthGuard';
 import {type Route} from '@/lib/Route';
 import GeneralErrorPage from '@/pages/GeneralErrorPage';
 
@@ -44,8 +44,6 @@ const navigationLinks: NavLink[] = [
 ];
 
 const AppSiteShell: Component = () => {
-    useAuthGuard();
-
     const [isSidebarExpanded, setIsSidebarExpanded] = createSignal(false);
 
     const toggleSidebar = () => setIsSidebarExpanded(currentState => !currentState);
@@ -68,20 +66,22 @@ const AppSiteShell: Component = () => {
                     />
                 </div>
                 <div class={styles.appContainer}>
+                    <header class={styles.header}>
+                        <div class={styles.headerContainer}>
+                            <div class={styles.userImage}>
+                                <img src={UserIcon} alt="user icon" />
+                            </div>
+                        </div>
+                    </header>
                     <SuspensefulErrorBoundary
                         error={GeneralErrorPage}
-                        loading={<LoadingView />}
+                        loading={LoadingView}
                     >
-                        <header class={styles.header}>
-                            <div class={styles.headerContainer}>
-                                <div class={styles.userImage}>
-                                    <img src={UserIcon} alt="user icon" />
-                                </div>
-                            </div>
-                        </header>
-                        <main class={styles.main}>
-                            <Outlet />
-                        </main>
+                        <AuthenticatedView>
+                            <main class={styles.main}>
+                                <Outlet />
+                            </main>
+                        </AuthenticatedView>
                     </SuspensefulErrorBoundary>
                 </div>
                 <div class="block md:hidden">

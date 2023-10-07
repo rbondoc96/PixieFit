@@ -1,10 +1,10 @@
-import {createRenderEffect} from 'solid-js';
+import {createRenderEffect, type ParentComponent} from 'solid-js';
 
 import {Login} from '@/constants/Routes';
 import useRouter from '@/hooks/useRouter';
 import {useUser} from '@/stores/auth.store';
 
-export default function useAuthGuard(): void {
+const AuthenticatedView: ParentComponent = props => {
     const router = useRouter();
     const user = useUser();
 
@@ -13,4 +13,12 @@ export default function useAuthGuard(): void {
             router.replace(Login.href);
         }
     });
-}
+
+    return (
+        <>
+            {props.children}
+        </>
+    );
+};
+
+export default AuthenticatedView;

@@ -1,11 +1,9 @@
 import {type Component} from 'solid-js';
 
-type GeneralErrorPageProps = {
+const GeneralErrorPage: Component<{
     error: unknown;
     reset: () => void;
-};
-
-const GeneralErrorPage: Component<GeneralErrorPageProps> = props => {
+}> = props => {
     return (
         <div>
             <h1>General Error Page</h1>
