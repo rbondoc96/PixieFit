@@ -10,12 +10,10 @@ const ExercisesPage: Component = () => {
     const musclesAsItems = createMemo<CardProps[]>(() => muscles()
         .map(muscle => ({
             href: `/app/muscles/${muscle.id}`,
-            image: muscle.image_source === null
-                ? undefined
-                : {
-                    alt: muscle.simple_name ?? muscle.name,
-                    src: muscle.image_source,
-                },
+            image: {
+                alt: muscle.simple_name ?? muscle.name,
+                src: muscle.image_source ?? undefined,
+            },
             title: muscle.simple_name ?? muscle.name,
         })),
     );
@@ -23,12 +21,10 @@ const ExercisesPage: Component = () => {
     const muscleGroupsAsItems = createMemo<CardProps[]>(() => muscleGroups()
         .map(group => ({
             href: `/app/muscle-groups/${group.id}`,
-            image: group.image_source === null
-                ? undefined
-                : {
-                    alt: group.name,
-                    src: group.image_source,
-                },
+            image: {
+                alt: group.name,
+                src: group.image_source ?? undefined,
+            },
             title: group.name,
         })),
     );

@@ -1,14 +1,14 @@
 import {A as Link} from '@solidjs/router';
-import {type Component, For, Show} from 'solid-js';
+import {type Component, For} from 'solid-js';
 
 import styles from './styles.module.scss';
 
 export type CardProps = {
     href: string;
-    image?: {
-        alt: string;
+    image: {
+        alt?: string;
         'class'?: string;
-        src: string;
+        src?: string;
     };
     title: string;
 };
@@ -28,18 +28,11 @@ const Card: Component<CardProps> = props => {
                 </div>
             </div>
             <div class={styles.cardBackground}>
-                <Show
-                    keyed
-                    when={props.image}
-                >
-                    {image => (
-                        <img
-                            class={image.class}
-                            src={image.src}
-                            alt={image.alt}
-                        />
-                    )}
-                </Show>
+                <img
+                    class={props.image.class}
+                    src={props.image.src}
+                    alt={props.image.alt}
+                />
             </div>
         </Link>
     );
