@@ -28,7 +28,7 @@ const RegisterPage: Component = () => {
             <Helmet title="Sign up - PixieFit" />
             <main class={styles.main}>
                 <div class={styles.formContainer}>
-                    <Logo theme="dark" />
+                    <Logo showText theme="light" />
                     <div class={styles.formHeading}>
                         <h1>Create an Account</h1>
                     </div>
