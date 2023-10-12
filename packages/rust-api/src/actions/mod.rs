@@ -1,7 +1,14 @@
 use crate::{
     data::{CreateUserData, CreateUserProfileData},
     enums::Role,
-    models::{CreateUserProfileData as NewUserProfile, NewUser, User, Profile},
+    models::{
+        CreateExerciseData,
+        CreateUserProfileData as NewUserProfile,
+        Exercise,
+        NewUser,
+        User,
+        Profile,
+    },
     sys::DatabaseManager,
     utils::{crypt, validators},
     Error, Result, __,

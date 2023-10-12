@@ -1,4 +1,13 @@
-use crate::enums::{Gender, Role};
+use crate::enums::{
+    ExerciseForce,
+    ExerciseMechanic,
+    ExerciseMuscleTarget,
+    ExerciseType,
+    Gender,
+    Measurement,
+    Role,
+};
+use serde::Deserialize;
 
 #[derive(Debug)]
 pub struct CreateUserData<'a> {
@@ -10,6 +19,7 @@ pub struct CreateUserData<'a> {
     pub password_confirm: &'a str,
 }
 
+#[derive(Debug)]
 pub struct CreateUserProfileData {
     pub user_id: i64,
     pub birthday: chrono::NaiveDate,

@@ -5,8 +5,7 @@ use crate::{
     types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
-use bcrypt::{hash, verify, DEFAULT_COST};
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgPool, FromRow};
 
