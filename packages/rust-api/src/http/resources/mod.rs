@@ -1,11 +1,17 @@
+mod exercise;
+mod exercise_equipment;
 mod link;
+mod measurement;
 mod muscle;
 mod muscle_group;
 mod name;
 mod profile;
 mod user;
 
+pub use exercise::ExerciseResource;
+pub use exercise_equipment::ExerciseEquipmentResource;
 pub use link::LinkResource;
+pub use measurement::MeasurementResource;
 pub use muscle::MuscleResource;
 pub use muscle_group::MuscleGroupResource;
 pub use name::NameResource;

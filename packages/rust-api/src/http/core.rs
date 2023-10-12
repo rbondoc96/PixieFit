@@ -1,5 +1,12 @@
 use super::controllers::{
-    AuthController, Controller, DevController, LinkController, MuscleController, MuscleGroupController,
+    AuthController,
+    Controller,
+    DevController,
+    ExerciseController,
+    ExerciseEquipmentController,
+    LinkController,
+    MuscleController,
+    MuscleGroupController,
 };
 use crate::{
     actions,
@@ -57,6 +64,16 @@ pub async fn init() -> Result<Router> {
     // Note: `.layer()` calls are executed from bottom-to-top
     Ok(Router::new()
         .merge(DevController::router(db_manager.clone()))
+        .nest(
+            "/api/exercises",
+            ExerciseController::router(db_manager.clone())
+                .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
+        )
+        .nest(
+            "/api/exercise-equipment",
+            ExerciseEquipmentController::router(db_manager.clone())
+                .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
+        )
         .nest(
             "/api/links",
             LinkController::router(db_manager.clone())
