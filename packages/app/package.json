@@ -13,7 +13,6 @@
     },
     "dependencies": {
         "@fortawesome/free-solid-svg-icons": "^6.4.0",
-        "@kratos/common": "workspace:*",
         "@solidjs/meta": "^0.28.5",
         "@solidjs/router": "^0.8.2",
         "axios": "^1.4.0",
