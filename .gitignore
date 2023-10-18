@@ -25,7 +25,3 @@ lerna-debug.log*
 
 # IDEs
 .idea
-
-# Backend
-pocketbase
-pb_data

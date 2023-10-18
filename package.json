@@ -17,24 +17,12 @@
         "app": "pnpm --filter=\"./packages/app\"",
         "api:dev": "pnpm api dev",
         "app:dev": "pnpm app dev",
-        "check:types": "turbo run check:types",
+        "build": "turbo run build",
         "cargo": "cd packages/api && cargo",
-        "dev": "turbo run dev",
-        "lint": "turbo run lint --continue",
-        "rust-api": "pnpm --filter=\"./packages/rust-api\""
+        "dev": "turbo run dev"
     },
     "devDependencies": {
-        "@types/node": "^20.3.1",
-        "@typescript-eslint/eslint-plugin": "^5.60.0",
-        "@typescript-eslint/parser": "^5.60.0",
-        "concurrently": "^8.2.0",
-        "eslint": "^8.43.0",
-        "eslint-define-config": "^1.20.0",
-        "eslint-plugin-import": "^2.27.5",
-        "eslint-plugin-promise": "^6.1.1",
-        "eslint-plugin-simple-import-sort": "^10.0.0",
         "prettier": "^2.8.8",
-        "turbo": "^1.10.7",
-        "typescript": "^5.1.6"
+        "turbo": "^1.10.7"
     }
 }
