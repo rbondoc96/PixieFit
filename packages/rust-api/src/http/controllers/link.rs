@@ -1,10 +1,10 @@
-use super::Controller;
+use super::{Controller, Result};
+use crate::prelude::*;
 use crate::{
     http::resources::{LinkResource, ModelResource},
     http::response::JsonResponse,
-    models::{CreateLinkData, Link},
+    models::{CreateLinkData, Link, Model},
     sys::DatabaseManager,
-    Error, Result,
 };
 use axum::{
     extract::State,

@@ -1,8 +1,8 @@
-use super::{Error, Exercise, Model, Muscle};
+use super::{Error, Exercise, Model, Muscle, Result};
+use crate::prelude::*;
 use crate::{
     enums::ExerciseMuscleTarget,
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::Deserialize;
@@ -29,6 +29,7 @@ pub struct ExerciseMuscleMap {
 
 #[async_trait]
 impl Model for ExerciseMuscleMap {
+    const MODEL_NAME: &'static str = "ExerciseMuscleMap";
     const TABLE_NAME: &'static str = "exercises_muscles";
     type Attributes = ExerciseMuscleMapRecord;
 
@@ -60,7 +61,7 @@ impl ExerciseMuscleMap {
     pub async fn create(
         muscle_data: CreateExerciseMuscleMapData,
         database: &DatabaseManager,
-    ) -> Result<ExerciseMuscleMap, sqlx::Error> {
+    ) -> Result<ExerciseMuscleMap> {
         let mut transaction = database.connection().begin().await?;
 
         let record = sqlx::query_as::<_, ExerciseMuscleMapRecord>(
@@ -79,7 +80,7 @@ impl ExerciseMuscleMap {
             },
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
     }
@@ -88,7 +89,7 @@ impl ExerciseMuscleMap {
         id: i64,
         target: ExerciseMuscleTarget,
         database: &DatabaseManager,
-    ) -> Result<Vec<ExerciseMuscleMap>, sqlx::Error> {
+    ) -> Result<Vec<ExerciseMuscleMap>> {
         let data = sqlx::query_as::<_, ExerciseMuscleMapRecord>(
             format!("SELECT * FROM {} WHERE exercise_id = $1 AND target = $2", Self::TABLE_NAME).as_str(),
         )

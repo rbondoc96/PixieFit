@@ -1,5 +1,6 @@
-use super::{Error, Link, Model};
-use crate::{sys::DatabaseManager, types::ISO8601DateTimeUTC};
+use super::{Error, Link, Model, Result};
+use crate::prelude::*;
+use crate::sys::DatabaseManager;
 use async_trait::async_trait;
 use sqlx::{FromRow, PgPool};
 
@@ -19,6 +20,7 @@ pub struct MuscleGroup {
 
 #[async_trait]
 impl Model for MuscleGroup {
+    const MODEL_NAME: &'static str = "MuscleGroup";
     const TABLE_NAME: &'static str = "muscle_groups";
     type Attributes = MuscleGroupRecord;
 

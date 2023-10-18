@@ -13,7 +13,6 @@ use crate::{
     data::CreateUserData,
     enums::Role,
     sys::{config, DatabaseManager},
-    types::DynError,
 };
 use axum::{
     http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
@@ -27,7 +26,7 @@ use axum_session::{
 use chrono::{Duration, NaiveDate};
 use tower_http::cors::{Any, CorsLayer};
 
-type Result<TValue> = ::core::result::Result<TValue, Box<DynError>>;
+type Result<TValue> = ::core::result::Result<TValue, Box<dyn std::error::Error + Send + Sync + 'static>>;
 
 pub async fn create_admin_user(database: &DatabaseManager) -> () {
     let auth = config().auth();
@@ -90,9 +89,9 @@ pub async fn init() -> Result<Router> {
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest("/api/auth", AuthController::router(db_manager.clone()))
-        .layer(middleware::map_response(
-            crate::http::middleware::response_mapper,
-        ))
+        // .layer(middleware::map_response(
+        //     crate::http::middleware::response_mapper,
+        // ))
         .layer(middleware::from_fn_with_state(
             db_manager.clone(),
             crate::http::middleware::context_resolver,

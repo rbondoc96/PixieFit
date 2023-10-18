@@ -1,8 +1,8 @@
-use super::{Error, Model, Profile};
+use super::{Error, Model, Profile, Result};
+use crate::prelude::*;
 use crate::{
     enums::Role,
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use chrono::Utc;
@@ -39,6 +39,7 @@ pub struct User {
 
 #[async_trait]
 impl Model for User {
+    const MODEL_NAME: &'static str = "User";
     const TABLE_NAME: &'static str = "users";
     type Attributes = UserRecord;
 
@@ -93,7 +94,7 @@ impl User {
 
     // region Relationships
 
-    pub async fn profile(&self) -> Result<Profile, Error> {
+    pub async fn profile(&self) -> Result<Profile> {
         Profile::find_by_user(self.id(), &self.database).await
     }
 
@@ -102,7 +103,7 @@ impl User {
     pub async fn create(
         attributes: NewUser,
         database: &DatabaseManager,
-    ) -> Result<User, sqlx::Error> {
+    ) -> Result<User> {
         let mut transaction = database.connection().begin().await?;
 
         let user = sqlx::query_as::<_, UserRecord>("INSERT INTO users (email, first_name, last_name, role, password) VALUES ($1, $2, $3, $4, $5) RETURNING *")
@@ -124,7 +125,7 @@ impl User {
             }
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
     }
@@ -132,7 +133,7 @@ impl User {
     pub async fn update_last_logged_in(
         &mut self,
         database: &DatabaseManager,
-    ) -> Result<(), sqlx::Error> {
+    ) -> Result<()> {
         let mut transaction = database.connection().begin().await?;
 
         let now = Utc::now();
@@ -146,7 +147,7 @@ impl User {
             Ok(result) => {
                 if result.rows_affected() != 1 {
                     transaction.rollback().await?;
-                    Err(sqlx::Error::RowNotFound)
+                    Err(Error::UnknownError)
                 } else {
                     transaction.commit().await?;
                     self.data.last_logged_in_at = Some(now);
@@ -155,47 +156,20 @@ impl User {
             }
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
     }
 
-    pub async fn exists(email: &str, database: &DatabaseManager) -> Result<bool, Error> {
+    pub async fn exists(email: &str, database: &DatabaseManager) -> Result<bool> {
         super::base::exists::<Self, &str>("email", email, database).await
     }
 
-    pub async fn find_by_id(id: i64, database: &DatabaseManager) -> Result<User, Error> {
+    pub async fn find_by_id(id: i64, database: &DatabaseManager) -> Result<User> {
         super::base::find_by_id::<Self>(id, database).await
     }
 
-    pub async fn find_by_email(email: String, database: &DatabaseManager) -> Result<User, Error> {
+    pub async fn find_by_email(email: String, database: &DatabaseManager) -> Result<User> {
         super::base::find("email", email, database).await
-    }
-
-    pub async fn save(self, database: &DatabaseManager) -> Result<(), sqlx::Error> {
-        let mut transaction = database.connection().begin().await?;
-
-        let update_result = sqlx::query_as::<_, (i64,)>("UPDATE users SET email = $1, first_name = $2, last_name = $3, password = $4 WHERE id = $5 RETURNING id")
-            .bind(self.data.email)
-            .bind(self.data.first_name)
-            .bind(self.data.last_name)
-            .bind(self.data.password)
-            .bind(self.data.id)
-            .fetch_one(&mut *transaction)
-            .await;
-
-        match update_result {
-            Ok(result) => {
-                log::info!("Update user succeeded");
-                transaction.commit().await?;
-                Ok(())
-            }
-            Err(err) => {
-                log::info!("Update user failed");
-                log::info!("{}", err);
-                transaction.rollback().await?;
-                Err(err)
-            }
-        }
     }
 }

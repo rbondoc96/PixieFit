@@ -1,3 +1,5 @@
+mod errors;
+
 use crate::{
     data::{CreateUserData, CreateUserProfileData},
     enums::Role,
@@ -11,25 +13,25 @@ use crate::{
     },
     sys::DatabaseManager,
     utils::{crypt, validators},
-    Error, Result, __,
 };
+
+pub(self) use errors::Error;
+pub(self) type Result<TValue> = core::result::Result<TValue, crate::error::Error>;
 
 pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -> Result<User> {
     if User::exists(data.email, database).await? {
-        return Err(Error::UserCreationFailed(__(
-            "errors.user.emailAlreadyExists",
-        )));
+        return Err(Error::UserWithEmailAlreadyExists)?;
     }
 
     if data.password != data.password_confirm {
-        return Err(Error::PasswordMismatch);
+        return Err(Error::PasswordMismatch)?;
     }
 
     validators::validate_password(data.password)?;
 
     let hash = crypt::encrypt(data.password)?;
 
-    User::create(
+    let user = User::create(
         NewUser {
             email: data.email.to_string(),
             first_name: data.first_name.to_string(),
@@ -39,16 +41,13 @@ pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -
         },
         database,
     )
-    .await
-    .map_err(|error| {
-        error.into_database_error()
-            .map(|db_error| Error::UserCreationFailed(db_error.message().to_string()))
-            .unwrap_or(Error::InternalServer)
-    })
+    .await?;
+
+    Ok(user)
 }
 
 pub async fn create_user_profile(data: CreateUserProfileData, database: &DatabaseManager) -> Result<Profile> {
-    Profile::create(
+    let profile = Profile::create(
         NewUserProfile {
             user_id: data.user_id,
             birthday: data.birthday,
@@ -56,10 +55,7 @@ pub async fn create_user_profile(data: CreateUserProfileData, database: &Databas
         },
         database,
     )
-    .await
-    .map_err(|error| {
-        error.into_database_error()
-            .map(|db_error| Error::UserCreationFailed(db_error.message().to_string()))
-            .unwrap_or(Error::InternalServer)
-    })
+    .await?;
+
+    Ok(profile)
 }

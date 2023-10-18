@@ -1,11 +1,11 @@
-use super::Controller;
+use super::{Controller, Result};
+use crate::prelude::*;
 use crate::{
     enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement},
     http::resources::{ModelResource, ExerciseResource},
     http::response::JsonResponse,
-    models::{CreateExerciseData, CreateExerciseMuscleMapData, Model, Exercise},
+    models::{CreateExerciseData, CreateExerciseMuscleMapData, Model, Exercise, ExerciseMuscleMap},
     sys::DatabaseManager,
-    Error, Result,
 };
 use axum::{
     extract::{Path, State},
@@ -14,7 +14,6 @@ use axum::{
     routing::{get, post, Router},
 };
 use serde::Deserialize;
-use crate::models::ExerciseMuscleMap;
 
 #[derive(Deserialize)]
 pub struct MuscleData {
@@ -66,7 +65,7 @@ impl ExerciseController {
         State(database): State<DatabaseManager>,
         Path(ulid): Path<String>,
     ) -> Result<JsonResponse<ExerciseResource>> {
-        let exercise = Exercise::find_by_ulid(ulid, &database).await?;
+        let exercise = Exercise::find_by_key(ulid, &database).await?;
 
         Ok(JsonResponse::success(
             Some(ExerciseResource::default(exercise).await),

@@ -1,4 +1,4 @@
-use super::{Error, Link, Model};
+use super::Model;
 use crate::sys::DatabaseManager;
 use async_trait::async_trait;
 use sqlx::{FromRow, PgPool};
@@ -15,6 +15,7 @@ pub struct ExerciseEquipment {
 
 #[async_trait]
 impl Model for ExerciseEquipment {
+    const MODEL_NAME: &'static str = "ExerciseEquipment";
     const TABLE_NAME: &'static str = "exercise_equipment";
     type Attributes = ExerciseEquipmentRecord;
 

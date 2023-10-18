@@ -1,8 +1,8 @@
 use super::ModelResource;
+use crate::prelude::*;
 use crate::{
     enums::{LinkFormat, LinkType},
     models::Link,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::Serialize;

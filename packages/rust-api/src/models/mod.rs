@@ -24,14 +24,18 @@ pub(self) type Result<TValue> = ::core::result::Result<TValue, Error>;
 
 use crate::sys::DatabaseManager;
 use async_trait::async_trait;
-use sqlx::postgres::PgRow;
-use sqlx::{Encode, FromRow, PgPool, Postgres, Type};
+use sqlx::{
+    postgres::PgRow,
+    Encode, FromRow, PgPool, Postgres, Type,
+};
 
 #[async_trait]
 pub trait Model
 where
     Self: Send + Sized + Unpin,
 {
+    const ROUTE_KEY: &'static str = "id";
+    const MODEL_NAME: &'static str;
     const TABLE_NAME: &'static str;
     type Attributes: for<'r> FromRow<'r, PgRow> + Unpin + Send;
 
@@ -47,6 +51,13 @@ where
 
     async fn find_by_id(id: i64, database: &DatabaseManager) -> Result<Self> {
         base::find_by_id(id, database).await
+    }
+
+    async fn find_by_key<TKey>(value: TKey, database: &DatabaseManager) -> Result<Self>
+    where
+        TKey: Type<Postgres> + for<'q> Encode<'q, Postgres> + Send + std::fmt::Display + Clone,
+    {
+        base::find(Self::ROUTE_KEY, value, database).await
     }
 
     async fn all(database: &DatabaseManager) -> Result<Vec<Self>> {

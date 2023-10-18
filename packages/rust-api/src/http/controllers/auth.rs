@@ -1,14 +1,14 @@
-use super::Controller;
+use super::{Controller, Error, Result};
+use crate::prelude::*;
 use crate::{
     actions,
     data,
     enums::{Gender, Role},
     http::resources::{ModelResource, UserResource},
+    http::{Context, JsonResponse},
     models::{CreateUserProfileData, NewUser, User, Profile},
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
     utils::{crypt, validators},
-    Context, Error, JsonResponse, Result, Session, __,
 };
 use axum::{
     extract::State,
@@ -16,6 +16,7 @@ use axum::{
     response::Json,
     routing::{get, post, Router},
 };
+use axum_session::SessionPgSession as Session;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -55,7 +56,7 @@ impl Controller for AuthController {
 impl AuthController {
     pub async fn ping(context: Option<Context>) -> Result<JsonResponse<String>> {
         if context.is_none() {
-            return Err(Error::RequestExtMissingContext);
+            return Err(Error::RequestExtensionMissingContext.into());
         }
 
         Ok(JsonResponse::success(
@@ -70,11 +71,7 @@ impl AuthController {
     ) -> Result<JsonResponse<UserResource>> {
         println!("->> {:<12} - AuthController::index", "AUTH_INDEX");
 
-        if context.is_none() {
-            return Err(Error::RequestExtMissingContext);
-        }
-
-        let context = context.unwrap();
+        let context = context.ok_or(Error::RequestExtensionMissingContext)?;
         let user = context.user();
 
         Ok(JsonResponse::success(
@@ -91,7 +88,7 @@ impl AuthController {
         let mut user = User::find_by_email(payload.email, &database).await?;
 
         if !crypt::decrypt_and_verify(payload.password.as_str(), user.password().as_str())? {
-            return Err(Error::UserLoginFailed);
+            return Err(Error::UserLoginFailed)?;
         }
 
         user.update_last_logged_in(&database).await?;

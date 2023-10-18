@@ -1,11 +1,9 @@
+use crate::error::Error;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use serde_with::skip_serializing_none;
-
-use crate::types::ErrorMap;
-use crate::ErrorContext;
 
 pub struct JsonResponse<TData>
 where
@@ -14,7 +12,30 @@ where
     code: StatusCode,
     success: bool,
     data: Option<TData>,
-    error_context: Option<ErrorContext>,
+    error: Option<Error>,
+}
+
+#[derive(Serialize)]
+pub struct ApiSuccessResponse<TData>
+where
+    TData: Serialize,
+{
+    success: bool,
+    data: Option<TData>,
+}
+
+#[derive(Serialize)]
+pub struct ApiErrorContext {
+    name: String,
+    message: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    errors: Option<std::collections::HashMap<String, Vec<String>>>,
+}
+
+#[derive(Serialize)]
+pub struct ApiErrorResponse {
+    success: bool,
+    error: ApiErrorContext,
 }
 
 #[skip_serializing_none]
@@ -27,7 +48,7 @@ where
     data: Option<TData>,
     error: Option<String>,
     message: Option<String>,
-    errors: Option<ErrorMap>,
+    errors: Option<std::collections::HashMap<String, Vec<String>>>,
 }
 
 impl<TData> JsonResponse<TData>
@@ -38,18 +59,23 @@ where
         code: StatusCode,
         success: bool,
         data: Option<TData>,
-        error_context: Option<ErrorContext>,
+        error: Option<Error>,
     ) -> Self {
         Self {
             code,
             success,
             data,
-            error_context,
+            error,
         }
     }
 
-    pub fn error(context: ErrorContext) -> Self {
-        Self::new(context.code(), false, None, Some(context))
+    pub fn error(error: Error) -> Self {
+        Self::new(
+            error.code(),
+            false,
+            None,
+            Some(error),
+        )
     }
 
     pub fn success(data: Option<TData>, code: StatusCode) -> Self {
@@ -57,21 +83,21 @@ where
     }
 
     pub fn json(self) -> Json<Value> {
-        Json(json!(ApiResponse {
+        if let Some(error) = self.error {
+            println!("error: {}", error);
+            return Json(json!(ApiErrorResponse {
+                success: self.success,
+                error: ApiErrorContext {
+                    name: error.client_name(),
+                    message: error.message(),
+                    errors: error.messages(),
+                },
+            }));
+        }
+
+        Json(json!(ApiSuccessResponse {
             success: self.success,
             data: self.data,
-            error: self
-                .error_context
-                .as_ref()
-                .map(|context| context.client_error().as_ref().to_string()),
-            message: self
-                .error_context
-                .as_ref()
-                .map(|context| context.client_error().message()),
-            errors: match self.error_context {
-                Some(context) => context.client_error().errors(),
-                None => None,
-            },
         }))
     }
 }

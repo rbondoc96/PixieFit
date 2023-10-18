@@ -1,4 +1,4 @@
-use crate::root::errors::{ClientError, ErrorContext, ErrorDomain, ErrorSubdomain};
+use crate::error::ClientError;
 use axum::http::StatusCode;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
@@ -6,75 +6,86 @@ use serde_with::{serde_as, DisplayFromStr};
 #[serde_as]
 #[derive(Debug, Serialize)]
 pub enum Error {
-    DatabaseError(#[serde_as(as = "DisplayFromStr")] sqlx::Error),
+    ModelNotCreated {
+        message: String,
+    },
     ModelNotFound {
         model: &'static str,
         search_key: String,
         search_value: String,
     },
+    UnexpectedDatabaseError {
+        message: String,
+    },
+    UnknownError,
 }
 
-impl From<Error> for crate::root::Error {
+impl From<Error> for crate::error::Error {
     fn from(error: Error) -> Self {
         match error {
+            Error::ModelNotCreated {
+                message,
+            } => Self::new(
+                StatusCode::UNPROCESSABLE_ENTITY,
+                message,
+                None,
+                "ModelNotCreated",
+                ClientError::ValidationError,
+            ),
             Error::ModelNotFound {
                 model,
                 search_key,
                 search_value,
-            } => Self::ModelFailure(ErrorContext::new(
+            } => Self::new(
                 StatusCode::NOT_FOUND,
-                ErrorDomain::Database,
+                format!(
+                    "A {} with {} = {} could not be found.",
+                    model, search_key, search_value
+                ),
                 None,
-                ClientError::RESOURCE_NOT_FOUND {
-                    resource_name: model,
-                    search_key,
-                    search_value,
-                },
-            )),
-            Error::DatabaseError(error) => {
-                let db_error = error.into_database_error();
-
-                if db_error.is_none() {
-                    return Self::UnknownFailure(ErrorContext::new(
-                        StatusCode::INTERNAL_SERVER_ERROR,
-                        ErrorDomain::Database,
-                        None,
-                        ClientError::UNEXPECTED_SERVICE,
-                    ));
-                }
-
-                let db_error = db_error.unwrap();
-                let message = db_error.message();
-
-                if db_error.is_unique_violation()
-                    || db_error.is_foreign_key_violation()
-                    || db_error.is_check_violation()
-                {
-                    return Self::ModelFailure(ErrorContext::new(
-                        StatusCode::UNPROCESSABLE_ENTITY,
-                        ErrorDomain::Database,
-                        None,
-                        ClientError::VALIDATION_ERROR {
-                            message: message.to_owned(),
-                            errors: None,
-                        },
-                    ));
-                }
-
-                Self::UnknownFailure(ErrorContext::new(
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    ErrorDomain::Database,
-                    None,
-                    ClientError::UNEXPECTED_SERVICE,
-                ))
-            }
+                "ModelNotFound",
+                ClientError::ResourceNotFound,
+            ),
+            Error::UnexpectedDatabaseError {
+                message,
+            } => Self::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                message,
+                None,
+                "UnexpectedDatabaseError",
+                ClientError::UnexpectedSystemFailure,
+            ),
+            Error::UnknownError => Self::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                "An unknown error has occurred.".to_string(),
+                None,
+                "UnknownError",
+                ClientError::UnknownSystemFailure,
+            ),
         }
     }
 }
 
 impl From<sqlx::Error> for Error {
     fn from(error: sqlx::Error) -> Self {
-        Error::DatabaseError(error)
+        if let Some(db_error) = error.into_database_error() {
+            let message = db_error.message();
+
+            if db_error.is_check_violation()
+                || db_error.is_foreign_key_violation()
+                || db_error.is_unique_violation()
+            {
+                return Self::ModelNotCreated {
+                    message: message.to_owned(),
+                };
+            }
+
+            return Self::UnexpectedDatabaseError {
+                message: message.to_owned(),
+            };
+        }
+
+        Self::UnknownError
     }
 }
 

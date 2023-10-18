@@ -1,8 +1,8 @@
-use super::{Error, Model};
+use super::{Error, Exercise, Model, Result};
+use crate::prelude::*;
 use crate::{
     enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType},
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use sqlx::{postgres::PgPool, FromRow};
@@ -23,6 +23,7 @@ pub struct ExerciseInstruction {
 
 #[async_trait]
 impl Model for ExerciseInstruction {
+    const MODEL_NAME: &'static str = "ExerciseInstruction";
     const TABLE_NAME: &'static str = "exercise_instructions";
     type Attributes = ExerciseInstructionRecord;
 
@@ -61,8 +62,8 @@ impl ExerciseInstruction {
 
     // region Relationships
 
-    pub fn exercise(&self) {
-        todo!()
+    pub async fn exercise(&self) -> Result<Exercise> {
+        Exercise::find_by_id(self.data.exercise_id, &self.database).await
     }
 
     // endregion

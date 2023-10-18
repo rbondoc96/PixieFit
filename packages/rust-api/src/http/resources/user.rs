@@ -1,8 +1,8 @@
 use super::{ModelResource, NameResource, ProfileResource};
+use crate::prelude::*;
 use crate::{
     enums::Role,
     models::{Profile, User},
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::Serialize;

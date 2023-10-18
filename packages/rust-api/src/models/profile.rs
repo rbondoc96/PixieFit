@@ -1,8 +1,8 @@
-use super::{Error, Model, User};
+use super::{Error, Model, Result, User};
+use crate::prelude::*;
 use crate::{
     enums::Gender,
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
@@ -33,6 +33,8 @@ pub struct Profile {
 
 #[async_trait]
 impl Model for Profile {
+    const ROUTE_KEY: &'static str = "ulid";
+    const MODEL_NAME: &'static str = "Profile";
     const TABLE_NAME: &'static str = "user_profiles";
     type Attributes = UserProfileRecord;
 
@@ -64,7 +66,7 @@ impl Profile {
     pub async fn create(
         attributes: CreateUserProfileData,
         database: &DatabaseManager,
-    ) -> Result<Profile, sqlx::error::Error> {
+    ) -> Result<Profile> {
         let mut transaction = database.connection().begin().await?;
 
         let ulid = Ulid::new();
@@ -87,7 +89,7 @@ impl Profile {
             }
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
     }
@@ -95,14 +97,7 @@ impl Profile {
     pub async fn find_by_user(
         user_id: i64,
         database: &DatabaseManager,
-    ) -> Result<Profile, Error> {
+    ) -> Result<Profile> {
         super::base::find::<Self, i64>("user_id", user_id, database).await
-    }
-
-    pub async fn find_by_ulid(
-        ulid: String,
-        database: &DatabaseManager,
-    ) -> Result<Profile, Error> {
-        super::base::find::<Self, String>("ulid", ulid, database).await
     }
 }

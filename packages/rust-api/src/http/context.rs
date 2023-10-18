@@ -1,9 +1,10 @@
+use crate::models::User;
 use async_trait::async_trait;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
 
-use crate::models::User;
-use crate::{Error, Result};
+pub(self) use crate::http::errors::Error;
+pub(self) type Result<TValue> = ::core::result::Result<TValue, Error>;
 
 #[derive(Clone, Debug)]
 pub struct Context {
@@ -28,9 +29,9 @@ impl<TState> FromRequestParts<TState> for Context
 where
     TState: Send + Sync,
 {
-    type Rejection = Error;
+    type Rejection = crate::error::Error;
 
-    async fn from_request_parts(parts: &mut Parts, _state: &TState) -> Result<Self> {
+    async fn from_request_parts(parts: &mut Parts, _state: &TState) -> core::result::Result<Self, Self::Rejection> {
         println!(
             "->> {:>12} -- Context::from_request_parts",
             "CTX_FROM_REQ_PARTS"
@@ -39,7 +40,7 @@ where
         parts
             .extensions
             .get::<Self>()
-            .ok_or(Error::RequestExtMissingContext)
+            .ok_or(Error::RequestExtensionMissingContext.into())
             .cloned()
     }
 }

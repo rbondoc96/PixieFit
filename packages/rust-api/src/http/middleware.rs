@@ -1,16 +1,21 @@
-use axum::extract::State;
-use axum::http::request::Parts;
-use axum::http::Request;
-use axum::http::{Method, Uri};
-use axum::middleware::Next;
-use axum::response::{IntoResponse, Json, Response};
-use axum::RequestPartsExt;
+use crate::{
+    http::Context,
+    models::User,
+    sys::DatabaseManager,
+};
+use axum::{
+    extract::State,
+    http::{Method, Request, Uri},
+    http::request::Parts,
+    middleware::Next,
+    response::{IntoResponse, Json, Response},
+    RequestPartsExt,
+};
+use axum_session::SessionPgSession as Session;
 use serde_json::json;
 
-use crate::models::User;
-use crate::sys::database::DatabaseManager;
-use crate::Context;
-use crate::{Error, Result, Session};
+pub(self) use crate::http::errors::Error;
+pub(self) type Result<TValue> = ::core::result::Result<TValue, crate::error::Error>;
 
 pub async fn context_resolver<TBody>(
     State(database): State<DatabaseManager>,
@@ -47,28 +52,28 @@ pub async fn context_resolver<TBody>(
     }
 
     session.clear();
-    Err(Error::NoMatchingSessionUserFound)
+    Err(Error::NoMatchingSessionUserFound)?
 }
 
-pub async fn response_mapper(
-    context: Option<Context>,
-    session: Session,
-    uri: Uri,
-    method: Method,
-    response: Response,
-) -> Response {
-    println!("->> {:<12} - response_mapper", "RES_MAPPER");
-
-    let error = response.extensions().get::<Error>();
-
-    let error_context = error.map(|err| err.to_error_context());
-    let client_error = error_context.as_ref().map(|context| context.client_error());
-    let error_response = error_context.map(|context| context.into_response());
-
-    // Logger::log_request(context, method, uri, error, client_error).await;
-
-    error_response.unwrap_or(response)
-}
+// pub async fn response_mapper(
+//     context: Option<Context>,
+//     session: Session,
+//     uri: Uri,
+//     method: Method,
+//     response: Response,
+// ) -> Response {
+//     println!("->> {:<12} - response_mapper", "RES_MAPPER");
+//
+//     let error = response.extensions().get::<Error>();
+//
+//     let error_context = error.map(|err| err.to_error_context());
+//     let client_error = error_context.as_ref().map(|context| context.client_error());
+//     let error_response = error_context.map(|context| context.into_response());
+//
+//     // Logger::log_request(context, method, uri, error, client_error).await;
+//
+//     error_response.unwrap_or(response)
+// }
 
 pub async fn require_auth<TBody>(
     context: Result<Context>,

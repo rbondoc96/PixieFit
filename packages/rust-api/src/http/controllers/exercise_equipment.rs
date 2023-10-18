@@ -1,10 +1,10 @@
-use super::Controller;
+use super::{Controller, Result};
+use crate::prelude::*;
 use crate::{
     http::resources::{ModelResource, ExerciseEquipmentResource},
     http::response::JsonResponse,
     models::{Model, ExerciseEquipment},
     sys::DatabaseManager,
-    Error, Result,
 };
 use axum::{
     extract::State,

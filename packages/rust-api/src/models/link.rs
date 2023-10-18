@@ -1,8 +1,8 @@
-use super::{Error, Model};
+use super::{Error, Model, Result};
+use crate::prelude::*;
 use crate::{
     enums::{LinkFormat, LinkType, Table},
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
@@ -44,6 +44,7 @@ pub struct Link {
 
 #[async_trait]
 impl Model for Link {
+    const MODEL_NAME: &'static str = "Link";
     const TABLE_NAME: &'static str = "links";
     type Attributes = LinkRecord;
 
@@ -94,7 +95,7 @@ impl Link {
 
     // region Relationships
 
-    pub async fn muscle_links(id: i64, database: &DatabaseManager) -> Result<Vec<Link>, Error> {
+    pub async fn muscle_links(id: i64, database: &DatabaseManager) -> Result<Vec<Link>> {
         let connection = database.connection();
 
         let links = sqlx::query_as::<_, LinkRecord>(
@@ -121,14 +122,10 @@ impl Link {
 
     // endregion
 
-    pub async fn all(database: &DatabaseManager) -> Result<Vec<Link>, Error> {
-        super::base::all(database).await
-    }
-
     pub async fn create(
         attributes: CreateLinkData,
         database: &DatabaseManager,
-    ) -> Result<Link, sqlx::Error> {
+    ) -> Result<Link> {
         let mut transaction = database.connection().begin().await?;
 
         let ulid = Ulid::new();
@@ -157,7 +154,7 @@ impl Link {
             }
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
     }

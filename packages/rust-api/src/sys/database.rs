@@ -1,8 +1,7 @@
 use super::{config, Error, Result};
-use crate::types::DatabasePool;
 use sqlx::postgres::{PgPool, PgPoolOptions};
 
-async fn create_pool() -> Result<DatabasePool> {
+async fn create_pool() -> Result<PgPool> {
     let db_config = config().database();
 
     PgPoolOptions::new()
@@ -15,7 +14,7 @@ async fn create_pool() -> Result<DatabasePool> {
 
 #[derive(Clone, Debug)]
 pub struct DatabaseManager {
-    connection: DatabasePool,
+    connection: PgPool,
 }
 
 impl DatabaseManager {
@@ -25,7 +24,7 @@ impl DatabaseManager {
         Ok(Self { connection })
     }
 
-    pub fn connection(&self) -> &DatabasePool {
+    pub fn connection(&self) -> &PgPool {
         &self.connection
     }
 }

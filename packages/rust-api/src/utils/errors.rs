@@ -1,39 +1,39 @@
-use crate::root::errors::{ClientError, ErrorContext, ErrorDomain, ErrorSubdomain};
-use crate::__;
+use crate::prelude::*;
+use crate::error::ClientError;
 use axum::http::StatusCode;
 use bcrypt::BcryptError;
 use std::collections::HashMap;
 
-#[derive(Debug)]
+#[derive(Debug, strum_macros::Display)]
 pub enum Error {
     StringDecryption(BcryptError),
     StringEncryption(BcryptError),
     InvalidPasswordFormat(Vec<String>),
 }
 
-impl From<Error> for crate::root::Error {
+impl From<Error> for crate::error::Error {
     fn from(error: Error) -> Self {
+        let name = error.to_string();
         match error {
             Error::InvalidPasswordFormat(messages) => {
                 let mut errors = HashMap::with_capacity(1);
                 errors.insert("password".to_owned(), messages);
 
-                Self::ValidatorFailure(ErrorContext::new(
+                Self::new(
                     StatusCode::UNPROCESSABLE_ENTITY,
-                    ErrorDomain::Validation,
-                    Some(ErrorSubdomain::UserRegistration),
-                    ClientError::VALIDATION_ERROR {
-                        message: __("errors.validation.invalidPasswordFormat"),
-                        errors: Some(errors),
-                    },
-                ))
+                    __("error.validation.invalidPasswordFormat"),
+                    Some(errors),
+                    name,
+                    ClientError::ValidationError,
+                )
             }
-            _ => Self::UnknownFailure(ErrorContext::new(
+            _ => Self::new(
                 StatusCode::INTERNAL_SERVER_ERROR,
-                ErrorDomain::System,
-                Some(ErrorSubdomain::Utilities),
-                ClientError::UNEXPECTED_SERVICE,
-            )),
+                __("error.unexpectedSystemFailure"),
+                None,
+                name,
+                ClientError::UnexpectedSystemFailure,
+            )
         }
     }
 }

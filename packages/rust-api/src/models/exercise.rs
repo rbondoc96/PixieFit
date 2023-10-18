@@ -1,8 +1,8 @@
-use super::{Error, ExerciseEquipment, ExerciseMuscleMap, Model, Muscle, MuscleGroup, MuscleRecord};
+use super::{Error, ExerciseEquipment, ExerciseMuscleMap, Model, Muscle, MuscleGroup, MuscleRecord, Result};
+use crate::prelude::*;
 use crate::{
     enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement},
     sys::DatabaseManager,
-    types::ISO8601DateTimeUTC,
 };
 use async_trait::async_trait;
 use serde::Deserialize;
@@ -46,6 +46,8 @@ pub struct Exercise {
 
 #[async_trait]
 impl Model for Exercise {
+    const ROUTE_KEY: &'static str = "ulid";
+    const MODEL_NAME: &'static str = "Exercise";
     const TABLE_NAME: &'static str = "exercises";
     type Attributes = ExerciseRecord;
 
@@ -116,11 +118,11 @@ impl Exercise {
 
     // region Relationships
 
-    pub async fn equipment(&self) -> Result<ExerciseEquipment, Error> {
+    pub async fn equipment(&self) -> Result<ExerciseEquipment> {
         ExerciseEquipment::find("name", self.equipment_key(), &self.database).await
     }
 
-    pub async fn target_muscle_group(&self) -> Result<MuscleGroup, Error> {
+    pub async fn target_muscle_group(&self) -> Result<MuscleGroup> {
         MuscleGroup::find_by_id(
             self.target_muscle_group_id().into(),
             &self.database,
@@ -128,7 +130,7 @@ impl Exercise {
         .await
     }
 
-    async fn muscles(&self, target: ExerciseMuscleTarget) -> Result<Vec<Muscle>, sqlx::Error> {
+    async fn muscles(&self, target: ExerciseMuscleTarget) -> Result<Vec<Muscle>> {
         let results = sqlx::query_as::<_, MuscleRecord>(
             "SELECT muscles.* FROM muscles INNER JOIN exercises_muscles ON muscles.id = exercises_muscles.muscle_id WHERE exercises_muscles.exercise_id = $1 AND exercises_muscles.target = $2",
         )
@@ -137,18 +139,22 @@ impl Exercise {
         .fetch_all(self.connection())
         .await?;
 
-        Ok(results.into_iter().map(|record| Muscle::from_database(record, &self.database)).collect())
+        Ok(results
+            .into_iter()
+            .map(|record| Muscle::from_database(record, &self.database))
+            .collect()
+        )
     }
 
-    pub async fn primary_muscles(&self) -> Result<Vec<Muscle>, sqlx::Error> {
+    pub async fn primary_muscles(&self) -> Result<Vec<Muscle>> {
         self.muscles(ExerciseMuscleTarget::Primary).await
     }
 
-    pub async fn secondary_muscles(&self) -> Result<Vec<Muscle>, sqlx::Error> {
+    pub async fn secondary_muscles(&self) -> Result<Vec<Muscle>> {
         self.muscles(ExerciseMuscleTarget::Secondary).await
     }
 
-    pub async fn tertiary_muscles(&self) -> Result<Vec<Muscle>, sqlx::Error> {
+    pub async fn tertiary_muscles(&self) -> Result<Vec<Muscle>> {
         self.muscles(ExerciseMuscleTarget::Tertiary).await
     }
 
@@ -157,7 +163,7 @@ impl Exercise {
     pub async fn create(
         attributes: CreateExerciseData,
         database: &DatabaseManager,
-    ) -> Result<Exercise, sqlx::Error> {
+    ) -> Result<Exercise> {
         let connection = database.connection();
 
         let record = sqlx::query_as::<_, ExerciseRecord>(
@@ -178,20 +184,6 @@ impl Exercise {
         Ok(Exercise {
             database: database.clone(),
             data: record,
-        })
-    }
-
-    pub async fn find_by_ulid(ulid: String, database: &DatabaseManager) -> Result<Exercise, sqlx::Error> {
-        let exercise = sqlx::query_as::<_, ExerciseRecord>(
-            "SELECT * FROM exercises WHERE ulid = $1",
-        )
-            .bind(ulid)
-            .fetch_one(database.connection())
-            .await?;
-
-        Ok(Exercise {
-            database: database.clone(),
-            data: exercise,
         })
     }
 }

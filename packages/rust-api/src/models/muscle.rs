@@ -1,5 +1,6 @@
-use super::{Error, Link, Model, MuscleGroup};
-use crate::{sys::DatabaseManager, types::ISO8601DateTimeUTC};
+use super::{Error, Link, Model, MuscleGroup, Result};
+use crate::prelude::*;
+use crate::sys::DatabaseManager;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
@@ -36,6 +37,8 @@ pub struct Muscle {
 
 #[async_trait]
 impl Model for Muscle {
+    const ROUTE_KEY: &'static str = "ulid";
+    const MODEL_NAME: &'static str = "Muscle";
     const TABLE_NAME: &'static str = "muscles";
     type Attributes = MuscleRecord;
 
@@ -98,11 +101,11 @@ impl Muscle {
 
     // region Relationships
 
-    pub async fn links(&self) -> Result<Vec<Link>, Error> {
+    pub async fn links(&self) -> Result<Vec<Link>> {
         Link::muscle_links(self.id(), &self.database).await
     }
 
-    pub async fn muscle_group(&self) -> Result<MuscleGroup, Error> {
+    pub async fn muscle_group(&self) -> Result<MuscleGroup> {
         MuscleGroup::find_by_id(self.group_id().into(), &self.database).await
     }
 
@@ -118,7 +121,7 @@ impl Muscle {
     pub async fn create(
         attributes: CreateMuscleData,
         database: &DatabaseManager,
-    ) -> Result<Muscle, sqlx::Error> {
+    ) -> Result<Muscle> {
         let mut transaction = database.connection().begin().await?;
 
         let muscle = sqlx::query_as::<_, MuscleRecord>(
@@ -143,22 +146,8 @@ impl Muscle {
             }
             Err(err) => {
                 transaction.rollback().await?;
-                Err(err)
+                Err(err.into())
             }
         }
-    }
-
-    pub async fn find_by_ulid(ulid: String, database: &DatabaseManager) -> Result<Muscle, sqlx::Error> {
-        let muscle = sqlx::query_as::<_, MuscleRecord>(
-            "SELECT * FROM muscles WHERE ulid = $1",
-        )
-        .bind(ulid)
-        .fetch_one(database.connection())
-        .await?;
-
-        Ok(Muscle {
-            database: database.clone(),
-            data: muscle,
-        })
     }
 }

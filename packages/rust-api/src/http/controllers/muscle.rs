@@ -1,10 +1,10 @@
-use super::Controller;
+use super::{Controller, Result};
+use crate::prelude::*;
 use crate::{
     http::resources::{ModelResource, MuscleResource},
     http::response::JsonResponse,
     models::{CreateMuscleData, Model, Muscle},
     sys::DatabaseManager,
-    Error, Result,
 };
 use axum::{
     extract::{Path, State},
@@ -54,7 +54,7 @@ impl MuscleController {
         State(database): State<DatabaseManager>,
         Path(ulid): Path<String>,
     ) -> Result<JsonResponse<MuscleResource>> {
-        let muscle = Muscle::find_by_ulid(ulid, &database).await?;
+        let muscle = Muscle::find_by_key(ulid, &database).await?;
 
         Ok(JsonResponse::success(
             Some(MuscleResource::default(muscle).await),

@@ -13,7 +13,8 @@
             "invalidPasswordFormat": "The given password does not meet the required format.",
             "passwordMismatch": "Passwords do not match."
         },
-        "unexpectedServiceError": "Unexpected service error.",
+        "unexpectedSystemError": "An unexpected system error has occurred.",
+        "unknownSystemError": "An unknown system error has occurred.",
         "validation": {
             "invalidPasswordFormat": "The given password does not meet the required format.",
             "passwordMismatch": "Passwords do not match."
