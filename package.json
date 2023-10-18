@@ -18,7 +18,7 @@
         "api:dev": "pnpm api dev",
         "app:dev": "pnpm app dev",
         "check:types": "turbo run check:types",
-        "cargo": "cd packages/rust-api && cargo",
+        "cargo": "cd packages/api && cargo",
         "dev": "turbo run dev",
         "lint": "turbo run lint --continue",
         "rust-api": "pnpm --filter=\"./packages/rust-api\""
