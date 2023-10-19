@@ -1,11 +1,11 @@
-use crate::enums::Measurement;
+use crate::enums::{Measurement, MeasurementDenominator, MeasurementOperation};
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct MeasurementResource {
     unit: &'static str,
-    denominator: Option<&'static str>,
-    operation: &'static str,
+    denominator: Option<MeasurementDenominator>,
+    operation: MeasurementOperation,
 }
 
 impl MeasurementResource {

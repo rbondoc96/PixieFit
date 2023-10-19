@@ -16,6 +16,6 @@ pub use exercise_type::ExerciseType;
 pub use gender::Gender;
 pub use link_format::LinkFormat;
 pub use link_type::LinkType;
-pub use measurement::Measurement;
+pub use measurement::{Measurement, MeasurementDenominator, MeasurementOperation, MeasurementUnit};
 pub use role::Role;
 pub use table::Table;
