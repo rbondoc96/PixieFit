@@ -51,6 +51,8 @@ pub async fn create_admin_user(database: &DatabaseManager) -> () {
 }
 
 pub async fn init() -> Result<Router> {
+    let server = config().server();
+
     let db_manager = DatabaseManager::new().await.unwrap_or_else(|_| {
         panic!("Could not initialize database manager");
     });
@@ -59,7 +61,10 @@ pub async fn init() -> Result<Router> {
     let session = session(db_manager.clone()).await?;
 
     create_admin_user(&db_manager).await;
-    actions::services::init(&db_manager).await;
+
+    if server.should_sync_exercises() {
+        actions::services::init(&db_manager).await;
+    }
 
     // Note: `.layer()` calls are executed from bottom-to-top
     Ok(Router::new()
