@@ -59,6 +59,7 @@ pub async fn init() -> Result<Router> {
     let session = session(db_manager.clone()).await?;
 
     create_admin_user(&db_manager).await;
+    actions::services::init(&db_manager).await;
 
     // Note: `.layer()` calls are executed from bottom-to-top
     Ok(Router::new()

@@ -1,4 +1,5 @@
 mod errors;
+pub mod services;
 
 use crate::{
     data::{CreateUserData, CreateUserProfileData},
