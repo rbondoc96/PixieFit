@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 #[sqlx(type_name = "varchar")]
 #[sqlx(rename_all = "snake_case")]
 pub enum ExerciseForce {
-    PullBilateral,
-    PushBilateral,
+    Hold,
+    Pull,
+    Push,
 }

@@ -9,4 +9,5 @@ pub enum ExerciseType {
     Class,
     Endurance,
     Strength,
+    Stretch,
 }

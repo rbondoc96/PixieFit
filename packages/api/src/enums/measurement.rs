@@ -1,33 +1,65 @@
 use serde::{Deserialize, Serialize};
+use sqlx::Type;
 
-#[derive(Clone, Debug, Deserialize, Serialize, sqlx::Type)]
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
 #[serde(rename_all = "snake_case")]
-#[sqlx(type_name = "varchar")]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename_all = "snake_case", type_name = "varchar")]
 pub enum Measurement {
-    ExerciseDuration,
-    ExerciseWeight,
+    Bodyweight,
+    Duration,
+    Repetitions,
+    WeightedRepetitions,
+    WeightedDuration,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, Type)]
+#[serde(rename_all = "snake_case")]
+#[sqlx(rename_all = "snake_case", type_name = "varchar")]
+pub enum MeasurementUnit {
+    Kilogram,
+    Repetition,
+    Second,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MeasurementDenominator {
+    Repetition,
+    Second,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MeasurementOperation {
+    Addition,
+    Division,
+    Multiplication,
 }
 
 impl Measurement {
     pub fn unit(&self) -> &'static str {
         match self {
-            Self::ExerciseDuration => "seconds",
-            Self::ExerciseWeight => "kilograms",
+            Self::Bodyweight
+                | Self::WeightedDuration
+                | Self::WeightedRepetitions => "kilograms",
+            Self::Duration => "seconds",
+            Self::Repetitions => "repetitions",
         }
     }
 
-    pub fn denominator(&self) -> Option<&'static str> {
+    pub fn denominator(&self) -> Option<MeasurementDenominator> {
         match self {
-            Self::ExerciseDuration => None,
-            Self::ExerciseWeight => Some("reps"),
+            Self::WeightedDuration => Some(MeasurementDenominator::Second),
+            Self::WeightedRepetitions => Some(MeasurementDenominator::Repetition),
+            _ => None,
         }
     }
 
-    pub fn operation(&self) -> &'static str {
+    pub fn operation(&self) -> MeasurementOperation {
         match self {
-            Self::ExerciseDuration => "summation",
-            Self::ExerciseWeight => "multiplication",
+            Self::WeightedDuration => MeasurementOperation::Division,
+            Self::WeightedRepetitions => MeasurementOperation::Multiplication,
+            Self::Bodyweight | Self::Duration | Self::Repetitions => MeasurementOperation::Addition,
         }
     }
 }
