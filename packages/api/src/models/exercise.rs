@@ -12,31 +12,33 @@ use sqlx::{postgres::PgPool, FromRow};
 pub struct ExerciseRecord {
     id: i64,
     ulid: String,
+    external_id: Option<i16>,
     #[sqlx(rename = "type")]
     exercise_type: ExerciseType,
-    target_muscle_group_id: i32,
+    target_muscle_group_id: Option<i32>,
     name: String,
     name_alternative: Option<String>,
     description: Option<String>,
-    equipment: String,
-    mechanic: ExerciseMechanic,
-    force: ExerciseForce,
-    measurement: Measurement,
+    equipment: Option<String>,
+    mechanic: Option<ExerciseMechanic>,
+    force: Option<ExerciseForce>,
+    measurement: Option<Measurement>,
     created_at: ISO8601DateTimeUTC,
     updated_at: ISO8601DateTimeUTC,
 }
 
 #[derive(Debug)]
 pub struct CreateExerciseData {
+    pub external_id: Option<i16>,
     pub exercise_type: ExerciseType,
-    pub target_muscle_group_id: i32,
+    pub target_muscle_group_id: Option<i32>,
     pub name: String,
     pub name_alternative: Option<String>,
     pub description: Option<String>,
-    pub equipment: String,
-    pub mechanic: ExerciseMechanic,
-    pub force: ExerciseForce,
-    pub measurement: Measurement,
+    pub equipment: Option<String>,
+    pub mechanic: Option<ExerciseMechanic>,
+    pub force: Option<ExerciseForce>,
+    pub measurement: Option<Measurement>,
 }
 
 pub struct Exercise {
@@ -72,11 +74,15 @@ impl Exercise {
         self.data.ulid.clone()
     }
 
+    pub fn external_id(&self) -> Option<i16> {
+        self.data.external_id.clone()
+    }
+
     pub fn exercise_type(&self) -> ExerciseType {
         self.data.exercise_type.clone()
     }
 
-    pub fn target_muscle_group_id(&self) -> i32 {
+    pub fn target_muscle_group_id(&self) -> Option<i32> {
         self.data.target_muscle_group_id
     }
 
@@ -92,19 +98,19 @@ impl Exercise {
         self.data.description.clone()
     }
 
-    pub fn equipment_key(&self) -> String {
+    pub fn equipment_key(&self) -> Option<String> {
         self.data.equipment.clone()
     }
 
-    pub fn mechanic(&self) -> ExerciseMechanic {
+    pub fn mechanic(&self) -> Option<ExerciseMechanic> {
         self.data.mechanic.clone()
     }
 
-    pub fn force(&self) -> ExerciseForce {
+    pub fn force(&self) -> Option<ExerciseForce> {
         self.data.force.clone()
     }
 
-    pub fn measurement(&self) -> Measurement {
+    pub fn measurement(&self) -> Option<Measurement> {
         self.data.measurement.clone()
     }
 
@@ -118,16 +124,36 @@ impl Exercise {
 
     // region Relationships
 
-    pub async fn equipment(&self) -> Result<ExerciseEquipment> {
-        ExerciseEquipment::find("name", self.equipment_key(), &self.database).await
+    pub async fn equipment(&self) -> Result<Option<ExerciseEquipment>> {
+        let key = self.equipment_key();
+
+        if key.is_none() {
+            return Ok(None);
+        }
+
+        let equipment = ExerciseEquipment::find(
+            "name",
+            key.unwrap(),
+            &self.database
+        ).await?;
+
+        Ok(Some(equipment))
     }
 
-    pub async fn target_muscle_group(&self) -> Result<MuscleGroup> {
-        MuscleGroup::find_by_id(
-            self.target_muscle_group_id().into(),
+    pub async fn target_muscle_group(&self) -> Result<Option<MuscleGroup>> {
+        let key = self.target_muscle_group_id();
+
+        if key.is_none() {
+            return Ok(None);
+        }
+
+        let group = MuscleGroup::find_by_id(
+            key.unwrap().into(),
             &self.database,
         )
-        .await
+        .await?;
+
+        Ok(Some(group))
     }
 
     async fn muscles(&self, target: ExerciseMuscleTarget) -> Result<Vec<Muscle>> {
@@ -167,8 +193,9 @@ impl Exercise {
         let connection = database.connection();
 
         let record = sqlx::query_as::<_, ExerciseRecord>(
-            "INSERT INTO exercises (type, target_muscle_group_id, name, name_alternative, description, equipment, mechanic, force, measurement) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *",
+            "INSERT INTO exercises (external_id, type, target_muscle_group_id, name, name_alternative, description, equipment, mechanic, force, measurement) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
         )
+        .bind(attributes.external_id)
         .bind(attributes.exercise_type)
         .bind(attributes.target_muscle_group_id)
         .bind(attributes.name)

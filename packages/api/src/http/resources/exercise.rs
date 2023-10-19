@@ -15,14 +15,14 @@ pub struct ExerciseResource {
     id: String,
     #[serde(rename = "type")]
     exercise_type: ExerciseType,
-    target_muscle_group: MuscleGroupResource,
+    target_muscle_group: Option<MuscleGroupResource>,
     name: String,
     name_alternative: Option<String>,
     description: Option<String>,
-    equipment: ExerciseEquipmentResource,
-    mechanic: ExerciseMechanic,
-    force: ExerciseForce,
-    measurement: MeasurementResource,
+    equipment: Option<ExerciseEquipmentResource>,
+    mechanic: Option<ExerciseMechanic>,
+    force: Option<ExerciseForce>,
+    measurement: Option<MeasurementResource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     primary_muscles: Option<Vec<MuscleResource>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -45,14 +45,23 @@ impl ModelResource for ExerciseResource {
         Self {
             id: exercise.ulid(),
             exercise_type: exercise.exercise_type(),
-            target_muscle_group: MuscleGroupResource::simple(muscle_group).await,
+            target_muscle_group: match muscle_group {
+                Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group).await),
+                None => None,
+            },
             name: exercise.name(),
             name_alternative: exercise.name_alternative(),
             description: exercise.description(),
-            equipment: ExerciseEquipmentResource::simple(equipment).await,
+            equipment: match equipment {
+                Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment).await),
+                None => None,
+            },
             mechanic: exercise.mechanic(),
             force: exercise.force(),
-            measurement: MeasurementResource::new(exercise.measurement()),
+            measurement: match exercise.measurement() {
+                Some(measurement) => Some(MeasurementResource::new(measurement)),
+                None => None,
+            },
             primary_muscles: Some(MuscleResource::list(primary_muscles).await),
             secondary_muscles: Some(MuscleResource::list(secondary_muscles).await),
             tertiary_muscles: Some(MuscleResource::list(tertiary_muscles).await),
@@ -66,14 +75,23 @@ impl ModelResource for ExerciseResource {
         Self {
             id: exercise.ulid(),
             exercise_type: exercise.exercise_type(),
-            target_muscle_group: MuscleGroupResource::simple(muscle_group).await,
+            target_muscle_group: match muscle_group {
+                Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group).await),
+                None => None,
+            },
             name: exercise.name(),
             name_alternative: exercise.name_alternative(),
             description: exercise.description(),
-            equipment: ExerciseEquipmentResource::simple(equipment).await,
+            equipment: match equipment {
+                Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment).await),
+                None => None,
+            },
             mechanic: exercise.mechanic(),
             force: exercise.force(),
-            measurement: MeasurementResource::new(exercise.measurement()),
+            measurement: match exercise.measurement() {
+                Some(measurement) => Some(MeasurementResource::new(measurement)),
+                None => None,
+            },
             primary_muscles: None,
             secondary_muscles: None,
             tertiary_muscles: None,

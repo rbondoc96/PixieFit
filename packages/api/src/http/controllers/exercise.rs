@@ -25,14 +25,14 @@ pub struct MuscleData {
 pub struct CreateExercisePayload {
     #[serde(rename = "type")]
     exercise_type: ExerciseType,
-    target_muscle_group_id: i32,
+    target_muscle_group_id: Option<i32>,
     name: String,
     name_alternative: Option<String>,
     description: Option<String>,
-    equipment: String,
-    mechanic: ExerciseMechanic,
-    force: ExerciseForce,
-    measurement: Measurement,
+    equipment: Option<String>,
+    mechanic: Option<ExerciseMechanic>,
+    force: Option<ExerciseForce>,
+    measurement: Option<Measurement>,
     muscles: Vec<MuscleData>
 }
 
@@ -79,6 +79,7 @@ impl ExerciseController {
     ) -> Result<JsonResponse<ExerciseResource>> {
         let exercise = Exercise::create(
             CreateExerciseData {
+                external_id: None,
                 exercise_type: payload.exercise_type,
                 target_muscle_group_id: payload.target_muscle_group_id,
                 name: payload.name,

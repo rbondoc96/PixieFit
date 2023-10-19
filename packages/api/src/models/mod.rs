@@ -1,14 +1,14 @@
 pub(self) mod base;
-mod exercise;
-mod exercise_equipment;
-mod exercise_instruction;
-mod exercise_muscle_map;
+pub mod exercise;
+pub mod exercise_equipment;
+pub mod exercise_instruction;
+pub mod exercise_muscle_map;
 mod errors;
-mod link;
-mod muscle;
-mod muscle_group;
-mod user;
-mod profile;
+pub mod link;
+pub mod muscle;
+pub mod muscle_group;
+pub mod user;
+pub mod profile;
 
 pub use exercise::{CreateExerciseData, Exercise};
 pub use exercise_equipment::ExerciseEquipment;
@@ -62,5 +62,13 @@ where
 
     async fn all(database: &DatabaseManager) -> Result<Vec<Self>> {
         base::all(database).await
+    }
+
+    async fn count(database: &DatabaseManager) -> Result<i64> {
+        let row_count = sqlx::query_as::<_, (i64,)>(format!("SELECT count(*) FROM {}", Self::TABLE_NAME).as_str())
+            .fetch_one(database.connection())
+            .await?;
+
+        Ok(row_count.0)
     }
 }

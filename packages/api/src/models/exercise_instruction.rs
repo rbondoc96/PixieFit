@@ -10,10 +10,16 @@ use sqlx::{postgres::PgPool, FromRow};
 #[derive(Clone, Debug, FromRow)]
 pub struct ExerciseInstructionRecord {
     exercise_id: i64,
-    order: i16,
+    sequence_number: i16,
     content: String,
     created_at: ISO8601DateTimeUTC,
     updated_at: ISO8601DateTimeUTC,
+}
+
+pub struct CreateExerciseInstructionData {
+    pub exercise_id: i64,
+    pub sequence_number: i16,
+    pub content: String,
 }
 
 pub struct ExerciseInstruction {
@@ -44,8 +50,8 @@ impl ExerciseInstruction {
         self.data.exercise_id
     }
 
-    pub fn order(&self) -> i16 {
-        self.data.order
+    pub fn sequence_number(&self) -> i16 {
+        self.data.sequence_number
     }
 
     pub fn content(&self) -> String {
@@ -67,4 +73,24 @@ impl ExerciseInstruction {
     }
 
     // endregion
+
+    pub async fn create(
+        attributes: CreateExerciseInstructionData,
+        database: &DatabaseManager,
+    ) -> Result<ExerciseInstruction> {
+        let record = sqlx::query_as::<_, ExerciseInstructionRecord>(format!(
+            "INSERT INTO {} (exercise_id, sequence_number, content) VALUES ($1, $2, $3) RETURNING *",
+            Self::TABLE_NAME,
+        ).as_str())
+        .bind(attributes.exercise_id)
+        .bind(attributes.sequence_number)
+        .bind(attributes.content)
+        .fetch_one(database.connection())
+        .await?;
+
+        Ok(ExerciseInstruction {
+            database: database.clone(),
+            data: record,
+        })
+    }
 }
