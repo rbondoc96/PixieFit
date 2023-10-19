@@ -13,9 +13,10 @@
         "doc": "docs"
     },
     "scripts": {
-        "api": "pnpm --filter=\"./packages/rust-api\"",
+        "api": "pnpm --filter=\"./packages/api\"",
         "app": "pnpm --filter=\"./packages/app\"",
         "api:dev": "pnpm api dev",
+        "api:dev:fresh": "pnpm api dev:fresh",
         "app:dev": "pnpm app dev",
         "build": "turbo run build",
         "cargo": "cd packages/api && cargo",
