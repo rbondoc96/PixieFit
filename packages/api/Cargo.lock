@@ -110,37 +110,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
-name = "api"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "axum",
- "axum_session",
- "bcrypt",
- "chrono",
- "dotenvy",
- "dotenvy_macro",
- "futures",
- "httpc-test",
- "log",
- "reqwest",
- "rust-i18n",
- "serde",
- "serde_as",
- "serde_derive",
- "serde_json",
- "serde_with",
- "simple_logger",
- "sqlx",
- "strum",
- "strum_macros",
- "tokio",
- "tower-http",
- "ulid",
-]
-
-[[package]]
 name = "async-trait"
 version = "0.1.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -488,6 +457,37 @@ dependencies = [
  "serde_json",
  "time 0.3.28",
  "url",
+]
+
+[[package]]
+name = "core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum",
+ "axum_session",
+ "bcrypt",
+ "chrono",
+ "dotenvy",
+ "dotenvy_macro",
+ "futures",
+ "httpc-test",
+ "log",
+ "reqwest",
+ "rust-i18n",
+ "serde",
+ "serde_as",
+ "serde_derive",
+ "serde_json",
+ "serde_with",
+ "simple_logger",
+ "sqlx",
+ "strum",
+ "strum_macros",
+ "tokio",
+ "tower-http",
+ "ulid",
 ]
 
 [[package]]

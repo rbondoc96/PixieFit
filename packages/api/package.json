@@ -8,7 +8,7 @@
         "db:up": "sqlx database create",
         "db:down": "sqlx database drop -y",
         "db:fresh": "pnpm db:down && pnpm db:up",
-        "dev": "cargo watch -q -c -w ./src -x 'run'",
+        "dev": "cargo watch -q -c -w core/src -x 'run'",
         "dev:fresh": "pnpm migrate:fresh && pnpm dev",
         "make:migration": "sqlx migrate add",
         "migrate": "sqlx migrate run",
