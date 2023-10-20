@@ -98,6 +98,6 @@ impl Profile {
         user_id: i64,
         database: &DatabaseManager,
     ) -> Result<Profile> {
-        super::base::find::<Self, i64>("user_id", user_id, database).await
+        Self::find::<i64>("user_id", user_id, database).await
     }
 }

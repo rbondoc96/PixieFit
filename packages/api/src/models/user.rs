@@ -162,14 +162,10 @@ impl User {
     }
 
     pub async fn exists(email: &str, database: &DatabaseManager) -> Result<bool> {
-        super::base::exists::<Self, &str>("email", email, database).await
-    }
-
-    pub async fn find_by_id(id: i64, database: &DatabaseManager) -> Result<User> {
-        super::base::find_by_id::<Self>(id, database).await
+        Self::has("email", email, database).await
     }
 
     pub async fn find_by_email(email: String, database: &DatabaseManager) -> Result<User> {
-        super::base::find("email", email, database).await
+        Self::find("email", email, database).await
     }
 }

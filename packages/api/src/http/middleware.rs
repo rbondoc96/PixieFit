@@ -1,6 +1,6 @@
 use crate::{
     http::Context,
-    models::User,
+    models::{Model, User},
     sys::DatabaseManager,
 };
 use axum::{
