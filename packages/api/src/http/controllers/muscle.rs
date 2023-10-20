@@ -1,6 +1,7 @@
 use super::{Controller, Result};
 use crate::prelude::*;
 use crate::{
+    http::extractors::Pagination,
     http::resources::{ModelResource, MuscleResource},
     http::response::JsonResponse,
     models::{CreateMuscleData, Model, Muscle},
@@ -28,9 +29,13 @@ impl Controller for MuscleController {
 
 impl MuscleController {
     pub async fn list(
+        pagination: Pagination,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse<Vec<MuscleResource>>> {
         let muscles = Muscle::all(&database).await?;
+
+        println!("{:?}", pagination);
+        println!("({:?}, {:?})", pagination.page(), pagination.per_page());
 
         Ok(JsonResponse::success(
             Some(MuscleResource::list(muscles).await),

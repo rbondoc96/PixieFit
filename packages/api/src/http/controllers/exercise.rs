@@ -8,7 +8,7 @@ use crate::{
     sys::DatabaseManager,
 };
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Query},
     http::StatusCode,
     response::Json,
     routing::{get, post, Router},
@@ -36,6 +36,12 @@ pub struct CreateExercisePayload {
     muscles: Vec<MuscleData>
 }
 
+#[derive(Deserialize)]
+pub struct ListExerciseParams {
+    muscle: Option<i64>,
+    muscle_group: Option<i32>,
+}
+
 pub struct ExerciseController;
 
 impl Controller for ExerciseController {
@@ -51,6 +57,7 @@ impl Controller for ExerciseController {
 
 impl ExerciseController {
     pub async fn list(
+        Query(params): Query<ListExerciseParams>,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse<Vec<ExerciseResource>>> {
         let exercises = Exercise::all(&database).await?;
