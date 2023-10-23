@@ -15,7 +15,8 @@ mod prelude;
 mod sys;
 mod utils;
 
-use sys::{config, DatabaseManager};
+use database::DatabaseManager;
+use sys::config;
 use log::Level;
 use std::net::SocketAddr;
 

@@ -2,10 +2,10 @@ use super::{Error, Model, Profile, Result};
 use crate::prelude::*;
 use crate::{
     enums::Role,
-    sys::DatabaseManager,
 };
 use async_trait::async_trait;
 use chrono::Utc;
+use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgPool, FromRow};
 

@@ -1,6 +1,6 @@
 use super::{Error, Result};
-use crate::sys::DatabaseManager;
 use async_trait::async_trait;
+use database::DatabaseManager;
 use sqlx::{
     postgres::PgRow,
     Encode, FromRow, PgPool, Postgres, Type,

@@ -12,9 +12,9 @@ use crate::{
         User,
         Profile,
     },
-    sys::DatabaseManager,
     utils::{crypt, validators},
 };
+use database::DatabaseManager;
 
 pub(self) use errors::Error;
 pub(self) type Result<TValue> = core::result::Result<TValue, crate::error::Error>;

@@ -4,13 +4,13 @@ use crate::{
     http::resources::{ModelResource, MuscleGroupResource},
     http::response::JsonResponse,
     models::{Model, MuscleGroup},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::State,
     http::StatusCode,
     routing::{get, Router},
 };
+use database::DatabaseManager;
 
 pub struct MuscleGroupController;
 

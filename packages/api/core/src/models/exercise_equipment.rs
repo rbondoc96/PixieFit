@@ -1,6 +1,6 @@
 use super::Model;
-use crate::sys::DatabaseManager;
 use async_trait::async_trait;
+use database::DatabaseManager;
 use sqlx::{FromRow, PgPool};
 
 #[derive(Clone, Debug, FromRow)]

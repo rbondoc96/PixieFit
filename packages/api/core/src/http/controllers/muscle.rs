@@ -5,7 +5,6 @@ use crate::{
     http::resources::{ModelResource, MuscleResource},
     http::response::JsonResponse,
     models::{CreateMuscleData, Model, Muscle},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::{Path, State},
@@ -13,6 +12,7 @@ use axum::{
     response::Json,
     routing::{get, post, Router},
 };
+use database::DatabaseManager;
 
 pub struct MuscleController;
 

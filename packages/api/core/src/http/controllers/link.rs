@@ -4,7 +4,6 @@ use crate::{
     http::resources::{LinkResource, ModelResource},
     http::response::JsonResponse,
     models::{CreateLinkData, Link, Model},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::State,
@@ -12,6 +11,7 @@ use axum::{
     response::Json,
     routing::{get, post, Router},
 };
+use database::DatabaseManager;
 
 pub struct LinkController;
 

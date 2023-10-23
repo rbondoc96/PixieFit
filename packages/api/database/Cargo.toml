@@ -1,0 +1,17 @@
+[package]
+name = "database"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rodrigo Bondoc <https://github.com/rbondoc86>"]
+
+[dependencies]
+async-trait = { workspace = true }
+futures.workspace = true
+serde.workspace = true
+serde_as.workspace = true
+serde_derive.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+thiserror.workspace = true
+
+sqlx = { version = "0.7.1", features = ["macros", "runtime-tokio", "tls-rustls", "postgres", "chrono"]}

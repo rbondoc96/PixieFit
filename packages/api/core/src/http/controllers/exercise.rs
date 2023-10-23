@@ -5,7 +5,6 @@ use crate::{
     http::resources::{ModelResource, ExerciseResource},
     http::response::JsonResponse,
     models::{CreateExerciseData, CreateExerciseMuscleMapData, Model, Exercise, ExerciseMuscleMap},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::{Path, State, Query},
@@ -13,6 +12,7 @@ use axum::{
     response::Json,
     routing::{get, post, Router},
 };
+use database::DatabaseManager;
 use serde::Deserialize;
 
 #[derive(Deserialize)]

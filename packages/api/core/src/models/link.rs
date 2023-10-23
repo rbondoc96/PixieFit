@@ -2,9 +2,9 @@ use super::{Error, Model, Result};
 use crate::prelude::*;
 use crate::{
     enums::{LinkFormat, LinkType, Table},
-    sys::DatabaseManager,
 };
 use async_trait::async_trait;
+use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 use ulid::Ulid;

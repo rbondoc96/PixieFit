@@ -1,7 +1,6 @@
 use crate::{
     http::Context,
     models::{Model, User},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::State,
@@ -12,6 +11,7 @@ use axum::{
     RequestPartsExt,
 };
 use axum_session::SessionPgSession as Session;
+use database::DatabaseManager;
 use serde_json::json;
 
 pub(self) use crate::http::errors::Error;

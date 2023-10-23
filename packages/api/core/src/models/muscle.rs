@@ -1,7 +1,7 @@
 use super::{Error, Link, Model, MuscleGroup, Result};
 use crate::prelude::*;
-use crate::sys::DatabaseManager;
 use async_trait::async_trait;
+use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 

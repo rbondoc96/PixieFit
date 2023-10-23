@@ -1,2 +1,13 @@
 [workspace]
-members = ["core"]
+members = ["core", "database"]
+
+[workspace.dependencies]
+async-trait = "0.1.73"
+futures = "0.3.28"
+httpc-test = "0.1.5"
+serde = "1.0.188"
+serde_as = "0.0.1"
+serde_derive = "1.0.188"
+serde_json = { version = "1.0.105", features = ["preserve_order"] }
+serde_with = "3.3.0"
+thiserror = "1.0.50"

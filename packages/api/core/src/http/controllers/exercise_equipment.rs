@@ -4,13 +4,13 @@ use crate::{
     http::resources::{ModelResource, ExerciseEquipmentResource},
     http::response::JsonResponse,
     models::{Model, ExerciseEquipment},
-    sys::DatabaseManager,
 };
 use axum::{
     extract::State,
     http::StatusCode,
     routing::{get, Router},
 };
+use database::DatabaseManager;
 
 pub struct ExerciseEquipmentController;
 

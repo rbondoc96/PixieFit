@@ -5,8 +5,8 @@ use crate::{
         exercise_instruction::{CreateExerciseInstructionData, ExerciseInstruction},
         exercise_muscle_map::{CreateExerciseMuscleMapData, ExerciseMuscleMap},
     },
-    sys::DatabaseManager,
 };
+use database::DatabaseManager;
 use futures::future::join_all;
 use serde::Deserialize;
 use sqlx::{

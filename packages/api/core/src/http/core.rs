@@ -12,7 +12,7 @@ use crate::{
     actions,
     data::CreateUserData,
     enums::Role,
-    sys::{config, DatabaseManager},
+    sys::config,
 };
 use axum::{
     http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE},
@@ -24,6 +24,7 @@ use axum_session::{
     SessionPgSessionStore,
 };
 use chrono::{Duration, NaiveDate};
+use database::DatabaseManager;
 use tower_http::cors::{Any, CorsLayer};
 
 type Result<TValue> = ::core::result::Result<TValue, Box<dyn std::error::Error + Send + Sync + 'static>>;
@@ -52,10 +53,17 @@ pub async fn create_admin_user(database: &DatabaseManager) -> () {
 
 pub async fn init() -> Result<Router> {
     let server = config().server();
+    let database = config().database();
 
-    let db_manager = DatabaseManager::new().await.unwrap_or_else(|_| {
-        panic!("Could not initialize database manager");
-    });
+    let db_manager = DatabaseManager::new()
+        .url(database.url())
+        .max_connections(database.max_connections())
+        .min_connections(database.min_connections())
+        .build()
+        .await
+        .unwrap_or_else(|error| {
+            panic!("Could not initialize database manager: {}", error);
+        });
 
     let cors = cors()?;
     let session = session(db_manager.clone()).await?;

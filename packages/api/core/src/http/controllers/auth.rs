@@ -7,7 +7,6 @@ use crate::{
     http::resources::{ModelResource, UserResource},
     http::{Context, JsonResponse},
     models::{CreateUserProfileData, NewUser, User, Profile},
-    sys::DatabaseManager,
     utils::{crypt, validators},
 };
 use axum::{
@@ -17,6 +16,7 @@ use axum::{
     routing::{get, post, Router},
 };
 use axum_session::SessionPgSession as Session;
+use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;

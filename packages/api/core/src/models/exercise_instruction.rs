@@ -2,9 +2,9 @@ use super::{Error, Exercise, Model, Result};
 use crate::prelude::*;
 use crate::{
     enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType},
-    sys::DatabaseManager,
 };
 use async_trait::async_trait;
+use database::DatabaseManager;
 use sqlx::{postgres::PgPool, FromRow};
 
 #[derive(Clone, Debug, FromRow)]

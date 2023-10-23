@@ -2,9 +2,9 @@ use super::{Error, ExerciseEquipment, ExerciseMuscleMap, Model, Muscle, MuscleGr
 use crate::prelude::*;
 use crate::{
     enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement},
-    sys::DatabaseManager,
 };
 use async_trait::async_trait;
+use database::DatabaseManager;
 use serde::Deserialize;
 use sqlx::{postgres::PgPool, FromRow};
 
