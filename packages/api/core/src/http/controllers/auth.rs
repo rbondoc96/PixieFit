@@ -1,29 +1,26 @@
 use super::{Controller, Error, Result};
 use crate::prelude::*;
-use crate::{
-    actions,
-    data,
-    enums::{Gender, Role},
-    http::resources::{ModelResource, UserResource},
-    http::{Context, JsonResponse},
-    models::{CreateUserProfileData, NewUser, User, Profile},
-    utils::{crypt, validators},
-};
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::Json,
-    routing::{get, post, Router},
-};
+use crate::actions;
+use crate::data;
+use crate::enums::{Gender, Role};
+use crate::http::resources::{ModelResource, UserResource};
+use crate::http::{Context, JsonResponse};
+use crate::models::{User, Profile};
+use crate::utils::{crypt, validators};
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::response::Json;
+use axum::routing::{get, post, Router};
 use axum_session::SessionPgSession as Session;
-use database::DatabaseManager;
+use chrono::NaiveDate;
+use database::{DatabaseManager, Model};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
 
 #[derive(Deserialize)]
 pub struct RegisterPayload {
-    pub birthday: chrono::NaiveDate,
+    pub birthday: NaiveDate,
     pub email: String,
     pub first_name: String,
     pub last_name: String,
@@ -54,7 +51,7 @@ impl Controller for AuthController {
 }
 
 impl AuthController {
-    pub async fn ping(context: Option<Context>) -> Result<JsonResponse<String>> {
+    pub async fn ping(context: Option<Context>) -> Result<JsonResponse> {
         if context.is_none() {
             return Err(Error::RequestExtensionMissingContext.into());
         }
@@ -68,14 +65,14 @@ impl AuthController {
     pub async fn index(
         context: Option<Context>,
         State(database): State<DatabaseManager>,
-    ) -> Result<JsonResponse<UserResource>> {
+    ) -> Result<JsonResponse> {
         println!("->> {:<12} - AuthController::index", "AUTH_INDEX");
 
         let context = context.ok_or(Error::RequestExtensionMissingContext)?;
         let user = context.user();
 
         Ok(JsonResponse::success(
-            Some(UserResource::default(user.clone()).await),
+            Some(UserResource::default(user.clone(), &database).await),
             StatusCode::CREATED,
         ))
     }
@@ -84,31 +81,33 @@ impl AuthController {
         session: Session,
         State(database): State<DatabaseManager>,
         Json(payload): Json<LoginPayload>,
-    ) -> Result<JsonResponse<UserResource>> {
+    ) -> Result<JsonResponse> {
         let mut user = User::find_by_email(payload.email, &database).await?;
 
-        if !crypt::decrypt_and_verify(payload.password.as_str(), user.password().as_str())? {
+        if !crypt::decrypt_and_verify(payload.password.as_str(), user.password.as_str())? {
             return Err(Error::UserLoginFailed)?;
         }
 
         user.update_last_logged_in(&database).await?;
-        session.set("user_id", user.id());
+        session.set("user_id", user.id);
 
         Ok(JsonResponse::success(
-            Some(UserResource::default(user).await),
+            Some(UserResource::default(user, &database).await),
             StatusCode::OK,
         ))
     }
 
-    pub async fn logout(session: Session) -> Result<JsonResponse<()>> {
+    pub async fn logout(session: Session) -> Result<JsonResponse> {
         session.destroy();
-        Ok(JsonResponse::success(None, StatusCode::OK))
+        // Compiler deemed it necessary to add a type annotation
+        // Due to the bound that success takes a parameter of Option<impl Serialize>
+        Ok(JsonResponse::success(None::<()>, StatusCode::OK))
     }
 
     pub async fn register(
         State(database): State<DatabaseManager>,
         Json(payload): Json<RegisterPayload>,
-    ) -> Result<JsonResponse<UserResource>> {
+    ) -> Result<JsonResponse> {
         let user = actions::create_user(
             data::CreateUserData {
                 email: payload.email.as_str(),
@@ -123,7 +122,7 @@ impl AuthController {
 
         let _profile = actions::create_user_profile(
             data::CreateUserProfileData {
-                user_id: user.id(),
+                user_id: user.id,
                 birthday: payload.birthday,
                 gender: payload.gender,
             },
@@ -131,7 +130,7 @@ impl AuthController {
         ).await?;
 
         Ok(JsonResponse::success(
-            Some(UserResource::default(user).await),
+            Some(UserResource::default(user, &database).await),
             StatusCode::CREATED,
         ))
     }

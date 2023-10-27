@@ -21,7 +21,7 @@ pub struct CreateUserData<'a> {
 
 #[derive(Debug)]
 pub struct CreateUserProfileData {
-    pub user_id: i64,
+    pub user_id: i16,
     pub birthday: chrono::NaiveDate,
     pub gender: Gender,
 }

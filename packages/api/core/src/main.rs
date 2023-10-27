@@ -4,6 +4,9 @@ extern crate dotenvy_macro;
 #[macro_use]
 extern crate rust_i18n;
 
+#[cfg(test)]
+pub(crate) mod mocks;
+
 mod actions;
 mod data;
 mod enums;

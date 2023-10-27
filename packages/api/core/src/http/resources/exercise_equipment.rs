@@ -1,10 +1,12 @@
 use super::ModelResource;
 use crate::models::ExerciseEquipment;
 use async_trait::async_trait;
+use database::DatabaseManager;
 use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct ExerciseEquipmentResource {
+    id: i16,
     name: String,
 }
 
@@ -12,15 +14,17 @@ pub struct ExerciseEquipmentResource {
 impl ModelResource for ExerciseEquipmentResource {
     type Model = ExerciseEquipment;
 
-    async fn default(equipment: ExerciseEquipment) -> Self {
+    async fn default(equipment: ExerciseEquipment, database: &DatabaseManager) -> Self {
         Self {
-            name: equipment.name(),
+            id: equipment.id,
+            name: equipment.name,
         }
     }
 
-    async fn simple(equipment: ExerciseEquipment) -> Self {
+    async fn simple(equipment: ExerciseEquipment, database: &DatabaseManager) -> Self {
         Self {
-            name: equipment.name(),
+            id: equipment.id,
+            name: equipment.name,
         }
     }
 }

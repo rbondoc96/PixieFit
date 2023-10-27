@@ -8,12 +8,14 @@
         "db:up": "sqlx database create",
         "db:down": "sqlx database drop -y",
         "db:fresh": "pnpm db:down && pnpm db:up",
-        "dev": "cargo watch -q -c -w core/src -x 'run'",
+        "dev": "cargo watch -q -c -w core/src -w database/src -x 'run'",
         "dev:fresh": "pnpm migrate:fresh && pnpm dev",
-        "make:migration": "sqlx migrate add",
-        "migrate": "sqlx migrate run",
-        "migrate:fresh": "pnpm db:fresh && pnpm migrate",
+        "make:migration": "sqlx migrate add --source ./core/migrations",
+        "migrate": "sqlx migrate run --source ./core/migrations",
+        "migrate:fresh": "sqlx database reset -y --source ./core/migrations",
+        "migrate:status": "sqlx migrate info --source ./core/migrations",
         "shell:pg": "docker exec -it pxee_postgres15 psql -U postgres",
+        "test": "sqlx database reset --database-url postgres://postgres:postgres@localhost:5415/kratos_test",
         "test:watch": "cargo watch -q -c -w ./tests -x 'test -q dev -- --nocapture'",
         "tree": "cargo modules generate tree"
     }

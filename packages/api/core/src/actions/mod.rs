@@ -1,26 +1,17 @@
 mod errors;
 pub mod services;
 
-use crate::{
-    data::{CreateUserData, CreateUserProfileData},
-    enums::Role,
-    models::{
-        CreateExerciseData,
-        CreateUserProfileData as NewUserProfile,
-        Exercise,
-        NewUser,
-        User,
-        Profile,
-    },
-    utils::{crypt, validators},
-};
+use crate::data::{CreateUserData, CreateUserProfileData};
+use crate::enums::Role;
+use crate::models::{Exercise, Profile, User};
+use crate::utils::{crypt, validators};
 use database::DatabaseManager;
 
 pub(self) use errors::Error;
 pub(self) type Result<TValue> = core::result::Result<TValue, crate::error::Error>;
 
 pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -> Result<User> {
-    if User::exists(data.email, database).await? {
+    if User::exists_with_email(data.email, database).await? {
         return Err(Error::UserWithEmailAlreadyExists)?;
     }
 
@@ -32,31 +23,24 @@ pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -
 
     let hash = crypt::encrypt(data.password)?;
 
-    let user = User::create(
-        NewUser {
-            email: data.email.to_string(),
-            first_name: data.first_name.to_string(),
-            last_name: data.last_name.to_string(),
-            role: data.role.unwrap_or(Role::User),
-            password: hash,
-        },
-        database,
-    )
-    .await?;
+    let user = User::new()
+        .name(data.first_name, data.last_name)
+        .email(data.email)
+        .role(data.role.unwrap_or_default())
+        .password(hash)
+        .create(&database)
+        .await?;
 
     Ok(user)
 }
 
 pub async fn create_user_profile(data: CreateUserProfileData, database: &DatabaseManager) -> Result<Profile> {
-    let profile = Profile::create(
-        NewUserProfile {
-            user_id: data.user_id,
-            birthday: data.birthday,
-            gender: data.gender,
-        },
-        database,
-    )
-    .await?;
+    let profile = Profile::new()
+        .user_id(data.user_id)
+        .birthday(data.birthday)
+        .gender(data.gender)
+        .create(&database)
+        .await?;
 
     Ok(profile)
 }

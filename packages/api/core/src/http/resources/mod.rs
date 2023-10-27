@@ -19,6 +19,7 @@ pub use profile::ProfileResource;
 pub use user::UserResource;
 
 use async_trait::async_trait;
+use database::DatabaseManager;
 use futures::future::join_all;
 use serde::Serialize;
 
@@ -112,28 +113,34 @@ pub trait ModelResource
 where
     Self: Send + Serialize + Sized + Sync,
 {
-    type Model: crate::models::Model + Unpin + Send;
+    type Model: database::Model + Unpin + Send;
 
     /// Create a new resource from a model
-    async fn default(model: Self::Model) -> Self;
-    async fn simple(model: Self::Model) -> Self;
+    async fn default(model: Self::Model, database: &DatabaseManager) -> Self;
+    async fn simple(model: Self::Model, database: &DatabaseManager) -> Self;
 
-    async fn new(model: Self::Model, format: ModelResourceFormat) -> Self {
+    async fn new(model: Self::Model, format: ModelResourceFormat, database: &DatabaseManager) -> Self {
         match format {
-            ModelResourceFormat::Default => Self::default(model).await,
-            ModelResourceFormat::Simple => Self::simple(model).await,
+            ModelResourceFormat::Default => Self::default(model, database).await,
+            ModelResourceFormat::Simple => Self::simple(model, database).await,
         }
     }
 
-    async fn list(models: Vec<Self::Model>) -> Vec<Self> {
-        Self::list_simple(models).await
+    async fn list(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
+        Self::list_simple(models, database).await
     }
 
-    async fn list_default(models: Vec<Self::Model>) -> Vec<Self> {
-        join_all(models.into_iter().map(Self::default)).await
+    async fn list_default(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
+        join_all(models
+            .into_iter()
+            .map(|model| Self::default(model, database))
+        ).await
     }
 
-    async fn list_simple(models: Vec<Self::Model>) -> Vec<Self> {
-        join_all(models.into_iter().map(Self::simple)).await
+    async fn list_simple(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
+        join_all(models
+            .into_iter()
+            .map(|model| Self::simple(model, database))
+        ).await
     }
 }

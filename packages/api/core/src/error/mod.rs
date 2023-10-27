@@ -3,10 +3,8 @@ mod client;
 pub use client::ClientError;
 
 use crate::http::JsonResponse;
-use axum::{
-    http::StatusCode,
-    response::{IntoResponse, Response},
-};
+use axum::http::StatusCode;
+use axum::response::{IntoResponse, Response};
 
 #[derive(Debug)]
 pub struct Error {
@@ -15,6 +13,18 @@ pub struct Error {
     messages: Option<std::collections::HashMap<String, Vec<String>>>,
     name: String,
     client_name: String,
+}
+
+impl From<sqlx::Error> for Error {
+    fn from(value: sqlx::Error) -> Error {
+        Error::new(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            value.to_string(),
+            None,
+            "SqlxError",
+            ClientError::UnexpectedSystemFailure,
+        )
+    }
 }
 
 impl Error {
@@ -57,7 +67,7 @@ impl Error {
 
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
-        JsonResponse::<()>::error(self).into_response()
+        JsonResponse::error(self).into_response()
     }
 }
 

@@ -1,9 +1,12 @@
+use database::impl_bindable;
 use serde::{Deserialize, Serialize};
 use sqlx::Type;
+use strum_macros::Display;
 
-#[derive(Clone, Debug, Deserialize, Serialize, Type)]
+#[derive(Clone, Debug, Deserialize, Display, PartialEq, Serialize, Type)]
 #[serde(rename_all = "snake_case")]
 #[sqlx(rename_all = "snake_case", type_name = "varchar")]
+#[strum(serialize_all = "snake_case")]
 pub enum Measurement {
     Bodyweight,
     Duration,
@@ -12,28 +15,56 @@ pub enum Measurement {
     WeightedDuration,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Type)]
+impl Default for Measurement {
+    fn default() -> Self {
+        Self::WeightedRepetitions
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Display, PartialEq, Serialize, Type)]
 #[serde(rename_all = "snake_case")]
 #[sqlx(rename_all = "snake_case", type_name = "varchar")]
+#[strum(serialize_all = "snake_case")]
 pub enum MeasurementUnit {
     Kilogram,
     Repetition,
     Second,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+impl Default for MeasurementUnit {
+    fn default() -> Self {
+        Self::Kilogram
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Display, PartialEq, Serialize, Type)]
 #[serde(rename_all = "snake_case")]
+#[sqlx(rename_all = "snake_case", type_name = "varchar")]
+#[strum(serialize_all = "snake_case")]
 pub enum MeasurementDenominator {
     Repetition,
     Second,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+impl Default for MeasurementDenominator {
+    fn default() -> Self {
+        Self::Repetition
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Display, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum MeasurementOperation {
     Addition,
     Division,
     Multiplication,
+}
+
+impl Default for MeasurementOperation {
+    fn default() -> Self {
+        Self::Multiplication
+    }
 }
 
 impl Measurement {
@@ -63,3 +94,5 @@ impl Measurement {
         }
     }
 }
+
+impl_bindable!(Measurement, MeasurementUnit, MeasurementDenominator);

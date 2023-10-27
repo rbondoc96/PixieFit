@@ -1,16 +1,12 @@
 use super::{Controller, Result};
 use crate::prelude::*;
-use crate::{
-    http::resources::{ModelResource, MuscleGroupResource},
-    http::response::JsonResponse,
-    models::{Model, MuscleGroup},
-};
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::{get, Router},
-};
-use database::DatabaseManager;
+use crate::http::resources::{ModelResource, MuscleGroupResource};
+use crate::http::response::JsonResponse;
+use crate::models::MuscleGroup;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::routing::{get, Router};
+use database::{DatabaseManager, Model};
 
 pub struct MuscleGroupController;
 
@@ -27,11 +23,11 @@ impl Controller for MuscleGroupController {
 impl MuscleGroupController {
     pub async fn list(
         State(database): State<DatabaseManager>,
-    ) -> Result<JsonResponse<Vec<MuscleGroupResource>>> {
+    ) -> Result<JsonResponse> {
         let groups = MuscleGroup::all(&database).await?;
 
         Ok(JsonResponse::success(
-            Some(MuscleGroupResource::list(groups).await),
+            Some(MuscleGroupResource::list(groups, &database).await),
             StatusCode::OK,
         ))
     }

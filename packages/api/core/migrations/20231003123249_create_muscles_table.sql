@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS muscles (
-    id BIGSERIAL PRIMARY KEY NOT NULL,
+    id SMALLSERIAL PRIMARY KEY NOT NULL,
     ulid VARCHAR UNIQUE DEFAULT generate_ulid() NOT NULL,
-    group_id SERIAL REFERENCES muscle_groups(id) ON DELETE CASCADE,
-    parent_id BIGINT REFERENCES muscles(id) ON DELETE CASCADE,
+    group_id SMALLSERIAL REFERENCES muscle_groups(id) ON DELETE CASCADE,
+    parent_id SMALLINT REFERENCES muscles(id) ON DELETE CASCADE,
     name VARCHAR UNIQUE NOT NULL,
     simple_name VARCHAR,
     description TEXT,

@@ -1,17 +1,13 @@
-use crate::{
-    http::Context,
-    models::{Model, User},
-};
-use axum::{
-    extract::State,
-    http::{Method, Request, Uri},
-    http::request::Parts,
-    middleware::Next,
-    response::{IntoResponse, Json, Response},
-    RequestPartsExt,
-};
+use crate::http::Context;
+use crate::models::User;
+use axum::extract::State;
+use axum::http::{Method, Request, Uri};
+use axum::http::request::Parts;
+use axum::middleware::Next;
+use axum::response::{IntoResponse, Json, Response};
+use axum::RequestPartsExt;
 use axum_session::SessionPgSession as Session;
-use database::DatabaseManager;
+use database::{DatabaseManager, Model};
 use serde_json::json;
 
 pub(self) use crate::http::errors::Error;
@@ -25,11 +21,15 @@ pub async fn context_resolver<TBody>(
 ) -> Result<Response> {
     println!("->> {:<12} - context_resolver", "CONTEXT_RESOLVER");
 
-    let user_id = session.get::<i64>("user_id");
+    let user_id = session.get::<i16>("user_id");
 
     if user_id.is_none() {
         return Ok(next.run(request).await);
     }
+
+    let user_id = user_id.unwrap();
+
+    eprintln!("context_resolver: {}", user_id);
 
     let matching_session_count =
         match sqlx::query_as::<_, (String,)>("SELECT id FROM sessions where id = $1")
@@ -46,13 +46,17 @@ pub async fn context_resolver<TBody>(
         return Ok(next.run(request).await);
     }
 
-    if let Ok(user) = User::find_by_id(user_id.unwrap(), &database).await {
-        request.extensions_mut().insert(Context::new(user));
-        return Ok(next.run(request).await);
+    match User::find_by_pk(user_id, &database).await {
+        Ok(user) => {
+            request.extensions_mut().insert(Context::new(user));
+            Ok(next.run(request).await)
+        },
+        Err(err) => {
+            eprintln!("{}", err);
+            session.clear();
+            Err(Error::NoMatchingSessionUserFound)?
+        }
     }
-
-    session.clear();
-    Err(Error::NoMatchingSessionUserFound)?
 }
 
 // pub async fn response_mapper(

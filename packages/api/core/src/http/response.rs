@@ -1,27 +1,20 @@
 use crate::error::Error;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json, Response};
+use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use serde_with::skip_serializing_none;
 
-pub struct JsonResponse<TData>
-where
-    TData: Serialize,
-{
+pub struct JsonResponse {
     code: StatusCode,
-    success: bool,
-    data: Option<TData>,
-    error: Option<Error>,
+    body: Json<Value>,
 }
 
 #[derive(Serialize)]
-pub struct ApiSuccessResponse<TData>
-where
-    TData: Serialize,
-{
+pub struct ApiSuccessResponse<T: Serialize> {
     success: bool,
-    data: Option<TData>,
+    data: Option<T>,
 }
 
 #[derive(Serialize)]
@@ -38,83 +31,47 @@ pub struct ApiErrorResponse {
     error: ApiErrorContext,
 }
 
-#[skip_serializing_none]
-#[derive(Serialize)]
-pub struct ApiResponse<TData>
-where
-    TData: Serialize,
-{
-    success: bool,
-    data: Option<TData>,
-    error: Option<String>,
-    message: Option<String>,
-    errors: Option<std::collections::HashMap<String, Vec<String>>>,
-}
-
-impl<TData> JsonResponse<TData>
-where
-    TData: Serialize,
-{
+impl JsonResponse {
     fn new(
+        body: Json<Value>,
         code: StatusCode,
-        success: bool,
-        data: Option<TData>,
-        error: Option<Error>,
     ) -> Self {
         Self {
+            body,
             code,
-            success,
-            data,
-            error,
         }
     }
 
     pub fn error(error: Error) -> Self {
         Self::new(
-            error.code(),
-            false,
-            None,
-            Some(error),
-        )
-    }
-
-    pub fn success(data: Option<TData>, code: StatusCode) -> Self {
-        Self::new(code, true, data, None)
-    }
-
-    pub fn json(self) -> Json<Value> {
-        if let Some(error) = self.error {
-            println!("error: {}", error);
-            return Json(json!(ApiErrorResponse {
-                success: self.success,
+            Json(json!(ApiErrorResponse {
+                success: false,
                 error: ApiErrorContext {
                     name: error.client_name(),
                     message: error.message(),
                     errors: error.messages(),
-                },
-            }));
-        }
+                }
+            })),
+            error.code()
+        )
+    }
 
-        Json(json!(ApiSuccessResponse {
-            success: self.success,
-            data: self.data,
-        }))
+    pub fn success(data: Option<impl Serialize>, code: StatusCode) -> Self {
+        Self::new(
+            Json(json!(ApiSuccessResponse {
+                success: true,
+                data: data,
+            })),
+            code,
+        )
     }
 }
 
-impl<TData> IntoResponse for JsonResponse<TData>
-where
-    TData: Serialize,
-{
+impl IntoResponse for JsonResponse {
     fn into_response(self) -> Response {
-        let status_code = self.code;
-
-        if status_code == StatusCode::NO_CONTENT {
-            return status_code.into_response();
+        match self.code {
+            StatusCode::NO_CONTENT => self.code.into_response(),
+            _ => (self.code, self.body).into_response()
         }
-
-        let body = self.json();
-
-        (status_code, body).into_response()
     }
 }

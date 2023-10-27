@@ -21,9 +21,6 @@ impl Context {
     }
 }
 
-/**
- * Takes information from the request headers.
- */
 #[async_trait]
 impl<TState> FromRequestParts<TState> for Context
 where

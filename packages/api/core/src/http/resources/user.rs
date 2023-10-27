@@ -1,10 +1,9 @@
 use super::{ModelResource, NameResource, ProfileResource};
 use crate::prelude::*;
-use crate::{
-    enums::Role,
-    models::{Profile, User},
-};
+use crate::enums::Role;
+use crate::models::{Profile, User};
 use async_trait::async_trait;
+use database::DatabaseManager;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -25,34 +24,34 @@ pub struct UserResource {
 impl ModelResource for UserResource {
     type Model = User;
 
-    async fn default(user: User) -> Self {
-        match user.profile().await {
+    async fn default(user: User, database: &DatabaseManager) -> Self {
+        match user.profile(database).await {
             Ok(profile) => {
                 Self {
-                    name: NameResource::new(user.first_name(), user.last_name()),
-                    email: user.email(),
-                    role: user.role(),
-                    profile: Some(ProfileResource::default(profile).await),
-                    last_logged_in_at: user.last_logged_in_at(),
-                    created_at: user.created_at(),
-                    updated_at: user.updated_at(),
+                    name: NameResource::new(user.first_name, user.last_name),
+                    email: user.email,
+                    role: user.role,
+                    profile: Some(ProfileResource::default(profile, database).await),
+                    last_logged_in_at: user.last_logged_in_at,
+                    created_at: user.created_at,
+                    updated_at: user.updated_at,
                 }
             }
             Err(_) => {
-                Self::simple(user).await
+                Self::simple(user, database).await
             }
         }
     }
 
-    async fn simple(user: User) -> Self {
+    async fn simple(user: User, database: &DatabaseManager) -> Self {
         Self {
-            name: NameResource::new(user.first_name(), user.last_name()),
-            email: user.email(),
-            role: user.role(),
+            name: NameResource::new(user.first_name, user.last_name),
+            email: user.email,
+            role: user.role,
             profile: None,
-            last_logged_in_at: user.last_logged_in_at(),
-            created_at: user.created_at(),
-            updated_at: user.updated_at(),
+            last_logged_in_at: user.last_logged_in_at,
+            created_at: user.created_at,
+            updated_at: user.updated_at,
         }
     }
 }

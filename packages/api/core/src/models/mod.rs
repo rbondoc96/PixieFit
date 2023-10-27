@@ -10,15 +10,15 @@ pub mod muscle_group;
 pub mod user;
 pub mod profile;
 
-pub use exercise::{CreateExerciseData, Exercise};
+pub use exercise::Exercise;
 pub use exercise_equipment::ExerciseEquipment;
 pub use exercise_instruction::ExerciseInstruction;
-pub use exercise_muscle_map::{CreateExerciseMuscleMapData, ExerciseMuscleMap};
+pub use exercise_muscle_map::ExerciseMuscleMap;
 pub use errors::Error;
-pub use link::{CreateLinkData, Link};
-pub use model::Model;
-pub use muscle::{CreateMuscleData, Muscle, MuscleRecord};
+pub use link::Link;
+pub use muscle::Muscle;
 pub use muscle_group::MuscleGroup;
-pub use profile::{CreateUserProfileData, Profile};
-pub use user::{NewUser, User};
+pub use profile::Profile;
+pub use user::User;
+
 pub(self) type Result<TValue> = ::core::result::Result<TValue, Error>;

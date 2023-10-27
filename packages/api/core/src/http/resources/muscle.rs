@@ -1,8 +1,7 @@
 use super::{LinkResource, ModelResource};
-use crate::{
-    models::{Link, Muscle},
-};
+use crate::models::{Link, Muscle};
 use async_trait::async_trait;
+use database::{DatabaseManager, Model};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -23,42 +22,42 @@ pub struct MuscleResource {
 impl ModelResource for MuscleResource {
     type Model = Muscle;
 
-    async fn default(muscle: Muscle) -> Self {
-        let links = match muscle.links().await {
+    async fn default(muscle: Muscle, database: &DatabaseManager) -> Self {
+        let links = match muscle.links(database).await {
             Ok(links) => links,
             Err(_) => vec![],
         };
 
-        let group = muscle.muscle_group().await.unwrap();
-        let parent = muscle.parent().await;
+        let group = muscle.muscle_group(database).await.unwrap();
+        let parent = muscle.parent(database).await.unwrap();
 
         Self {
-            id: muscle.ulid(),
-            muscle_group: group.name(),
-            name: muscle.name(),
-            simple_name: muscle.simple_name(),
-            description: muscle.description(),
-            image_source: muscle.image_source(),
+            id: muscle.rk(),
+            muscle_group: group.name,
+            name: muscle.name,
+            simple_name: muscle.simple_name,
+            description: muscle.description,
+            image_source: muscle.image_source,
             parent: match parent {
                 Some(parent) => Some(
-                    Box::new(MuscleResource::simple(parent).await)
+                    Box::new(MuscleResource::simple(parent, database).await)
                 ),
                 None => None,
             },
-            links: Some(LinkResource::list(links).await),
+            links: Some(LinkResource::list(links, database).await),
         }
     }
 
-    async fn simple(muscle: Muscle) -> Self {
-        let group = muscle.muscle_group().await.unwrap();
+    async fn simple(muscle: Muscle, database: &DatabaseManager) -> Self {
+        let group = muscle.muscle_group(database).await.unwrap();
 
         Self {
-            id: muscle.ulid(),
-            muscle_group: group.name(),
-            name: muscle.name(),
-            simple_name: muscle.simple_name(),
-            description: muscle.description(),
-            image_source: muscle.image_source(),
+            id: muscle.rk(),
+            muscle_group: group.name,
+            name: muscle.name,
+            simple_name: muscle.simple_name,
+            description: muscle.description,
+            image_source: muscle.image_source,
             parent: None,
             links: None,
         }

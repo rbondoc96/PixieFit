@@ -1,16 +1,12 @@
 use super::{Controller, Result};
 use crate::prelude::*;
-use crate::{
-    http::resources::{ModelResource, ExerciseEquipmentResource},
-    http::response::JsonResponse,
-    models::{Model, ExerciseEquipment},
-};
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::{get, Router},
-};
-use database::DatabaseManager;
+use crate::http::resources::{ModelResource, ExerciseEquipmentResource};
+use crate::http::response::JsonResponse;
+use crate::models::ExerciseEquipment;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::routing::{get, Router};
+use database::{DatabaseManager, Model};
 
 pub struct ExerciseEquipmentController;
 
@@ -25,13 +21,11 @@ impl Controller for ExerciseEquipmentController {
 }
 
 impl ExerciseEquipmentController {
-    pub async fn list(
-        State(database): State<DatabaseManager>,
-    ) -> Result<JsonResponse<Vec<ExerciseEquipmentResource>>> {
+    pub async fn list(State(database): State<DatabaseManager>) -> Result<JsonResponse> {
         let groups = ExerciseEquipment::all(&database).await?;
 
         Ok(JsonResponse::success(
-            Some(ExerciseEquipmentResource::list(groups).await),
+            Some(ExerciseEquipmentResource::list(groups, &database).await),
             StatusCode::OK,
         ))
     }

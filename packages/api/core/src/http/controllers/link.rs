@@ -1,17 +1,27 @@
 use super::{Controller, Result};
 use crate::prelude::*;
-use crate::{
-    http::resources::{LinkResource, ModelResource},
-    http::response::JsonResponse,
-    models::{CreateLinkData, Link, Model},
-};
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::Json,
-    routing::{get, post, Router},
-};
-use database::DatabaseManager;
+use crate::enums::{LinkFormat, LinkType, Table};
+use crate::http::resources::{LinkResource, ModelResource};
+use crate::http::response::JsonResponse;
+use crate::models::Link;
+use axum::extract::State;
+use axum::http::StatusCode;
+use axum::response::Json;
+use axum::routing::{get, post, Router};
+use database::{DatabaseManager, Model};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+pub struct CreateLinkPayload {
+    model_name: Table,
+    model_id: i16,
+    #[serde(rename = "type")]
+    link_type: LinkType,
+    format: LinkFormat,
+    label: String,
+    description: Option<String>,
+    src: String,
+}
 
 pub struct LinkController;
 
@@ -28,25 +38,33 @@ impl Controller for LinkController {
 type LinkList = Vec<LinkResource>;
 
 impl LinkController {
-    pub async fn list(State(database): State<DatabaseManager>) -> Result<JsonResponse<LinkList>> {
+    pub async fn list(State(database): State<DatabaseManager>) -> Result<JsonResponse> {
         println!("->> {:<12} - LinkController::list", "Link_LIST");
 
         let links = Link::all(&database).await?;
 
         Ok(JsonResponse::success(
-            Some(LinkResource::list(links).await),
+            Some(LinkResource::list(links, &database).await),
             StatusCode::OK,
         ))
     }
 
     pub async fn create(
         State(database): State<DatabaseManager>,
-        Json(payload): Json<CreateLinkData>,
-    ) -> Result<JsonResponse<LinkResource>> {
-        let link = Link::create(payload, &database).await?;
+        Json(payload): Json<CreateLinkPayload>,
+    ) -> Result<JsonResponse> {
+        let link = Link::new()
+            .model(payload.model_name, payload.model_id)
+            .link_type(payload.link_type)
+            .format(payload.format)
+            .label(payload.label)
+            .description(payload.description)
+            .src(payload.src)
+            .create(&database)
+            .await?;
 
         Ok(JsonResponse::success(
-            Some(LinkResource::default(link).await),
+            Some(LinkResource::default(link, &database).await),
             StatusCode::CREATED,
         ))
     }

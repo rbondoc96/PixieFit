@@ -6,32 +6,33 @@ authors = ["Rodrigo Bondoc <https://github.com/rbondoc86>"]
 
 [dependencies]
 async-trait.workspace = true
+chrono = { workspace = true, features = ["serde"]}
 futures.workspace = true
 serde.workspace = true
 serde_as.workspace = true
 serde_derive.workspace = true
 serde_json.workspace = true
 serde_with.workspace = true
+sqlx.workspace = true
 
 database = { path = "../database" }
 
 axum = "0.6.20"
 axum_session = { version = "0.5.0", features = [ "postgres-rustls"] }
 bcrypt = "0.15.0"
-chrono = { version = "0.4.28", features = ["serde"] }
 dotenvy = "0.15.7"
 dotenvy_macro = "0.15.7"
 log = "0.4.20"
 reqwest = { version = "0.11.22", features = ["json"] }
 rust-i18n = "2.2.1"
 simple_logger = "4.2.0"
-sqlx = { version = "0.7.1", features = ["macros", "runtime-tokio", "tls-rustls", "postgres", "chrono", "time"]}
 strum = { version = "0.25.0", features = ["derive"] }
 strum_macros = "0.25"
 tokio = { version = "1.32.0", features = ["full"] }
 tower-http = { version = "0.4.4", features = ["cors"] }
-ulid = "1.1.0"
 
 [dev-dependencies]
 httpc-test.workspace = true
+
 anyhow = "1.0.75"
+fake = { version = "2.9.1", features = ["chrono", "derive"] }

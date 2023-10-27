@@ -1,9 +1,8 @@
 use super::ModelResource;
-use crate::{
-    enums::Gender,
-    models::Profile,
-};
+use crate::enums::Gender;
+use crate::models::Profile;
 use async_trait::async_trait;
+use database::{DatabaseManager, Model};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -17,19 +16,19 @@ pub struct ProfileResource {
 impl ModelResource for ProfileResource {
     type Model = Profile;
 
-    async fn default(profile: Profile) -> Self {
+    async fn default(profile: Profile, database: &DatabaseManager) -> Self {
         Self {
-            id: profile.route_key(),
-            gender: profile.gender(),
-            birthday: profile.birthday(),
+            id: profile.rk(),
+            gender: profile.gender,
+            birthday: profile.birthday,
         }
     }
 
-    async fn simple(profile: Profile) -> Self {
+    async fn simple(profile: Profile, database: &DatabaseManager) -> Self {
         Self {
-            id: profile.route_key(),
-            gender: profile.gender(),
-            birthday: profile.birthday(),
+            id: profile.rk(),
+            gender: profile.gender,
+            birthday: profile.birthday,
         }
     }
 }

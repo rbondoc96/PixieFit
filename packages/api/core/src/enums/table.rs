@@ -1,12 +1,23 @@
+use database::impl_bindable;
 use serde::{Deserialize, Serialize};
+use sqlx::Type;
+use strum_macros::Display;
 
-#[derive(Clone, Debug, Deserialize, Serialize, sqlx::Type)]
+#[derive(Clone, Debug, Deserialize, Display, PartialEq, Serialize, Type)]
 #[serde(rename_all = "snake_case")]
-#[sqlx(type_name = "varchar")]
-#[sqlx(rename_all = "snake_case")]
+#[sqlx(rename_all = "snake_case", type_name = "varchar")]
+#[strum(serialize_all = "snake_case")]
 pub enum Table {
-    Links,
+    Exercises,
     Muscles,
     Users,
     UserProfiles,
+}
+
+impl_bindable!(Table);
+
+impl Default for Table {
+    fn default() -> Self {
+        Self::Muscles
+    }
 }

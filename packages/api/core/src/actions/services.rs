@@ -1,18 +1,10 @@
-use crate::{
-    enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement},
-    models::{
-        exercise::{CreateExerciseData, Exercise},
-        exercise_instruction::{CreateExerciseInstructionData, ExerciseInstruction},
-        exercise_muscle_map::{CreateExerciseMuscleMapData, ExerciseMuscleMap},
-    },
-};
+use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement};
+use crate::models::{Exercise, ExerciseInstruction, ExerciseMuscleMap};
 use database::DatabaseManager;
 use futures::future::join_all;
 use serde::Deserialize;
-use sqlx::{
-    postgres::PgRow,
-    Decode, FromRow, PgPool, Postgres, Type,
-};
+use sqlx::postgres::PgRow;
+use sqlx::{Decode, FromRow, PgPool, Postgres, Type};
 use std::collections::HashMap;
 use std::convert::Infallible;
 
@@ -62,6 +54,7 @@ where
 pub async fn init(database: &DatabaseManager) -> Result<(), Infallible> {
     let muscle_map = create_muscle_map(database).await;
     let muscle_group_map = create_muscle_group_map(database).await;
+    let equipment_map = create_equipment_map(database).await;
 
     let mut limit = 50;
     let mut offset = 0;
@@ -79,6 +72,7 @@ pub async fn init(database: &DatabaseManager) -> Result<(), Infallible> {
                     exercise.clone(),
                     &muscle_map,
                     &muscle_group_map,
+                    &equipment_map,
                     database
                 )
             })
@@ -90,7 +84,29 @@ pub async fn init(database: &DatabaseManager) -> Result<(), Infallible> {
     Ok(())
 }
 
-async fn create_muscle_group_map(database: &DatabaseManager) -> IdMap<i32> {
+async fn create_equipment_map(database: &DatabaseManager) -> IdMap<i16> {
+    let map = IdMap::new("exercise_equipment", database.clone());
+
+    // id of 8 --> stretches
+    // 26 --> vitruvian, and all others map to other
+    map.insert(10, "resistance_band").await
+        .insert(1, "barbell").await
+        .insert(3, "bodyweight").await
+        .insert(24, "bosu_ball").await
+        .insert(9, "cable_machine").await
+        .insert(27, "cardio_machine").await
+        .insert(2, "dumbbell").await
+        .insert(7, "kettlebell").await
+        .insert(4, "weight_machine").await
+        .insert(6, "medicine_ball").await
+        .insert(11, "plate").await
+        .insert(85, "smith_machine").await
+        .insert(13, "yoga").await
+        .insert(12, "trx").await
+        .insert(26, "other").await
+}
+
+async fn create_muscle_group_map(database: &DatabaseManager) -> IdMap<i16> {
     // key is tree_id, value is id in the DB
     let map = IdMap::new("muscle_groups", database.clone());
 
@@ -112,7 +128,7 @@ async fn create_muscle_group_map(database: &DatabaseManager) -> IdMap<i32> {
         .insert(16, "Hands").await
 }
 
-async fn create_muscle_map(database: &DatabaseManager) -> IdMap<i64> {
+async fn create_muscle_map(database: &DatabaseManager) -> IdMap<i16> {
     // key is muscle_id, value is id in the DB
     let map = IdMap::new("muscles", database.clone());
 
@@ -180,8 +196,9 @@ async fn fetch_mw_exercise_list(limit: u16, offset: u16) -> Vec<MWExercise> {
 
 async fn convert_mw_exercise_to_model(
     mw_exercise: MWExercise,
-    muscle_map: &IdMap<i64>,
-    muscle_group_map: &IdMap<i32>,
+    muscle_map: &IdMap<i16>,
+    muscle_group_map: &IdMap<i16>,
+    equipment_map: &IdMap<i16>,
     database: &DatabaseManager,
 ) -> Result<(), Infallible> {
     let name = mw_exercise.name.clone();
@@ -193,21 +210,28 @@ async fn convert_mw_exercise_to_model(
             ).as_str())
         })
         .cloned();
-    let exercise = Exercise::create(
-        CreateExerciseData {
-            external_id: Some(mw_exercise.id),
-            exercise_type: ExerciseType::Strength,
-            target_muscle_group_id: group_id.clone(),
-            name: name.clone(),
-            name_alternative: mw_exercise.name_alternative,
-            description: None,
-            equipment: mw_category_to_exercise_equipment(mw_exercise.category),
-            mechanic: mw_mechanic_to_exercise_mechanic(mw_exercise.mechanic),
-            force: mw_force_to_exercise_force(mw_exercise.force),
-            measurement: mw_full_measure_to_exercise_measurement(mw_exercise.full_measure)
-        },
-        database,
-    ).await;
+
+    let equipment_id = equipment_map.get(mw_exercise.category.id)
+        .cloned();
+
+    let exercise_type = match &equipment_id {
+        Some(_) => ExerciseType::Strength,
+        None => ExerciseType::Stretch,
+    };
+
+    let exercise = Exercise::new()
+        .external_id(Some(mw_exercise.id))
+        .exercise_type(exercise_type)
+        .target_muscle_group_id(group_id.clone())
+        .name(name.clone())
+        .name_alternative(mw_exercise.name_alternative)
+        .description(None)
+        .equipment_id(equipment_id)
+        .mechanic(mw_mechanic_to_exercise_mechanic(mw_exercise.mechanic))
+        .force(mw_force_to_exercise_force(mw_exercise.force))
+        .measurement(mw_full_measure_to_exercise_measurement(mw_exercise.full_measure))
+        .create(&database)
+        .await;
 
     if let Err(error) = exercise {
         println!("Failed to create exercise: {:?}", name);
@@ -225,14 +249,11 @@ async fn convert_mw_exercise_to_model(
                 "Expected to find muscle with identifier {} in muscle_map", muscle.id,
             ).as_str());
 
-            ExerciseMuscleMap::create(
-                CreateExerciseMuscleMapData {
-                    exercise_id: exercise.id(),
-                    muscle_id: id.clone(),
-                    target: ExerciseMuscleTarget::Primary,
-                },
-                database,
-            )
+            ExerciseMuscleMap::new()
+                .exercise_id(exercise.id)
+                .muscle_id(id.clone())
+                .target(ExerciseMuscleTarget::Primary)
+                .create(&database)
         })
     ).await;
     // .iter()
@@ -247,14 +268,11 @@ async fn convert_mw_exercise_to_model(
                 "Expected to find muscle with identifier {} in muscle_map", muscle.id,
             ).as_str());
 
-            ExerciseMuscleMap::create(
-                CreateExerciseMuscleMapData {
-                    exercise_id: exercise.id(),
-                    muscle_id: id.clone(),
-                    target: ExerciseMuscleTarget::Secondary,
-                },
-                database,
-            )
+            ExerciseMuscleMap::new()
+                .exercise_id(exercise.id)
+                .muscle_id(id.clone())
+                .target(ExerciseMuscleTarget::Secondary)
+                .create(&database)
         })
     ).await;
     // .iter()
@@ -270,14 +288,11 @@ async fn convert_mw_exercise_to_model(
                 "Expected to find muscle with identifier {} in muscle_map", muscle.id,
             ).as_str());
 
-            ExerciseMuscleMap::create(
-                CreateExerciseMuscleMapData {
-                    exercise_id: exercise.id(),
-                    muscle_id: id.clone(),
-                    target: ExerciseMuscleTarget::Tertiary,
-                },
-                database,
-            )
+            ExerciseMuscleMap::new()
+                .exercise_id(exercise.id)
+                .muscle_id(id.clone())
+                .target(ExerciseMuscleTarget::Tertiary)
+                .create(&database)
         })
     ).await;
     // .iter()
@@ -289,14 +304,11 @@ async fn convert_mw_exercise_to_model(
     // Create instruction relationships
     join_all(mw_exercise.correct_steps.iter()
         .map(|step| {
-            ExerciseInstruction::create(
-                CreateExerciseInstructionData {
-                    exercise_id: exercise.id(),
-                    sequence_number: step.order,
-                    content: step.text.clone(),
-                },
-                database,
-            )
+            ExerciseInstruction::new()
+                .exercise_id(exercise.id)
+                .sequence_number(step.order)
+                .content(step.text.clone())
+                .create(&database)
         })
     ).await;
     // .iter()
@@ -306,32 +318,6 @@ async fn convert_mw_exercise_to_model(
     // });
 
     Ok(())
-}
-
-fn mw_category_to_exercise_equipment(category: MWCategory) -> Option<String> {
-    let name = category.name.to_lowercase();
-
-    if name.clone().as_str().eq("stretches") {
-        return None;
-    }
-
-    Some(match name.as_str() {
-        "band" => "resistance_band",
-        "barbell" => "barbell",
-        "bodyweight" => "bodyweight",
-        "bosu-ball" => "bosu_ball",
-        "cables" => "cable_machine",
-        "cardio" => "cardio_machine",
-        "dumbbells" => "dumbbell",
-        "kettlebells" => "kettlebell",
-        "machine" => "weight_machine",
-        "medicine-ball" => "medicine_ball",
-        "plate" => "plate",
-        "smithmachine" => "smith_machine",
-        "yoga" => "yoga",
-        // Includes "vitruvian"
-        _ => "other"
-    }.to_string())
 }
 
 fn mw_force_to_exercise_force(force: Option<MWForce>) -> Option<ExerciseForce> {
@@ -405,12 +391,13 @@ pub struct MWExercise {
 pub struct MWMuscle {
     pub id: i16,
     pub name: String,
-    pub tree_id: i32,
+    pub tree_id: i16,
     // pub description: String,
 }
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct MWCategory {
+    pub id: i16,
     pub name: String,
 }
 
