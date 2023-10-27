@@ -1,9 +1,27 @@
-use crate::Error;
-use sqlx::postgres::{PgPool, PgPoolOptions};
+use sqlx::{
+    Transaction,
+    postgres::{PgConnection, PgPool, PgPoolOptions, Postgres}
+};
 
 #[derive(Clone, Debug)]
 pub struct DatabaseManager {
     connection: PgPool,
+}
+
+pub struct TransactionManager<'t>(Transaction<'t, Postgres>);
+
+impl TransactionManager<'_> {
+    pub fn executor(&mut self) -> &mut PgConnection {
+        &mut *self.0
+    }
+
+    pub async fn commit(mut self) -> Result<(), sqlx::Error> {
+        self.0.commit().await
+    }
+
+    pub async fn rollback(mut self) -> Result<(), sqlx::Error> {
+        self.0.rollback().await
+    }
 }
 
 impl DatabaseManager {
@@ -11,8 +29,20 @@ impl DatabaseManager {
         DatabaseManagerBuilder::new()
     }
 
+    pub fn from_pool(pool: PgPool) -> Self {
+        Self {
+            connection: pool,
+        }
+    }
+
     pub fn connection(&self) -> &PgPool {
         &self.connection
+    }
+
+    pub async fn transaction<'s>(&'s self) -> Result<TransactionManager<'s>, sqlx::Error> {
+        let transaction = self.connection().begin().await?;
+
+        Ok(TransactionManager(transaction))
     }
 }
 
@@ -71,13 +101,12 @@ impl<U> DatabaseManagerBuilder<U> {
 }
 
 impl DatabaseManagerBuilder<Url> {
-    pub async fn build(self) -> Result<DatabaseManager, Error> {
+    pub async fn build(self) -> Result<DatabaseManager, sqlx::Error> {
         let connection = PgPoolOptions::new()
             .max_connections(self.max_connections)
             .min_connections(self.min_connections)
             .connect(&self.url.0)
-            .await
-            .map_err(Error::DatabasePoolCreationFailure)?;
+            .await?;
 
         Ok(DatabaseManager { connection })
     }
