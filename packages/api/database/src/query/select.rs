@@ -1,6 +1,6 @@
 use super::SqlxAction;
 use super::bind::SqlxBindable;
-use super::clause::WhereClause;
+use super::clause::{OrderClause, WhereClause};
 use async_trait::async_trait;
 use sqlx::{Execute, Executor, FromRow, postgres::{PgArguments, PgRow, Postgres}};
 
@@ -8,14 +8,9 @@ pub struct SelectAction<'a> {
     table: &'static str,
     columns: &'static[&'static str],
     wheres: Vec<WhereClause<'a>>,
-    ordering: Option<SelectOrder>,
+    orders: Vec<OrderClause>,
     limit: Option<i64>,
     offset: Option<i64>,
-}
-
-pub enum SelectOrder {
-    Ascending(&'static str),
-    Descending(&'static str),
 }
 
 impl<'a> SelectAction<'a> {
@@ -24,7 +19,7 @@ impl<'a> SelectAction<'a> {
             table,
             columns,
             wheres: Vec::new(),
-            ordering: None,
+            orders: Vec::new(),
             limit: None,
             offset: None,
         }
@@ -39,6 +34,24 @@ impl<'a> SelectAction<'a> {
             operator,
             value: Box::new(value),
         });
+        self
+    }
+
+    pub fn order_by(mut self, name: &'static str, asc: bool) -> Self {
+        match asc {
+            true => self.orders.push(OrderClause::Ascending(name)),
+            false => self.orders.push(OrderClause::Descending(name)),
+        }
+        self
+    }
+
+    pub fn limit(mut self, limit: i64) -> Self {
+        self.limit = Some(limit);
+        self
+    }
+
+    pub fn offset(mut self, offset: i64) -> Self {
+        self.offset = Some(offset);
         self
     }
 
@@ -116,17 +129,36 @@ impl<'a> SqlxAction<'a> for SelectAction<'a> {
         tokens.push(table_token);
 
         if !self.wheres.is_empty() {
-            tokens.push("WHERE".to_string())
-        }
+            tokens.push("WHERE".to_string());
 
-        tokens.push(
-            self.wheres.iter().enumerate()
+            let joined_wheres = self.wheres.iter().enumerate()
                 .map(|(index, clause)| {
                     format!("{} {} ${}", clause.column, clause.operator, index + 1)
                 })
                 .collect::<Vec<String>>()
-                .join(" AND ")
-        );
+                .join(" AND ");
+
+            tokens.push(joined_wheres);
+        }
+
+        if !self.orders.is_empty() {
+            tokens.push("ORDER BY".to_string());
+
+            let joined_orders = self.orders.iter()
+                .map(|clause| clause.to_string())
+                .collect::<Vec<String>>()
+                .join(", ");
+
+            tokens.push(joined_orders);
+        }
+
+        if let Some(limit) = &self.limit {
+            tokens.push(format!("LIMIT {}", limit));
+        }
+
+        if let Some(offset) = &self.offset {
+            tokens.push(format!("OFFSET {}", offset));
+        }
 
         let res = tokens.join(" ");
 
