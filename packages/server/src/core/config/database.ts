@@ -36,7 +36,7 @@ const url = `mongodb://${username}:${password}@mongodb:27017`;
  * - May want to decrease this if running into connection limits
  *
  * [retryWrites]
- * Retry write operations a single time if network errors are encountered
+ * Retry write operations a single time if network error are encountered
  *
  * [socketTimeoutMS] Default = 30000
  * How long the MongoDB driver will wait before killing a socket due to inactivity after INITIAL connection
