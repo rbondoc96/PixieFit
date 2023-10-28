@@ -70,7 +70,7 @@ impl ModelResource for ExerciseResource {
     }
 
     async fn simple(exercise: Exercise, database: &DatabaseManager) -> Self {
-        let equipment = exercise.equipment(database).await.unwrap();
+        let equipment = exercise.equipment(database).await.unwrap_or(None);
         let muscle_group = exercise.target_muscle_group(database).await.unwrap();
 
         Self {
