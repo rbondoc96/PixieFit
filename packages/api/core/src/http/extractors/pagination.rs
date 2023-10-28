@@ -7,17 +7,17 @@ use serde::Deserialize;
 
 #[derive(Clone, Debug, Deserialize)]
 pub struct Pagination {
-    page: u16,
-    per_page: u8,
+    page: i64,
+    per_page: i64,
 }
 
 impl Pagination {
-    pub fn page(&self) -> u16 {
-        self.page
+    pub fn limit(&self) -> i64 {
+        self.per_page
     }
 
-    pub fn per_page(&self) -> u8 {
-        self.per_page
+    pub fn offset(&self) -> i64 {
+        self.per_page * (self.page - 1)
     }
 }
 

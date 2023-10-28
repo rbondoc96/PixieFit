@@ -40,7 +40,11 @@ impl MuscleController {
         pagination: Pagination,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse> {
-        let muscles = Muscle::all(&database).await?;
+        let muscles = Muscle::query()
+            .select(&["*"])
+            .order_by("name", true)
+            .all(database.connection())
+            .await?;
 
         Ok(JsonResponse::success(
             Some(MuscleResource::list(muscles, &database).await),

@@ -1,6 +1,7 @@
 use super::{Controller, Result};
 use crate::prelude::*;
 use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement};
+use crate::http::extractors::Pagination;
 use crate::http::resources::{ModelResource, ExerciseResource};
 use crate::http::response::JsonResponse;
 use crate::models::{Exercise, ExerciseMuscleMap};
@@ -32,7 +33,7 @@ pub struct CreateExercisePayload {
     muscles: Vec<MuscleData>
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct ListExerciseParams {
     muscle: Option<i16>,
     muscle_group: Option<i16>,
@@ -53,10 +54,22 @@ impl Controller for ExerciseController {
 
 impl ExerciseController {
     pub async fn list(
+        pagination: Pagination,
         Query(params): Query<ListExerciseParams>,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse> {
-        let exercises = Exercise::all(&database).await?;
+        let mut query = Exercise::query()
+            .select(&["*"])
+            .limit(pagination.limit())
+            .offset(pagination.offset());
+
+        if let Some(group) = params.muscle_group {
+            query = query.and_where("target_muscle_group_id", "=", group);
+        }
+
+        let exercises = query
+            .all(database.connection())
+            .await?;
 
         Ok(JsonResponse::success(
             Some(ExerciseResource::list(exercises, &database).await),

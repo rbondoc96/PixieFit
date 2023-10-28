@@ -24,7 +24,11 @@ impl MuscleGroupController {
     pub async fn list(
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse> {
-        let groups = MuscleGroup::all(&database).await?;
+        let groups = MuscleGroup::query()
+            .select(&["*"])
+            .order_by("name", true)
+            .all(database.connection())
+            .await?;
 
         Ok(JsonResponse::success(
             Some(MuscleGroupResource::list(groups, &database).await),
