@@ -42,9 +42,7 @@ pub struct ListExerciseParams {
 pub struct ExerciseController;
 
 impl Controller for ExerciseController {
-    type State = DatabaseManager;
-
-    fn router(state: Self::State) -> Router {
+    fn router(state: DatabaseManager) -> Router {
         Router::new()
             .route("/", get(Self::list).post(Self::create))
             .route("/:ulid", get(Self::read))

@@ -26,9 +26,7 @@ pub struct CreateLinkPayload {
 pub struct LinkController;
 
 impl Controller for LinkController {
-    type State = DatabaseManager;
-
-    fn router(state: Self::State) -> Router {
+    fn router(state: DatabaseManager) -> Router {
         Router::new()
             .route("/", get(Self::list).post(Self::create))
             .with_state(state)

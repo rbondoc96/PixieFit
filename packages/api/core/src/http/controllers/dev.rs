@@ -14,9 +14,7 @@ pub struct HelloParams {
 pub struct DevController;
 
 impl Controller for DevController {
-    type State = DatabaseManager;
-
-    fn router(_state: Self::State) -> Router {
+    fn router(_state: DatabaseManager) -> Router {
         Router::new()
             .route("/ping", get(Self::pong))
             .route("/hello", get(Self::hello))

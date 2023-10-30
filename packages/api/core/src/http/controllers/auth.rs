@@ -39,9 +39,7 @@ pub struct LoginPayload {
 pub struct AuthController;
 
 impl Controller for AuthController {
-    type State = DatabaseManager;
-
-    fn router(state: Self::State) -> Router {
+    fn router(state: DatabaseManager) -> Router {
         Router::new()
             .route("/register", post(Self::register))
             .route("/", get(Self::index).post(Self::login).delete(Self::logout))

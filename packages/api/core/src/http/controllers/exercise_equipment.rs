@@ -11,9 +11,7 @@ use database::{DatabaseManager, Model};
 pub struct ExerciseEquipmentController;
 
 impl Controller for ExerciseEquipmentController {
-    type State = DatabaseManager;
-
-    fn router(state: Self::State) -> Router {
+    fn router(state: DatabaseManager) -> Router {
         Router::new()
             .route("/", get(Self::list))
             .with_state(state)

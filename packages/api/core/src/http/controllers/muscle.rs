@@ -25,9 +25,7 @@ pub struct CreateMusclePayload {
 pub struct MuscleController;
 
 impl Controller for MuscleController {
-    type State = DatabaseManager;
-
-    fn router(state: Self::State) -> Router {
+    fn router(state: DatabaseManager) -> Router {
         Router::new()
             .route("/", get(Self::list).post(Self::create))
             .route("/:id", get(Self::read))

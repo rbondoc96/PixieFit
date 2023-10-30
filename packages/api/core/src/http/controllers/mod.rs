@@ -7,6 +7,8 @@ mod link;
 mod muscle;
 mod muscle_group;
 
+use database::DatabaseManager;
+
 pub use auth::AuthController;
 pub use dev::DevController;
 pub use exercise::ExerciseController;
@@ -20,7 +22,5 @@ pub(self) type Result<TValue> = ::core::result::Result<TValue, crate::error::Err
 use axum::Router;
 
 pub trait Controller {
-    type State;
-
-    fn router(state: Self::State) -> Router;
+    fn router(state: DatabaseManager) -> Router;
 }
