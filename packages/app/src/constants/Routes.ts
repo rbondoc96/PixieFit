@@ -4,6 +4,7 @@ const Routes = {
     Exercises: Route({name: Symbol('exercises'), pathName: 'exercises', parents: ['app']}),
     Landing: Route({name: Symbol('landing'), pathName: ''}),
     Login: Route({name: Symbol('login'), pathName: 'login'}),
+    Logout: Route({name: Symbol('logout'), pathName: 'logout'}),
     Register: Route({name: Symbol('register'), pathName: 'register'}),
     UserDashboard: Route({name: Symbol('user-dashboard'), pathName: 'dashboard', parents: ['app']}),
     UserProgress: Route({name: Symbol('user-progress'), pathName: 'progress', parents: ['app']}),
@@ -18,6 +19,7 @@ const Routes = {
 export const Exercises = Routes.Exercises;
 export const Landing = Routes.Landing;
 export const Login = Routes.Login;
+export const Logout = Routes.Logout;
 export const Register = Routes.Register;
 export const UserDashboard = Routes.UserDashboard;
 export const UserProgress = Routes.UserProgress;

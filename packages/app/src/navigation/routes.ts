@@ -6,6 +6,7 @@ import * as Routes from '@/constants/Routes';
 import Error404Page from '@/pages/Error404Page';
 import LandingPage from '@/pages/LandingPage';
 import LoginPage from '@/pages/LoginPage';
+import LogoutPage from '@/pages/LogoutPage';
 import RegisterPage from '@/pages/RegisterPage';
 
 export default [
@@ -16,6 +17,10 @@ export default [
     {
         path: Routes.Login.path,
         component: LoginPage,
+    },
+    {
+        path: Routes.Logout.path,
+        component: LogoutPage,
     },
     {
         path: Routes.Register.path,
