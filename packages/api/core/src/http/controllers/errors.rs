@@ -4,6 +4,7 @@ use crate::error::ClientError;
 #[derive(Debug, strum_macros::Display)]
 pub enum Error {
     RequestExtensionMissingContext,
+    UnauthorizedUserRole,
     UserLoginFailed,
 }
 
@@ -17,6 +18,13 @@ impl From<Error> for crate::error::Error {
                 None,
                 name,
                 ClientError::NotAuthenticated,
+            ),
+            Error::UnauthorizedUserRole => Self::new(
+                StatusCode::FORBIDDEN,
+                "This user role is not authorized. Please check your permissions.",
+                None,
+                name,
+                ClientError::ActionNotAuthorized,
             ),
             Error::UserLoginFailed => Self::new(
                 StatusCode::BAD_REQUEST,

@@ -65,6 +65,16 @@ impl JsonResponse {
             code,
         )
     }
+
+    pub fn success_none(code: StatusCode) -> Self {
+        Self::new(
+            Json(json!(ApiSuccessResponse {
+                success: true,
+                data: None::<()>,
+            })),
+            code,
+        )
+    }
 }
 
 impl IntoResponse for JsonResponse {

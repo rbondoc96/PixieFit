@@ -43,6 +43,7 @@ impl Controller for AuthController {
         Router::new()
             .route("/register", post(Self::register))
             .route("/", get(Self::index).post(Self::login).delete(Self::logout))
+            .route("/admin", get(Self::index).post(Self::admin_login).delete(Self::logout))
             .route("/ping", get(Self::ping))
             .with_state(state)
     }
@@ -61,17 +62,21 @@ impl AuthController {
     }
 
     pub async fn index(
+        session: Session,
         context: Option<Context>,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse> {
         println!("->> {:<12} - AuthController::index", "AUTH_INDEX");
 
         let context = context.ok_or(Error::RequestExtensionMissingContext)?;
+
+        session.renew();
+
         let user = context.user();
 
         Ok(JsonResponse::success(
             Some(UserResource::default(user.clone(), &database).await),
-            StatusCode::CREATED,
+            StatusCode::OK,
         ))
     }
 
@@ -84,6 +89,34 @@ impl AuthController {
 
         if !crypt::decrypt_and_verify(payload.password.as_str(), user.password.as_str())? {
             return Err(Error::UserLoginFailed)?;
+        }
+
+        if user.role == Role::Admin {
+            return Err(Error::UnauthorizedUserRole)?;
+        }
+
+        user.update_last_logged_in(&database).await?;
+        session.set("user_id", user.id);
+
+        Ok(JsonResponse::success(
+            Some(UserResource::default(user, &database).await),
+            StatusCode::OK,
+        ))
+    }
+
+    pub async fn admin_login(
+        session: Session,
+        State(database): State<DatabaseManager>,
+        Json(payload): Json<LoginPayload>,
+    ) -> Result<JsonResponse> {
+        let mut user = User::find_by_email(&payload.email, &database).await?;
+
+        if !crypt::decrypt_and_verify(payload.password.as_str(), user.password.as_str())? {
+            return Err(Error::UserLoginFailed)?;
+        }
+
+        if user.role != Role::Admin {
+            return Err(Error::UnauthorizedUserRole)?;
         }
 
         user.update_last_logged_in(&database).await?;
@@ -99,7 +132,7 @@ impl AuthController {
         session.destroy();
         // Compiler deemed it necessary to add a type annotation
         // Due to the bound that success takes a parameter of Option<impl Serialize>
-        Ok(JsonResponse::success(None::<()>, StatusCode::OK))
+        Ok(JsonResponse::success_none(StatusCode::OK))
     }
 
     pub async fn register(
