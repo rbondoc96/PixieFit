@@ -338,7 +338,7 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
         const zormContext = useContext(Context);
 
         if (zormContext === undefined) {
-            throw new Error('Zorm.Input must be used within a Zorm.Provider');
+            throw new Error('Zorm.Select must be used within a Zorm.Provider');
         }
 
         onMount(() => {
