@@ -1,14 +1,31 @@
+// region Card
+
 .card {
     position: relative;
     flex-shrink: 0;
+
+    height: 14rem;
 }
 
-.card__background > img {
-    aspect-ratio: 4 / 5;
-    inline-size: 100%;
-    object-fit: cover;
+.card__overlay {
+    position: absolute;
+    inset: 0;
 
+    @apply bg-gray-900/70;
     @apply rounded-lg;
+}
+
+.card__background {
+    display: flex;
+    height: 100%;
+
+    & > img {
+        aspect-ratio: 4 / 5;
+        inline-size: 100%;
+        object-fit: cover;
+
+        @apply rounded-lg;
+    }
 }
 
 .card__content {
@@ -34,13 +51,9 @@
     }
 }
 
-.card__overlay {
-    position: absolute;
-    inset: 0;
+// endregion
 
-    @apply bg-gray-900/70;
-    @apply rounded-lg;
-}
+// region CardScroller
 
 .card-scroller {
     display: flex;
@@ -64,6 +77,9 @@
 
         @apply gap-x-3;
         @apply overflow-x-auto;
+        // Y-padding allows the X-scrollbar to be seen
         @apply py-3;
     }
 }
+
+// endregion

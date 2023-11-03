@@ -30,18 +30,18 @@
         & > .sidebar-toggle {
             @apply hidden md:flex;
         }
-
-        & > .user-image {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        & > .user-image > img {
-            width: 35px;
-            height: auto;
-            aspect-ratio: 1;
-        }
+        //
+        //& .user-image {
+        //    display: flex;
+        //    justify-content: center;
+        //    align-items: center;
+        //}
+        //
+        //& .user-image > img {
+        //    width: 35px;
+        //    height: auto;
+        //    aspect-ratio: 1;
+        //}
     }
 }
 
