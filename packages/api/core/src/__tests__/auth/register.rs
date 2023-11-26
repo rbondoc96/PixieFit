@@ -1,10 +1,7 @@
+use crate::__tests__::actions;
 use crate::__tests__::prelude::*;
 use crate::enums::Gender;
 use crate::models::{Profile, User};
-
-async fn perform_register(server: &TestServer, payload: &Value) -> TestResponse {
-    server.post("/api/auth/register").json(payload).await
-}
 
 #[sqlx::test]
 async fn success(pool: PgPool) -> Result<()> {
@@ -22,7 +19,7 @@ async fn success(pool: PgPool) -> Result<()> {
         "password_confirm": "#TestPassword1234",
     });
 
-    let response = perform_register(&server, &payload).await;
+    let response = actions::register(&server, &payload).await;
 
     let user = User::find_by_email("test_user@example.com", &database).await;
 
@@ -59,7 +56,7 @@ async fn fails_with_duplicate_email(pool: PgPool) -> Result<()> {
         "password_confirm": "#TestPassword1234",
     });
 
-    let response = perform_register(&server, &payload).await;
+    let response = actions::register(&server, &payload).await;
 
     // Assert
     response.assert_status(StatusCode::UNPROCESSABLE_ENTITY);
@@ -87,7 +84,7 @@ macro_rules! password_format_tests {
                     "password_confirm": "#TestPassword1234",
                 });
 
-                let response = perform_register(&server, &payload).await;
+                let response = actions::register(&server, &payload).await;
 
                 // Assert
                 response.assert_status(StatusCode::UNPROCESSABLE_ENTITY);

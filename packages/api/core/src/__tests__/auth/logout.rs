@@ -1,4 +1,4 @@
-use super::{perform_admin_login, perform_standard_login};
+use crate::__tests__::actions;
 use crate::__tests__::prelude::*;
 use crate::models::User;
 
@@ -23,7 +23,7 @@ async fn success_as_standard_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let login_response = perform_standard_login(&server, &login_payload).await;
+    let login_response = actions::login(&server, &login_payload).await;
     let logout_response = perform_logout(&server).await;
 
     // Assert
@@ -51,7 +51,7 @@ async fn success_as_admin_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let login_response = perform_admin_login(&server, &login_payload).await;
+    let login_response = actions::login_as_admin(&server, &login_payload).await;
     let logout_response = perform_logout(&server).await;
 
     // Assert

@@ -1,4 +1,4 @@
-use super::{perform_admin_login, perform_standard_login};
+use crate::__tests__::actions;
 use crate::__tests__::prelude::*;
 use crate::enums::Gender;
 use crate::models::{Profile, User};
@@ -19,7 +19,7 @@ async fn standard_login_success(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_standard_login(&server, &payload).await;
+    let response = actions::login(&server, &payload).await;
 
     // Assert
     response.assert_status_ok();
@@ -43,7 +43,7 @@ async fn standard_login_fails_with_incorrect_password(pool: PgPool) -> Result<()
     });
 
     // Act
-    let response = perform_standard_login(&server, &payload).await;
+    let response = actions::login(&server, &payload).await;
 
     // Assert
     response.assert_status(StatusCode::BAD_REQUEST);
@@ -67,7 +67,7 @@ async fn standard_login_fails_with_non_existent_email(pool: PgPool) -> Result<()
     });
 
     // Act
-    let response = perform_standard_login(&server, &payload).await;
+    let response = actions::login(&server, &payload).await;
 
 
     // Assert
@@ -93,7 +93,7 @@ async fn standard_login_fails_with_admin_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_standard_login(&server, &payload).await;
+    let response = actions::login(&server, &payload).await;
 
     // Assert
     response.assert_status_forbidden();
@@ -118,7 +118,7 @@ async fn admin_login_success(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_admin_login(&server, &payload).await;
+    let response = actions::login_as_admin(&server, &payload).await;
 
     // Assert
     response.assert_status_ok();
@@ -142,7 +142,7 @@ async fn admin_login_fails_with_standard_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_admin_login(&server, &payload).await;
+    let response = actions::login_as_admin(&server, &payload).await;
 
     // Assert
     response.assert_status_forbidden();
@@ -167,7 +167,7 @@ async fn admin_login_fails_with_incorrect_password(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_admin_login(&server, &payload).await;
+    let response = actions::login_as_admin(&server, &payload).await;
 
     // Assert
     response.assert_status_bad_request();
@@ -192,7 +192,7 @@ async fn admin_login_fails_with_non_existent_email(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = perform_admin_login(&server, &payload).await;
+    let response = actions::login_as_admin(&server, &payload).await;
 
 
     // Assert
