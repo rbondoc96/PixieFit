@@ -4,7 +4,6 @@ use crate::http::resources::{ModelResource, ExerciseEquipmentResource};
 use crate::http::response::JsonResponse;
 use crate::models::ExerciseEquipment;
 use axum::extract::State;
-use axum::http::StatusCode;
 use axum::routing::{get, Router};
 use database::{DatabaseManager, Model};
 
@@ -22,9 +21,8 @@ impl ExerciseEquipmentController {
     pub async fn list(State(database): State<DatabaseManager>) -> Result<JsonResponse> {
         let groups = ExerciseEquipment::all(&database).await?;
 
-        Ok(JsonResponse::success(
-            Some(ExerciseEquipmentResource::list(groups, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(ExerciseEquipmentResource::list(groups, &database).await)
+        )
     }
 }

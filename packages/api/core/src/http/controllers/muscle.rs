@@ -6,7 +6,6 @@ use crate::http::resources::{ModelResource, MuscleResource};
 use crate::http::response::JsonResponse;
 use crate::models::Muscle;
 use axum::extract::{Path, State};
-use axum::http::StatusCode;
 use axum::response::Json;
 use axum::routing::{get, post, Router};
 use database::{DatabaseManager, Model};
@@ -44,10 +43,9 @@ impl MuscleController {
             .all(database.connection())
             .await?;
 
-        Ok(JsonResponse::success(
-            Some(MuscleResource::list(muscles, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(MuscleResource::list(muscles, &database).await)
+        )
     }
 
     pub async fn create(
@@ -64,10 +62,9 @@ impl MuscleController {
             .create(&database)
             .await?;
 
-        Ok(JsonResponse::success(
-            Some(MuscleResource::default(muscle, &database).await),
-            StatusCode::CREATED,
-        ))
+        Ok(JsonResponse::created()
+            .with_data(MuscleResource::default(muscle, &database).await)
+        )
     }
 
     pub async fn read(
@@ -79,9 +76,8 @@ impl MuscleController {
 
         eprintln!("{:?}", context);
 
-        Ok(JsonResponse::success(
-            Some(MuscleResource::default(muscle, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(MuscleResource::default(muscle, &database).await)
+        )
     }
 }

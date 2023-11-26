@@ -28,9 +28,10 @@ impl MuscleGroupController {
             .all(database.connection())
             .await?;
 
-        Ok(JsonResponse::success(
-            Some(MuscleGroupResource::list(groups, &database).await),
-            StatusCode::OK,
-        ))
+
+
+        Ok(JsonResponse::ok()
+            .with_data(MuscleGroupResource::list(groups, &database).await)
+        )
     }
 }

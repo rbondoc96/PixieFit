@@ -235,6 +235,7 @@ mod tests {
     use crate::enums::Role;
     use crate::models::Profile;
     use crate::prelude::*;
+    use crate::utils::crypt::decrypt_and_verify;
 
     #[sqlx::test]
     async fn create_user_success(pool: PgPool) -> Result<()> {
@@ -253,8 +254,8 @@ mod tests {
         assert_eq!("Test", user.first_name);
         assert_eq!("User", user.last_name);
         assert_eq!("test_user@example.com", user.email);
+        assert!(decrypt_and_verify("password", user.password.as_ref())?);
         assert_eq!(Role::User, user.role);
-        assert_eq!("password", user.password);
         assert_eq!(1, count);
 
         Ok(())

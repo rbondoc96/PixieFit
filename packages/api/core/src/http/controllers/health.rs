@@ -1,8 +1,8 @@
 use super::{Controller, Result};
-use axum::response::Json;
+use crate::http::response::JsonResponse;
 use axum::routing::{get, Router};
 use database::DatabaseManager;
-use serde_json::{json, Value};
+use serde_json::json;
 
 pub struct HealthController;
 
@@ -14,12 +14,11 @@ impl Controller for HealthController {
 }
 
 impl HealthController {
-    pub async fn pong() -> Result<Json<Value>> {
-        let body = Json(json!({
-            "success": true,
-            "message": "pong",
-        }));
-
-        Ok(body)
+    pub async fn pong() -> Result<JsonResponse> {
+        Ok(JsonResponse::ok()
+            .with_data(json!({
+                "message": "pong"
+            }))
+        )
     }
 }

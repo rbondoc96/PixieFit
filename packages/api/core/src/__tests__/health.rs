@@ -13,7 +13,9 @@ async fn ping(pool: PgPool) -> Result<()> {
 
     response.assert_json(&json!({
         "success": true,
-        "message": "pong",
+        "data": {
+            "message": "pong"
+        },
     }));
 
     Ok(())

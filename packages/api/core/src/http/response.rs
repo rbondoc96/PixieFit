@@ -5,8 +5,9 @@ use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 
 pub struct JsonResponse {
+    body: Value,
     code: StatusCode,
-    body: Json<Value>,
+    success: bool,
 }
 
 #[derive(Serialize)]
@@ -30,56 +31,89 @@ pub struct ApiErrorResponse {
 }
 
 impl JsonResponse {
+    // region Static Methods
+
     fn new(
-        body: Json<Value>,
+        body: Value,
         code: StatusCode,
+        success: bool,
     ) -> Self {
         Self {
             body,
             code,
+            success,
         }
     }
 
     pub fn error(error: super::Error) -> Self {
         Self::new(
-            Json(json!(ApiErrorResponse {
-                success: false,
-                error: ApiErrorContext {
-                    name: error.client().to_string(),
-                    message: error.message(),
-                    errors: error.messages(),
-                }
-            })),
-            error.code()
+            json!(ApiErrorContext {
+                name: error.client().to_string(),
+                message: error.message(),
+                errors: error.messages(),
+            }),
+            error.code(),
+            false,
         )
     }
 
-    pub fn success(data: Option<impl Serialize>, code: StatusCode) -> Self {
+    pub fn success(code: StatusCode) -> Self {
         Self::new(
-            Json(json!(ApiSuccessResponse {
-                success: true,
-                data: data,
-            })),
+            json!(None::<()>),
             code,
+            true,
         )
     }
 
-    pub fn success_none(code: StatusCode) -> Self {
-        Self::new(
-            Json(json!(ApiSuccessResponse {
-                success: true,
-                data: None::<()>,
-            })),
-            code,
-        )
+    pub fn ok() -> Self {
+        Self::success(StatusCode::OK)
     }
+
+    pub fn created() -> Self {
+        Self::success(StatusCode::CREATED)
+    }
+
+    pub fn no_content() -> Self {
+        Self::success(StatusCode::NO_CONTENT)
+    }
+
+    // endregion
+
+    // region Instance Accessor Methods
+
+    pub fn code(&self) -> StatusCode {
+        self.code
+    }
+
+    // endregion
+
+    // region Instance Mutator Methods
+
+    pub fn with_data(mut self, data: impl Serialize) -> Self {
+        self.body = json!(data);
+        self
+    }
+
+    // endregion
 }
 
 impl IntoResponse for JsonResponse {
     fn into_response(self) -> Response {
-        match self.code {
-            StatusCode::NO_CONTENT => self.code.into_response(),
-            _ => (self.code, self.body).into_response()
+        if self.code == StatusCode::NO_CONTENT {
+            return self.code.into_response()
         }
+
+        let body = Json(match self.success {
+            true => json!({
+                "success": true,
+                "data": self.body,
+            }),
+            false => json!({
+                "success": false,
+                "error": self.body,
+            }),
+        });
+
+        (self.code, body).into_response()
     }
 }

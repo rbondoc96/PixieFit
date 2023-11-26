@@ -6,7 +6,6 @@ use crate::http::resources::{ModelResource, ExerciseResource};
 use crate::http::response::JsonResponse;
 use crate::models::{Exercise, ExerciseMuscleMap};
 use axum::extract::{Path, State, Query};
-use axum::http::StatusCode;
 use axum::response::Json;
 use axum::routing::{get, post, Router};
 use database::{DatabaseManager, Model};
@@ -69,10 +68,9 @@ impl ExerciseController {
             .all(database.connection())
             .await?;
 
-        Ok(JsonResponse::success(
-            Some(ExerciseResource::list(exercises, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(ExerciseResource::list(exercises, &database).await)
+        )
     }
 
     pub async fn read(
@@ -81,10 +79,9 @@ impl ExerciseController {
     ) -> Result<JsonResponse> {
         let exercise = Exercise::find_by_route_key(ulid, &database).await?;
 
-        Ok(JsonResponse::success(
-            Some(ExerciseResource::default(exercise, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(ExerciseResource::default(exercise, &database).await)
+        )
     }
 
     pub async fn create(
@@ -113,9 +110,8 @@ impl ExerciseController {
                 .await?;
         }
 
-        Ok(JsonResponse::success(
-            Some(ExerciseResource::default(exercise, &database).await),
-            StatusCode::CREATED,
-        ))
+        Ok(JsonResponse::created()
+            .with_data(ExerciseResource::default(exercise, &database).await)
+        )
     }
 }

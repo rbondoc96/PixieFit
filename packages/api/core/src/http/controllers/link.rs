@@ -5,7 +5,6 @@ use crate::http::resources::{LinkResource, ModelResource};
 use crate::http::response::JsonResponse;
 use crate::models::Link;
 use axum::extract::State;
-use axum::http::StatusCode;
 use axum::response::Json;
 use axum::routing::{get, post, Router};
 use database::{DatabaseManager, Model};
@@ -41,10 +40,9 @@ impl LinkController {
 
         let links = Link::all(&database).await?;
 
-        Ok(JsonResponse::success(
-            Some(LinkResource::list(links, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(LinkResource::list(links, &database).await)
+        )
     }
 
     pub async fn create(
@@ -61,9 +59,8 @@ impl LinkController {
             .create(&database)
             .await?;
 
-        Ok(JsonResponse::success(
-            Some(LinkResource::default(link, &database).await),
-            StatusCode::CREATED,
-        ))
+        Ok(JsonResponse::created()
+            .with_data(LinkResource::default(link, &database).await)
+        )
     }
 }

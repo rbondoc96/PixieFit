@@ -8,7 +8,6 @@ use crate::models::{User, Profile};
 use crate::prelude::*;
 use crate::utils::{crypt, validators};
 use axum::extract::State;
-use axum::http::StatusCode;
 use axum::response::Json;
 use axum::routing::{get, post, Router};
 use axum_session::SessionPgSession as Session;
@@ -52,10 +51,10 @@ impl Controller for AuthController {
 impl AuthController {
     pub async fn ping(context: Option<Context>) -> Result<JsonResponse> {
         let result = context.ok_or(Error::RequestExtensionMissingContext)
-            .map(|_| JsonResponse::success(
-                Some("ping-pong".to_string()),
-                StatusCode::OK,
-            ))?;
+            .map(|_| {
+                JsonResponse::ok()
+                    .with_data("pong")
+            })?;
 
         Ok(result)
     }
@@ -73,10 +72,9 @@ impl AuthController {
                 context.user().clone()
             })?;
 
-        Ok(JsonResponse::success(
-            Some(UserResource::default(user, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(UserResource::default(user, &database).await)
+        )
     }
 
     pub async fn login(
@@ -99,10 +97,9 @@ impl AuthController {
         user.update_last_logged_in(&database).await?;
         session.set("user_id", user.id);
 
-        Ok(JsonResponse::success(
-            Some(UserResource::default(user, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(UserResource::default(user, &database).await)
+        )
     }
 
     pub async fn admin_login(
@@ -125,17 +122,16 @@ impl AuthController {
         user.update_last_logged_in(&database).await?;
         session.set("user_id", user.id);
 
-        Ok(JsonResponse::success(
-            Some(UserResource::default(user, &database).await),
-            StatusCode::OK,
-        ))
+        Ok(JsonResponse::ok()
+            .with_data(UserResource::default(user, &database).await)
+        )
     }
 
     pub async fn logout(session: Session, context: Option<Context>) -> Result<JsonResponse> {
         context.ok_or(Error::RequestExtensionMissingContext)?;
 
         session.destroy();
-        Ok(JsonResponse::success_none(StatusCode::OK))
+        Ok(JsonResponse::ok())
     }
 
     pub async fn register(
@@ -163,9 +159,8 @@ impl AuthController {
             &database,
         ).await?;
 
-        Ok(JsonResponse::success(
-            Some(UserResource::default(user, &database).await),
-            StatusCode::CREATED,
-        ))
+        Ok(JsonResponse::created()
+            .with_data(UserResource::default(user, &database).await)
+        )
     }
 }
