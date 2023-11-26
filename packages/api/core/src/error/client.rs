@@ -1,11 +1,28 @@
-#[derive(Debug, strum_macros::Display)]
+#[derive(Clone, Debug, strum_macros::Display)]
 pub enum ClientError {
-    ActionNotAuthorized,
-    InvalidCredentials,
-    InvalidPasswordFormat,
+    // Generic Errors
+    Conflict,
+    #[strum(serialize = "InternalError")]
+    Internal,
+    InvalidRequest,
+    #[strum(serialize = "NetworkError")]
+    Network,
     NotAuthenticated,
+    RequestTooLarge,
+    Unavailable,
+    #[strum(serialize = "UnexpectedError")]
+    /// A known one-in-a-million/impossible error, but it was somehow triggered.
+    Unexpected,
+    #[strum(serialize = "UnknownError")]
+    /// An error that is completely unknown,
+    Unknown,
+
+    // Standard Errors
     ResourceNotFound,
-    UnexpectedSystemFailure,
-    UnknownSystemFailure,
-    ValidationError,
+    UnauthorizedAction,
+    #[strum(serialize = "ValidationError")]
+    Validation,
+
+    // Specific Errors
+    InvalidCredentials,
 }

@@ -1,67 +1,30 @@
-use crate::error::ClientError;
+use crate::error::{ClientError, Domain};
+use crate::utils::__;
 use axum::http::StatusCode;
 use serde::Serialize;
 use serde_with::{serde_as, DisplayFromStr};
 
-#[serde_as]
-#[derive(Debug, Serialize)]
+#[derive(Debug, strum_macros::Display, thiserror::Error, Serialize)]
 pub enum Error {
-    ModelNotCreated {
-        message: String,
-    },
-    ModelNotFound {
-        model: &'static str,
-        search_key: String,
-        search_value: String,
-    },
-    UnexpectedDatabaseError {
-        message: String,
-    },
-    UnknownError,
+    ModelNotCreated(String),
+    ModelNotFound(String),
+    Unknown(String),
 }
 
-impl From<Error> for crate::error::Error {
-    fn from(error: Error) -> Self {
+impl From<crate::utils::Error> for Error {
+    fn from(error: crate::utils::Error) -> Self {
+        Self::Unknown(__("errors.unknownSystemError"))
+    }
+}
+
+impl From<database::Error> for Error {
+    fn from(error: database::Error) -> Self {
+        use database::Error as DatabaseError;
+
         match error {
-            Error::ModelNotCreated {
-                message,
-            } => Self::new(
-                StatusCode::UNPROCESSABLE_ENTITY,
-                message,
-                None,
-                "ModelNotCreated",
-                ClientError::ValidationError,
-            ),
-            Error::ModelNotFound {
-                model,
-                search_key,
-                search_value,
-            } => Self::new(
-                StatusCode::NOT_FOUND,
-                format!(
-                    "A {} with {} = {} could not be found.",
-                    model, search_key, search_value
-                ),
-                None,
-                "ModelNotFound",
-                ClientError::ResourceNotFound,
-            ),
-            Error::UnexpectedDatabaseError {
-                message,
-            } => Self::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                message,
-                None,
-                "UnexpectedDatabaseError",
-                ClientError::UnexpectedSystemFailure,
-            ),
-            Error::UnknownError => Self::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "An unknown error has occurred.".to_string(),
-                None,
-                "UnknownError",
-                ClientError::UnknownSystemFailure,
-            ),
+            DatabaseError::ModelNotCreated(message) => Self::ModelNotCreated(message),
+            DatabaseError::ModelNotFound { .. } => Self::ModelNotFound(error.to_string()),
+            DatabaseError::Unknown(err) => Self::Unknown(err.to_string()),
         }
     }
 }
@@ -75,24 +38,23 @@ impl From<sqlx::Error> for Error {
                 || db_error.is_foreign_key_violation()
                 || db_error.is_unique_violation()
             {
-                return Self::ModelNotCreated {
-                    message: message.to_owned(),
-                };
+                return Self::ModelNotCreated(message.to_owned());
             }
-
-            return Self::UnexpectedDatabaseError {
-                message: message.to_owned(),
-            };
         }
 
-        Self::UnknownError
+        Self::Unknown(__("errors.unknownSystemError"))
     }
 }
 
-impl core::fmt::Display for Error {
-    fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
-        write!(fmt, "{:?}", self)
+impl From<Error> for crate::http::Error {
+    fn from(error: Error) -> Self {
+        match error {
+            Error::ModelNotCreated(message) => Self::unprocessable(ClientError::Validation, Domain::Database)
+                .with_message(message),
+            Error::ModelNotFound(message) => Self::not_found(ClientError::ResourceNotFound, Domain::Database)
+                .with_message(message),
+            Error::Unknown(message) => Self::internal_error(ClientError::Unknown, Domain::Database)
+                .with_message(message),
+        }
     }
 }
-
-impl std::error::Error for Error {}

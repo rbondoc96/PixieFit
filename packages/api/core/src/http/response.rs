@@ -1,10 +1,8 @@
-use crate::error::Error;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json, Response};
 use database::DatabaseManager;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use serde_with::skip_serializing_none;
 
 pub struct JsonResponse {
     code: StatusCode,
@@ -13,22 +11,22 @@ pub struct JsonResponse {
 
 #[derive(Serialize)]
 pub struct ApiSuccessResponse<T: Serialize> {
-    success: bool,
-    data: Option<T>,
+    pub success: bool,
+    pub data: Option<T>,
 }
 
 #[derive(Serialize)]
 pub struct ApiErrorContext {
-    name: String,
-    message: String,
+    pub name: String,
+    pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    errors: Option<std::collections::HashMap<String, Vec<String>>>,
+    pub errors: Option<std::collections::HashMap<String, Vec<String>>>,
 }
 
 #[derive(Serialize)]
 pub struct ApiErrorResponse {
-    success: bool,
-    error: ApiErrorContext,
+    pub success: bool,
+    pub error: ApiErrorContext,
 }
 
 impl JsonResponse {
@@ -42,12 +40,12 @@ impl JsonResponse {
         }
     }
 
-    pub fn error(error: Error) -> Self {
+    pub fn error(error: super::Error) -> Self {
         Self::new(
             Json(json!(ApiErrorResponse {
                 success: false,
                 error: ApiErrorContext {
-                    name: error.client_name(),
+                    name: error.client().to_string(),
                     message: error.message(),
                     errors: error.messages(),
                 }

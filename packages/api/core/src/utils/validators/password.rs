@@ -1,4 +1,4 @@
-use super::{Error, Result};
+use super::ValidatorResult;
 use std::collections::HashMap;
 
 pub struct CharacterValidator {
@@ -24,7 +24,7 @@ impl CharacterValidator {
     }
 }
 
-pub fn validate_password(password: &str) -> Result<()> {
+pub fn password(password: &str) -> ValidatorResult {
     let mut one_off_validators: HashMap<String, CharacterValidator> = HashMap::new();
     let mut repeat_validators: HashMap<String, CharacterValidator> = HashMap::new();
 
@@ -89,8 +89,8 @@ pub fn validate_password(password: &str) -> Result<()> {
         .for_each(|(message, _)| validation_errors.push(message.to_owned()));
 
     if !validation_errors.is_empty() {
-        return Err(Error::InvalidPasswordFormat(validation_errors));
+        return ValidatorResult::Invalid(validation_errors);
     }
 
-    Ok(())
+    ValidatorResult::Valid
 }

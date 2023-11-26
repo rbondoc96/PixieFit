@@ -11,7 +11,7 @@ use database::{DatabaseManager, Model};
 use serde_json::json;
 
 pub(self) use crate::http::errors::Error;
-pub(self) type Result<TValue> = ::core::result::Result<TValue, crate::error::Error>;
+pub(self) type Result<TValue> = ::core::result::Result<TValue, crate::http::Error>;
 
 pub async fn context_resolver<TBody>(
     State(database): State<DatabaseManager>,

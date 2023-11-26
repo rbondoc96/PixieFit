@@ -1,13 +1,12 @@
+pub use crate::types::*;
 pub use crate::utils::__;
-pub type ErrorMap = std::collections::HashMap<String, Vec<String>>;
-pub type ISO8601DateTimeUTC = chrono::DateTime<chrono::Utc>;
 
 #[cfg(test)]
 mod test_utils {
     pub use database::{DatabaseManager, Model};
     pub use sqlx::postgres::PgPool;
 
-    pub type Result<T> = core::result::Result<T, crate::error::Error>;
+    pub type Result<T> = core::result::Result<T, crate::http::Error>;
 
     pub fn assert_some_eq<T>(expected: impl Into<T>, actual: Option<T>)
     where

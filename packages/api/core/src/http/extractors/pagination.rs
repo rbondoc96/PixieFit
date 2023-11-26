@@ -35,7 +35,7 @@ impl<TState> FromRequestParts<TState> for Pagination
 where
     TState: Send + Sync,
 {
-    type Rejection = crate::error::Error;
+    type Rejection = crate::http::Error;
 
     async fn from_request_parts(parts: &mut Parts, state: &TState) -> core::result::Result<Self, Self::Rejection> {
         let Query(pagination) = Query::<Pagination>::from_request_parts(parts, state)

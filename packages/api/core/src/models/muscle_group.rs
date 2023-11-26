@@ -134,7 +134,6 @@ impl MuscleGroup {
 #[cfg(test)]
 mod tests {
     use super::MuscleGroup;
-    use crate::error::Error;
     use crate::prelude::*;
 
     #[sqlx::test]

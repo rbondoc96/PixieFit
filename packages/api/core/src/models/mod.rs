@@ -4,7 +4,6 @@ pub mod exercise_instruction;
 pub mod exercise_muscle_map;
 mod errors;
 pub mod link;
-mod model;
 pub mod muscle;
 pub mod muscle_group;
 pub mod user;

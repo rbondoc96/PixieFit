@@ -16,12 +16,17 @@ mod http;
 mod models;
 mod prelude;
 mod sys;
+mod types;
 mod utils;
+
+#[cfg(test)]
+mod __tests__;
 
 use database::DatabaseManager;
 use sys::config;
 use log::Level;
 use std::net::SocketAddr;
+use tracing_subscriber::filter::EnvFilter;
 
 i18n!("lang", fallback = "en");
 

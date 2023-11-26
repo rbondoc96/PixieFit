@@ -1,7 +1,6 @@
 pub mod crypt;
 mod errors;
 mod lang;
-mod query;
 pub mod validators;
 
 pub use errors::Error;

@@ -1,6 +1,6 @@
 use super::{Error, Profile, Result};
-use crate::prelude::*;
 use crate::enums::Role;
+use crate::prelude::*;
 use async_trait::async_trait;
 use database::{DatabaseManager, Model};
 use serde::{Deserialize, Serialize};
@@ -25,6 +25,7 @@ pub struct User {
 mod builder {
     use super::{Error, User, Result};
     use crate::enums::Role;
+    use crate::utils::crypt;
     use database::{DatabaseManager, Model};
 
     // region Type States
@@ -65,7 +66,7 @@ mod builder {
         }
     }
 
-    impl<R, E, N> UserBuilder<NoPassword, R, E, N> {
+    impl<P, R, E, N> UserBuilder<P, R, E, N> {
         pub fn password(self, password: impl Into<String>) -> UserBuilder<Password, R, E, N> {
             UserBuilder {
                 password: Password(password.into()),
@@ -74,9 +75,7 @@ mod builder {
                 name: self.name,
             }
         }
-    }
 
-    impl<P, E, N> UserBuilder<P, NoUserRole, E, N> {
         pub fn role(self, role: Role) -> UserBuilder<P, UserRole, E, N> {
             UserBuilder {
                 password: self.password,
@@ -85,9 +84,7 @@ mod builder {
                 name: self.name,
             }
         }
-    }
 
-    impl<P, R, N> UserBuilder<P, R, NoEmail, N> {
         pub fn email(self, email: impl Into<String>) -> UserBuilder<P, R, Email, N> {
             UserBuilder {
                 password: self.password,
@@ -96,9 +93,7 @@ mod builder {
                 name: self.name,
             }
         }
-    }
 
-    impl<P, R, E> UserBuilder<P, R, E, NoName> {
         pub fn name(self, first: impl Into<String>, last: impl Into<String>) -> UserBuilder<P, R, E, Name> {
             UserBuilder {
                 password: self.password,
@@ -111,6 +106,8 @@ mod builder {
 
     impl UserBuilder<Password, UserRole, Email, Name> {
         pub async fn create(self, database: &DatabaseManager) -> Result<User> {
+            let password = crypt::encrypt(self.password.0.as_ref())?;
+
             let model = sqlx::query_as::<_, User>(format!(
                 "INSERT INTO {} (email, role, first_name, last_name, password) VALUES ($1, $2, $3, $4, $5) RETURNING *",
                 User::TABLE_NAME,
@@ -119,7 +116,7 @@ mod builder {
                 .bind(self.role.0)
                 .bind(self.name.0)
                 .bind(self.name.1)
-                .bind(self.password.0)
+                .bind(password)
                 .fetch_one(database.connection())
                 .await?;
 
@@ -171,11 +168,11 @@ impl User {
     }
 
     pub async fn find_by_email(email: impl ToString, database: &DatabaseManager) -> Result<User> {
-        let user = Self::query()
-            .select(&["*"])
-            .and_where("email", "=", email.to_string())
-            .one(database.connection())
-            .await?;
+        let user = Self::find(
+            "email",
+            email.to_string(),
+            database
+        ).await?;
 
         Ok(user)
     }

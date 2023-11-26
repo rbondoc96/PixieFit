@@ -55,7 +55,7 @@ pub async fn init() -> Result<Router> {
     let server = config().server();
     let database = config().database();
 
-    let db_manager = DatabaseManager::new()
+    let database = DatabaseManager::new()
         .url(database.url())
         .max_connections(database.max_connections())
         .min_connections(database.min_connections())
@@ -65,53 +65,61 @@ pub async fn init() -> Result<Router> {
             panic!("Could not initialize database manager: {}", error);
         });
 
-    let cors = cors()?;
-    let session = session(db_manager.clone()).await?;
-
-    create_admin_user(&db_manager).await;
+    create_admin_user(&database).await;
 
     if server.should_sync_exercises() {
-        actions::services::init(&db_manager).await;
+        actions::services::init(&database).await;
     }
 
+    Ok(router(database).await)
+}
+
+pub async fn router(database: DatabaseManager) -> Router {
+    let server = config().server();
+
+    let cors = cors().unwrap();
+    let session = session(database.clone())
+        .await
+        .unwrap();
+
     // Note: `.layer()` calls are executed from bottom-to-top
-    Ok(Router::new()
-        .merge(DevController::router(db_manager.clone()))
+    Router::new()
+        .merge(DevController::router(database.clone()))
         .nest(
             "/api/exercises",
-            ExerciseController::router(db_manager.clone())
+            ExerciseController::router(database.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest(
             "/api/exercise-equipment",
-            ExerciseEquipmentController::router(db_manager.clone())
+            ExerciseEquipmentController::router(database.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest(
             "/api/links",
-            LinkController::router(db_manager.clone())
+            LinkController::router(database.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest(
             "/api/muscle-groups",
-            MuscleGroupController::router(db_manager.clone())
+            MuscleGroupController::router(database.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
         .nest(
             "/api/muscles",
-            MuscleController::router(db_manager.clone())
+            MuscleController::router(database.clone())
                 .route_layer(middleware::from_fn(crate::http::middleware::require_auth)),
         )
-        .nest("/api/auth", AuthController::router(db_manager.clone()))
+        .nest("/api/auth", AuthController::router(database.clone()))
         // .layer(middleware::map_response(
         //     crate::http::middleware::response_mapper,
         // ))
         .layer(middleware::from_fn_with_state(
-            db_manager.clone(),
+            database.clone(),
             crate::http::middleware::context_resolver,
         ))
         .layer(session)
-        .layer(cors))
+        .layer(cors)
 }
 
 fn cors() -> Result<CorsLayer> {

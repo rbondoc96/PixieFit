@@ -1,26 +1,18 @@
 use crate::prelude::__;
-use crate::error::ClientError;
+use crate::error::{ClientError, Domain};
 use axum::http::StatusCode;
 
-#[derive(Debug, strum_macros::Display)]
+#[derive(Debug, strum_macros::Display, thiserror::Error)]
 pub enum Error {
     NoMatchingSessionUserFound,
     RequestExtensionMissingContext,
 }
 
-impl From<Error> for crate::error::Error {
+impl From<Error> for crate::http::Error {
     fn from(error: Error) -> Self {
-        let name = error.to_string();
-
-        match error {
-            Error::NoMatchingSessionUserFound
-            | Error::RequestExtensionMissingContext=> Self::new(
-                StatusCode::UNAUTHORIZED,
-                __("error.auth.notAuthenticated"),
-                None,
-                name,
-                ClientError::NotAuthenticated,
-            )
-        }
+        Self::not_authenticated(
+            ClientError::NotAuthenticated,
+            Domain::UserAuthentication,
+        )
     }
 }

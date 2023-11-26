@@ -1,11 +1,11 @@
 use super::{Controller, Error, Result};
-use crate::prelude::*;
 use crate::actions;
 use crate::data;
 use crate::enums::{Gender, Role};
 use crate::http::resources::{ModelResource, UserResource};
 use crate::http::{Context, JsonResponse};
 use crate::models::{User, Profile};
+use crate::prelude::*;
 use crate::utils::{crypt, validators};
 use axum::extract::State;
 use axum::http::StatusCode;
@@ -51,14 +51,13 @@ impl Controller for AuthController {
 
 impl AuthController {
     pub async fn ping(context: Option<Context>) -> Result<JsonResponse> {
-        if context.is_none() {
-            return Err(Error::RequestExtensionMissingContext.into());
-        }
+        let result = context.ok_or(Error::RequestExtensionMissingContext)
+            .map(|_| JsonResponse::success(
+                Some("ping-pong".to_string()),
+                StatusCode::OK,
+            ))?;
 
-        Ok(JsonResponse::success(
-            Some("ping-pong".to_string()),
-            StatusCode::OK,
-        ))
+        Ok(result)
     }
 
     pub async fn index(
@@ -66,13 +65,13 @@ impl AuthController {
         context: Option<Context>,
         State(database): State<DatabaseManager>,
     ) -> Result<JsonResponse> {
-        println!("->> {:<12} - AuthController::index", "AUTH_INDEX");
+        tracing::debug!("->> {:<12} - AuthController::index", "AUTH_INDEX");
 
-        let context = context.ok_or(Error::RequestExtensionMissingContext)?;
-
-        session.renew();
-
-        let user = context.user();
+        let user = context.ok_or(Error::RequestExtensionMissingContext)
+            .map(|context| {
+                session.renew();
+                context.user()
+            })?;
 
         Ok(JsonResponse::success(
             Some(UserResource::default(user.clone(), &database).await),
@@ -85,10 +84,12 @@ impl AuthController {
         State(database): State<DatabaseManager>,
         Json(payload): Json<LoginPayload>,
     ) -> Result<JsonResponse> {
-        let mut user = User::find_by_email(payload.email, &database).await?;
+        let mut user = User::find_by_email(payload.email, &database)
+            .await
+            .map_err(|_| Error::NoMatchingCredentialsFound)?;
 
         if !crypt::decrypt_and_verify(payload.password.as_str(), user.password.as_str())? {
-            return Err(Error::UserLoginFailed)?;
+            return Err(Error::NoMatchingCredentialsFound)?;
         }
 
         if user.role == Role::Admin {
@@ -109,10 +110,12 @@ impl AuthController {
         State(database): State<DatabaseManager>,
         Json(payload): Json<LoginPayload>,
     ) -> Result<JsonResponse> {
-        let mut user = User::find_by_email(&payload.email, &database).await?;
+        let mut user = User::find_by_email(&payload.email, &database)
+            .await
+            .map_err(|_| Error::NoMatchingCredentialsFound)?;
 
         if !crypt::decrypt_and_verify(payload.password.as_str(), user.password.as_str())? {
-            return Err(Error::UserLoginFailed)?;
+            return Err(Error::NoMatchingCredentialsFound)?;
         }
 
         if user.role != Role::Admin {
@@ -130,8 +133,6 @@ impl AuthController {
 
     pub async fn logout(session: Session) -> Result<JsonResponse> {
         session.destroy();
-        // Compiler deemed it necessary to add a type annotation
-        // Due to the bound that success takes a parameter of Option<impl Serialize>
         Ok(JsonResponse::success_none(StatusCode::OK))
     }
 

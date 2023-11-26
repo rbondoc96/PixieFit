@@ -26,7 +26,7 @@ impl<TState> FromRequestParts<TState> for Context
 where
     TState: Send + Sync,
 {
-    type Rejection = crate::error::Error;
+    type Rejection = crate::http::Error;
 
     async fn from_request_parts(parts: &mut Parts, _state: &TState) -> core::result::Result<Self, Self::Rejection> {
         println!(
@@ -34,10 +34,12 @@ where
             "CTX_FROM_REQ_PARTS"
         );
 
-        parts
+        let result = parts
             .extensions
             .get::<Self>()
-            .ok_or(Error::RequestExtensionMissingContext.into())
-            .cloned()
+            .ok_or(Error::RequestExtensionMissingContext)
+            .cloned()?;
+
+        Ok(result)
     }
 }

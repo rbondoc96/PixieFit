@@ -8,9 +8,11 @@ use crate::utils::{crypt, validators};
 use database::DatabaseManager;
 
 pub(self) use errors::Error;
-pub(self) type Result<TValue> = core::result::Result<TValue, crate::error::Error>;
+pub(self) type Result<TValue> = core::result::Result<TValue, crate::http::Error>;
 
 pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -> Result<User> {
+    use validators::ValidatorResult;
+
     if User::exists_with_email(data.email, database).await? {
         return Err(Error::UserWithEmailAlreadyExists)?;
     }
@@ -19,7 +21,9 @@ pub async fn create_user(data: CreateUserData<'_>, database: &DatabaseManager) -
         return Err(Error::PasswordMismatch)?;
     }
 
-    validators::validate_password(data.password)?;
+    if let ValidatorResult::Invalid(messages) = validators::password(data.password) {
+        return Err(Error::InvalidPasswordFormat(messages))?;
+    }
 
     let hash = crypt::encrypt(data.password)?;
 

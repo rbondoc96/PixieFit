@@ -190,12 +190,7 @@ impl Link {
             .and_where("model_name", "=", model_name.clone())
             .and_where("model_id", "=", id)
             .all::<&PgPool, Self>(database.connection())
-            .await
-            .map_err(|err| Error::ModelNotFound {
-                model: "links",
-                search_key: format!("{}:{}", model_name.to_string(), id.to_string()),
-                search_value: id.to_string(),
-            })?;
+            .await?;
 
         Ok(links)
     }

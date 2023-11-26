@@ -1,32 +1,28 @@
-use crate::error::ClientError;
+use crate::error::{ClientError, Domain};
 use crate::prelude::__;
+use crate::types::ErrorMap;
 use axum::http::StatusCode;
 
-#[derive(Debug, strum_macros::Display)]
+#[derive(Debug, strum_macros::Display, thiserror::Error)]
 pub enum Error {
+    InvalidPasswordFormat(Vec<String>),
     PasswordMismatch,
     UserWithEmailAlreadyExists,
 }
 
-impl From<Error> for crate::error::Error {
+impl From<Error> for crate::http::Error {
     fn from(error: Error) -> Self {
-        let name = error.to_string();
+        match &error {
+            Error::InvalidPasswordFormat(messages) => {
+                let mut map = ErrorMap::new();
+                map.insert("password".to_string(), messages.clone());
 
-        match error {
-            Error::PasswordMismatch => Self::new(
-                StatusCode::UNPROCESSABLE_ENTITY,
-                __("error.user.passwordMismatch"),
-                None,
-                name,
-                ClientError::ValidationError,
-            ),
-            Error::UserWithEmailAlreadyExists => Self::new(
-                StatusCode::UNPROCESSABLE_ENTITY,
-                __("error.user.emailAlreadyExists"),
-                None,
-                name,
-                ClientError::ValidationError,
-            ),
+                Self::unprocessable(ClientError::Validation, Domain::UserRegistration)
+                    .with_messages(map)
+            },
+            Error::PasswordMismatch => Self::unprocessable(ClientError::Validation, Domain::UserRegistration)
+                .with_message(__("errors.auth.passwordMismatch")),
+            Error::UserWithEmailAlreadyExists => Self::unprocessable(ClientError::Validation, Domain::UserRegistration)
         }
     }
 }

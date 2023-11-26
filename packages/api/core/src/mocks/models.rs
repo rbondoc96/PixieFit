@@ -1,5 +1,5 @@
 use crate::enums::*;
-use crate::error::Error;
+use crate::http::Error;
 use crate::models::*;
 use chrono::{Datelike, DateTime, NaiveDate, Utc};
 use database::DatabaseManager;
