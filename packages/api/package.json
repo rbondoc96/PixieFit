@@ -16,7 +16,8 @@
         "migrate:fresh": "sqlx database reset -y --source ./core/migrations",
         "migrate:status": "sqlx migrate info --source ./core/migrations",
         "shell:pg": "docker exec -it pxee_postgres15 psql -U postgres",
-        "test": "sqlx database reset --database-url postgres://postgres:postgres@localhost:5415/kratos_test",
+        "test": "cargo t",
+        "test:it": "cargo t __tests__",
         "test:watch": "cargo watch -q -c -w ./tests -x 'test -q dev -- --nocapture'",
         "tree": "cargo modules generate tree"
     }
