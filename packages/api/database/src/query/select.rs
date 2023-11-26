@@ -6,7 +6,7 @@ use sqlx::{Execute, Executor, FromRow, postgres::{PgArguments, PgRow, Postgres}}
 
 pub struct SelectAction<'a> {
     table: &'static str,
-    columns: &'static[&'static str],
+    columns: &'a[&'static str],
     wheres: Vec<WhereClause<'a>>,
     orders: Vec<OrderClause>,
     limit: Option<i64>,
@@ -14,7 +14,7 @@ pub struct SelectAction<'a> {
 }
 
 impl<'a> SelectAction<'a> {
-    pub fn new(table: &'static str, columns: &'static[&'static str]) -> Self {
+    pub fn new(table: &'static str, columns: &'a[&'static str]) -> Self {
         Self {
             table,
             columns,

@@ -17,7 +17,7 @@ impl SqlxQuery {
         }
     }
 
-    pub fn select(self, columns: &'static[&'static str]) -> SelectAction {
+    pub fn select<'a>(self, columns: &'a[&'static str]) -> SelectAction<'a> {
         SelectAction::new(self.table, columns)
     }
 }
