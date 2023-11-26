@@ -1,42 +1,17 @@
 use crate::http::router;
 use crate::http::response::{ApiErrorContext, ApiErrorResponse, ApiSuccessResponse};
+use crate::types::DynError;
 use serde::Serialize;
 
 pub use axum::http::StatusCode;
-pub use axum_test::{TestResponse, TestServer};
+pub use axum_test::{TestResponse, TestServer, TestServerConfig};
 pub use database::{DatabaseManager, Model};
 pub use serde_json::{json, Value};
 pub use sqlx::postgres::PgPool;
 
-pub type Result<T> = core::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+pub type Result<T> = core::result::Result<T, Box<DynError>>;
 
-pub struct ApiResponse;
-
-impl ApiResponse {
-    pub fn error(
-        name: impl ToString,
-        message: impl ToString,
-        errors: Option<std::collections::HashMap<String, Vec<String>>>
-    ) -> Value {
-        json!(ApiErrorResponse {
-            success: false,
-            error: ApiErrorContext {
-                name: name.to_string(),
-                message: message.to_string(),
-                errors: errors,
-            }
-        })
-    }
-
-    pub fn success<T: Serialize>(data: Option<T>) -> Value {
-        json!(ApiSuccessResponse {
-            success: true,
-            data: data
-        })
-    }
-}
-
-pub fn assert_some_eq<T>(expected: impl Into<T>, actual: Option<T>)
+pub fn assert_some_and_eq<T>(expected: impl Into<T>, actual: Option<T>)
 where
     T: PartialEq + std::fmt::Debug,
 {
@@ -48,5 +23,10 @@ pub async fn init(pool: PgPool) -> (TestServer, DatabaseManager) {
     let database = DatabaseManager::from_pool(pool);
     let router = router(database.clone()).await;
 
-    (TestServer::new(router).unwrap(), database)
+    let config = TestServerConfig::builder()
+        .save_cookies()
+        .default_content_type("application/json")
+        .build();
+
+    (TestServer::new_with_config(router, config).unwrap(), database)
 }

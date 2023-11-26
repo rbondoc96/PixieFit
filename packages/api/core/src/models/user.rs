@@ -85,6 +85,15 @@ mod builder {
             }
         }
 
+        pub fn admin(self) -> UserBuilder<P, UserRole, E, N> {
+            UserBuilder {
+                password: self.password,
+                role: UserRole(Role::Admin),
+                email: self.email,
+                name: self.name,
+            }
+        }
+
         pub fn email(self, email: impl Into<String>) -> UserBuilder<P, R, Email, N> {
             UserBuilder {
                 password: self.password,

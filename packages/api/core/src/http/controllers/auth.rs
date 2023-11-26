@@ -70,11 +70,11 @@ impl AuthController {
         let user = context.ok_or(Error::RequestExtensionMissingContext)
             .map(|context| {
                 session.renew();
-                context.user()
+                context.user().clone()
             })?;
 
         Ok(JsonResponse::success(
-            Some(UserResource::default(user.clone(), &database).await),
+            Some(UserResource::default(user, &database).await),
             StatusCode::OK,
         ))
     }
@@ -131,7 +131,9 @@ impl AuthController {
         ))
     }
 
-    pub async fn logout(session: Session) -> Result<JsonResponse> {
+    pub async fn logout(session: Session, context: Option<Context>) -> Result<JsonResponse> {
+        context.ok_or(Error::RequestExtensionMissingContext)?;
+
         session.destroy();
         Ok(JsonResponse::success_none(StatusCode::OK))
     }
