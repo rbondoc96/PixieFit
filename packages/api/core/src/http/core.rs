@@ -1,9 +1,9 @@
 use super::controllers::{
     AuthController,
     Controller,
-    DevController,
     ExerciseController,
     ExerciseEquipmentController,
+    HealthController,
     LinkController,
     MuscleController,
     MuscleGroupController,
@@ -84,7 +84,7 @@ pub async fn router(database: DatabaseManager) -> Router {
 
     // Note: `.layer()` calls are executed from bottom-to-top
     Router::new()
-        .merge(DevController::router(database.clone()))
+        .merge(HealthController::router(database.clone()))
         .nest(
             "/api/exercises",
             ExerciseController::router(database.clone())
