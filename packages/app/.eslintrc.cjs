@@ -31,7 +31,7 @@ module.exports = defineConfig({
         'indent': ['error', 4, {SwitchCase: 1}],
         'object-curly-newline': ['error', {consistent: true}],
         'object-curly-spacing': ['error', 'never'],
-        'max-len': ['error', 100],
+        'max-len': ['error', 120],
         'no-debugger': 'error',
         'no-empty': 'warn',
         'no-process-exit': 'off',
