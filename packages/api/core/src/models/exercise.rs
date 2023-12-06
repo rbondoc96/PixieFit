@@ -210,8 +210,7 @@ impl Exercise {
             return Ok(None);
         }
 
-        let equipment = ExerciseEquipment::find(
-            "name",
+        let equipment = ExerciseEquipment::find_by_pk(
             equipment_id.unwrap(),
             database,
         ).await?;
