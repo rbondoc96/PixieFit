@@ -50,40 +50,6 @@ impl Controller for ExerciseController {
 }
 
 impl ExerciseController {
-    pub async fn list(
-        pagination: Pagination,
-        Query(params): Query<ListExerciseParams>,
-        State(database): State<DatabaseManager>,
-    ) -> Result<JsonResponse> {
-        let mut query = Exercise::query()
-            .select(&["*"])
-            .limit(pagination.limit())
-            .offset(pagination.offset());
-
-        if let Some(group) = params.muscle_group {
-            query = query.and_where("target_muscle_group_id", "=", group);
-        }
-
-        let exercises = query
-            .all(database.connection())
-            .await?;
-
-        Ok(JsonResponse::ok()
-            .with_data(ExerciseResource::list(exercises, &database).await)
-        )
-    }
-
-    pub async fn read(
-        State(database): State<DatabaseManager>,
-        Path(ulid): Path<String>,
-    ) -> Result<JsonResponse> {
-        let exercise = Exercise::find_by_route_key(ulid, &database).await?;
-
-        Ok(JsonResponse::ok()
-            .with_data(ExerciseResource::default(exercise, &database).await)
-        )
-    }
-
     pub async fn create(
         State(database): State<DatabaseManager>,
         Json(payload): Json<CreateExercisePayload>,
@@ -112,6 +78,40 @@ impl ExerciseController {
 
         Ok(JsonResponse::created()
             .with_data(ExerciseResource::default(exercise, &database).await)
+        )
+    }
+
+    pub async fn read(
+        State(database): State<DatabaseManager>,
+        Path(ulid): Path<String>,
+    ) -> Result<JsonResponse> {
+        let exercise = Exercise::find_by_route_key(ulid, &database).await?;
+
+        Ok(JsonResponse::ok()
+            .with_data(ExerciseResource::default(exercise, &database).await)
+        )
+    }
+
+    pub async fn list(
+        pagination: Pagination,
+        Query(params): Query<ListExerciseParams>,
+        State(database): State<DatabaseManager>,
+    ) -> Result<JsonResponse> {
+        let mut query = Exercise::query()
+            .select(&["*"])
+            .limit(pagination.limit())
+            .offset(pagination.offset());
+
+        if let Some(group) = params.muscle_group {
+            query = query.and_where("target_muscle_group_id", "=", group);
+        }
+
+        let exercises = query
+            .all(database.connection())
+            .await?;
+
+        Ok(JsonResponse::ok()
+            .with_data(ExerciseResource::list(exercises, &database).await)
         )
     }
 }
