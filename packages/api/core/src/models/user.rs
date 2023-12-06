@@ -153,17 +153,11 @@ impl Model for User {
 }
 
 impl User {
+    // region Static Methods
+
     pub fn new() -> UserBuilder<NoPassword, NoUserRole, NoEmail, NoName> {
         UserBuilder::new()
     }
-
-    // region Relationships
-
-    pub async fn profile(&self, database: &DatabaseManager) -> Result<Profile> {
-        Profile::find_by_user(self.id, database).await
-    }
-
-    // endregion
 
     pub async fn exists_with_email(email: impl ToString, database: &DatabaseManager) -> Result<bool> {
         let result = Self::query()
@@ -185,6 +179,8 @@ impl User {
 
         Ok(user)
     }
+
+    // endregion
 
     // region Instance Methods
 
@@ -224,6 +220,14 @@ impl User {
         self.last_logged_in_at = Some(now);
 
         Ok(())
+    }
+
+    // endregion
+
+    // region Relationships
+
+    pub async fn profile(&self, database: &DatabaseManager) -> Result<Profile> {
+        Profile::find_by_user(self.id, database).await
     }
 
     // endregion
