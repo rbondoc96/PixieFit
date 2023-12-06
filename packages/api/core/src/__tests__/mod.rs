@@ -1,4 +1,7 @@
-mod prelude;
 mod auth;
 mod health;
-mod actions;
+pub mod actions;
+mod exercise;
+mod muscle_group;
+mod muscle;
+mod exercise_equipment;

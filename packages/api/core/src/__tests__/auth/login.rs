@@ -1,16 +1,16 @@
-use crate::__tests__::actions;
-use crate::__tests__::prelude::*;
+use crate::__tests__::actions::auth as actions;
 use crate::enums::Gender;
 use crate::models::{Profile, User};
+use crate::prelude::*;
 
 #[sqlx::test]
 async fn standard_login_success(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -19,10 +19,10 @@ async fn standard_login_success(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login(&server, &payload).await;
+    let response = actions::login(&server, payload).await;
 
     // Assert
-    response.assert_status_ok();
+    response.assert_ok();
 
     Ok(())
 }
@@ -30,11 +30,11 @@ async fn standard_login_success(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn standard_login_fails_with_incorrect_password(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -43,10 +43,10 @@ async fn standard_login_fails_with_incorrect_password(pool: PgPool) -> Result<()
     });
 
     // Act
-    let response = actions::login(&server, &payload).await;
+    let response = actions::login(&server, payload).await;
 
     // Assert
-    response.assert_status(StatusCode::BAD_REQUEST);
+    response.assert_bad_request();
 
     Ok(())
 }
@@ -54,11 +54,11 @@ async fn standard_login_fails_with_incorrect_password(pool: PgPool) -> Result<()
 #[sqlx::test]
 async fn standard_login_fails_with_non_existent_email(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -67,11 +67,10 @@ async fn standard_login_fails_with_non_existent_email(pool: PgPool) -> Result<()
     });
 
     // Act
-    let response = actions::login(&server, &payload).await;
-
+    let response = actions::login(&server, payload).await;
 
     // Assert
-    response.assert_status(StatusCode::BAD_REQUEST);
+    response.assert_bad_request();
 
     Ok(())
 }
@@ -79,12 +78,12 @@ async fn standard_login_fails_with_non_existent_email(pool: PgPool) -> Result<()
 #[sqlx::test]
 async fn standard_login_fails_with_admin_user(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .admin()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -93,10 +92,10 @@ async fn standard_login_fails_with_admin_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login(&server, &payload).await;
+    let response = actions::login(&server, payload).await;
 
     // Assert
-    response.assert_status_forbidden();
+    response.assert_forbidden();
 
     Ok(())
 }
@@ -104,12 +103,12 @@ async fn standard_login_fails_with_admin_user(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn admin_login_success(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .admin()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -118,10 +117,10 @@ async fn admin_login_success(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login_as_admin(&server, &payload).await;
+    let response = actions::login_as_admin(&server, payload).await;
 
     // Assert
-    response.assert_status_ok();
+    response.assert_ok();
 
     Ok(())
 }
@@ -129,11 +128,11 @@ async fn admin_login_success(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn admin_login_fails_with_standard_user(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -142,10 +141,10 @@ async fn admin_login_fails_with_standard_user(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login_as_admin(&server, &payload).await;
+    let response = actions::login_as_admin(&server, payload).await;
 
     // Assert
-    response.assert_status_forbidden();
+    response.assert_forbidden();
 
     Ok(())
 }
@@ -153,12 +152,12 @@ async fn admin_login_fails_with_standard_user(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn admin_login_fails_with_incorrect_password(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .admin()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -167,10 +166,10 @@ async fn admin_login_fails_with_incorrect_password(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login_as_admin(&server, &payload).await;
+    let response = actions::login_as_admin(&server, payload).await;
 
     // Assert
-    response.assert_status_bad_request();
+    response.assert_bad_request();
 
     Ok(())
 }
@@ -178,12 +177,12 @@ async fn admin_login_fails_with_incorrect_password(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn admin_login_fails_with_non_existent_email(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .admin()
         .email("test_user@example.com")
         .password("#TestPassword1234")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     let payload = json!({
@@ -192,11 +191,10 @@ async fn admin_login_fails_with_non_existent_email(pool: PgPool) -> Result<()> {
     });
 
     // Act
-    let response = actions::login_as_admin(&server, &payload).await;
-
+    let response = actions::login_as_admin(&server, payload).await;
 
     // Assert
-    response.assert_status_bad_request();
+    response.assert_bad_request();
 
     Ok(())
 }

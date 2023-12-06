@@ -1,12 +1,13 @@
-use crate::__tests__::actions;
-use crate::__tests__::prelude::*;
+use crate::__tests__::actions::auth as actions;
 use crate::enums::Gender;
 use crate::models::{Profile, User};
+use crate::prelude::*;
 
 #[sqlx::test]
 async fn success(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
+    let database = server.database();
 
     // Act
     let payload = json!({
@@ -19,17 +20,19 @@ async fn success(pool: PgPool) -> Result<()> {
         "password_confirm": "#TestPassword1234",
     });
 
-    let response = actions::register(&server, &payload).await;
+    let response = actions::register(&server, payload).await;
 
-    let user = User::find_by_email("test_user@example.com", &database).await;
+    let user = User::find_by_email("test_user@example.com", database).await;
+    let user_count = User::count(database).await;
+    let profile_count = Profile::count(database).await;
 
     // Assert
-    response.assert_status(StatusCode::CREATED);
-    assert_eq!(User::count(&database).await?, 1);
-    assert_eq!(Profile::count(&database).await?, 1);
-    assert!(user.is_ok());
-    assert_eq!(Profile::find_by_user(user?.id, &database).await?
-        .user(&database).await?.email,
+    response.assert_created();
+    assert_ok(&user);
+    assert_eq!(User::count(server.database()).await?, 1);
+    assert_eq!(Profile::count(server.database()).await?, 1);
+    assert_eq!(Profile::find_by_user(user?.id, server.database()).await?
+        .user(server.database()).await?.email,
         "test_user@example.com",
     );
 
@@ -39,10 +42,10 @@ async fn success(pool: PgPool) -> Result<()> {
 #[sqlx::test]
 async fn fails_with_duplicate_email(pool: PgPool) -> Result<()> {
     // Arrange
-    let (server, database) = init(pool).await;
+    let server = MockServer::init(pool).await;
     let user = User::fake()
         .email("test_user@example.com")
-        .create(&database)
+        .create(server.database())
         .await?;
 
     // Act
@@ -56,11 +59,11 @@ async fn fails_with_duplicate_email(pool: PgPool) -> Result<()> {
         "password_confirm": "#TestPassword1234",
     });
 
-    let response = actions::register(&server, &payload).await;
+    let response = actions::register(&server, payload).await;
 
     // Assert
-    response.assert_status(StatusCode::UNPROCESSABLE_ENTITY);
-    assert_eq!(User::count(&database).await.unwrap(), 1);
+    response.assert_unprocessable();
+    assert_eq!(User::count(server.database()).await?, 1);
 
     Ok(())
 }
@@ -71,7 +74,7 @@ macro_rules! password_format_tests {
             #[sqlx::test]
             async fn $name(pool: PgPool) -> Result<()> {
                 // Arrange
-                let (server, database) = init(pool).await;
+                let server = MockServer::init(pool).await;
 
                 // Act
                 let payload = json!({
@@ -84,11 +87,11 @@ macro_rules! password_format_tests {
                     "password_confirm": "#TestPassword1234",
                 });
 
-                let response = actions::register(&server, &payload).await;
+                let response = actions::register(&server, payload).await;
 
                 // Assert
-                response.assert_status(StatusCode::UNPROCESSABLE_ENTITY);
-                assert_eq!(User::count(&database).await.unwrap(), 0);
+                response.assert_unprocessable();
+                assert_eq!(User::count(server.database()).await?, 0);
 
                 Ok(())
             }
