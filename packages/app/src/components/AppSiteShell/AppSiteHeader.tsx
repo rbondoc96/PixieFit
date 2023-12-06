@@ -1,13 +1,17 @@
-import {faChevronDown, faSignOut} from '@fortawesome/free-solid-svg-icons';
+import {faBars, faSignOut} from '@fortawesome/free-solid-svg-icons';
 import FontAwesomeIcon from 'solid-fa';
 import {type Component, createEffect, createSignal, Show} from 'solid-js';
 
 import UserIcon from '@/assets/images/user.png';
+import Logo from '@/components/Logo';
 import RouterLink from '@/components/RouterLink';
 import {Logout} from '@/constants/Routes';
 import {logout} from '@/stores/auth.store';
 
-const AppSiteHeader: Component = () => {
+const AppSiteHeader: Component<{
+    isSidebarExpanded: boolean;
+    onSidebarToggle: () => void;
+}> = props => {
     let activeArea: HTMLDivElement | undefined;
 
     const [isMenuDisplayed, setIsMenuDisplayed] = createSignal(false);
@@ -29,8 +33,21 @@ const AppSiteHeader: Component = () => {
     });
 
     return (
-        <div class="flex-1 flex items-center justify-end">
-            <div class="relative" ref={activeArea}>
+        <div class="flex-1 flex items-center justify-between md:justify-end">
+            <div class="flex h-full md:hidden">
+                <button
+                    class="flex w-[35px] justify-center items-center text-2xl"
+                    onClick={() => props.onSidebarToggle()}
+                >
+                    <FontAwesomeIcon
+                        icon={faBars}
+                    />
+                </button>
+            </div>
+            <div class="md:hidden">
+                <Logo theme="dark" />
+            </div>
+            <div class="relative">
                 <button
                     type="button"
                     class="flex gap-x-2 items-center justify-center focus:ring focus:ring-blue-500"
@@ -40,9 +57,6 @@ const AppSiteHeader: Component = () => {
                         class="w-[35px] h-auto aspect-square"
                         src={UserIcon}
                         alt="user icon"
-                    />
-                    <FontAwesomeIcon
-                        icon={faChevronDown}
                     />
                 </button>
                 <Show when={isMenuDisplayed()}>
