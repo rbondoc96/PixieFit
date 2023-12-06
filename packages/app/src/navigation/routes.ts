@@ -35,8 +35,8 @@ export default [
                 component: lazy(() => import('@/pages/app/DashboardPage')),
             },
             {
-                path: Routes.Exercises.path,
-                component: lazy(() => import('@/pages/app/ExercisesPage')),
+                path: Routes.ExerciseHomePage.path,
+                component: lazy(() => import('../pages/app/exercises/ExerciseHomePage')),
             },
             {
                 path: Routes.UserTracker.path,

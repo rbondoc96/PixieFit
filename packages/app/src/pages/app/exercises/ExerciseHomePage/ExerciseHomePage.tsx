@@ -3,7 +3,7 @@ import {type Component, createMemo} from 'solid-js';
 import CardScroller, {type CardProps} from '@/components/CardScroller';
 import {useMuscleGroupList} from '@/stores/muscle.store';
 
-const ExercisesPage: Component = () => {
+const ExerciseHomePage: Component = () => {
     const muscleGroups = useMuscleGroupList();
 
     const muscleGroupsAsItems = createMemo<CardProps[]>(() => muscleGroups()
@@ -33,4 +33,4 @@ const ExercisesPage: Component = () => {
     );
 };
 
-export default ExercisesPage;
+export default ExerciseHomePage;

@@ -11,7 +11,7 @@ import FontAwesomeIcon from 'solid-fa';
 import {type Component} from 'solid-js';
 
 import {
-    Exercises,
+    ExerciseHomePage,
     UserDashboard,
     UserProgress,
     UserSettings,
@@ -44,7 +44,7 @@ const TabNavigationBar: Component = () => {
     return (
         <nav class={styles.nav}>
             <TabButton icon={faList} label="Dashboard" route={UserDashboard} />
-            <TabButton icon={faDumbbell} label="Exercises" route={Exercises} />
+            <TabButton icon={faDumbbell} label="Exercises" route={ExerciseHomePage} />
             <Link
                 href={UserTracker.href}
                 activeClass={styles.middleTabActive}
