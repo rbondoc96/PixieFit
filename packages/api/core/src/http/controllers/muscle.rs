@@ -33,21 +33,6 @@ impl Controller for MuscleController {
 }
 
 impl MuscleController {
-    pub async fn list(
-        pagination: Pagination,
-        State(database): State<DatabaseManager>,
-    ) -> Result<JsonResponse> {
-        let muscles = Muscle::query()
-            .select(&["*"])
-            .order_by("name", true)
-            .all(database.connection())
-            .await?;
-
-        Ok(JsonResponse::ok()
-            .with_data(MuscleResource::list(muscles, &database).await)
-        )
-    }
-
     pub async fn create(
         State(database): State<DatabaseManager>,
         Json(payload): Json<CreateMusclePayload>,
@@ -78,6 +63,21 @@ impl MuscleController {
 
         Ok(JsonResponse::ok()
             .with_data(MuscleResource::default(muscle, &database).await)
+        )
+    }
+
+    pub async fn list(
+        pagination: Pagination,
+        State(database): State<DatabaseManager>,
+    ) -> Result<JsonResponse> {
+        let muscles = Muscle::query()
+            .select(&["*"])
+            .order_by("name", true)
+            .all(database.connection())
+            .await?;
+
+        Ok(JsonResponse::ok()
+            .with_data(MuscleResource::list(muscles, &database).await)
         )
     }
 }
