@@ -2,6 +2,11 @@ import Route from '@/lib/Route';
 
 const Routes = {
     ExerciseHomePage: Route({name: Symbol('exercises'), pathName: 'exercises', parents: ['app']}),
+    ExercisesByMuscleGroupPage: Route({
+        name: Symbol('exercises-by-muscle-group'),
+        pathName: 'exercises/muscle-groups/:id',
+        parents: ['app', 'exercises'],
+    }),
     Landing: Route({name: Symbol('landing'), pathName: ''}),
     Login: Route({name: Symbol('login'), pathName: 'login'}),
     Logout: Route({name: Symbol('logout'), pathName: 'logout'}),
@@ -17,6 +22,7 @@ const Routes = {
 } as const;
 
 export const ExerciseHomePage = Routes.ExerciseHomePage;
+export const ExercisesByMuscleGroupPage = Routes.ExercisesByMuscleGroupPage;
 export const Landing = Routes.Landing;
 export const Login = Routes.Login;
 export const Logout = Routes.Logout;

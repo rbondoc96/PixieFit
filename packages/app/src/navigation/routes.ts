@@ -36,7 +36,11 @@ export default [
             },
             {
                 path: Routes.ExerciseHomePage.path,
-                component: lazy(() => import('../pages/app/exercises/ExerciseHomePage')),
+                component: lazy(() => import('@/pages/app/exercises/ExerciseHomePage')),
+            },
+            {
+                path: Routes.ExercisesByMuscleGroupPage.path,
+                component: lazy(() => import('@/pages/app/exercises/ExercisesByMuscleGroupPage')),
             },
             {
                 path: Routes.UserTracker.path,

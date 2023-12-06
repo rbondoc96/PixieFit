@@ -8,7 +8,7 @@ const ExerciseHomePage: Component = () => {
 
     const muscleGroupsAsItems = createMemo<CardProps[]>(() => muscleGroups()
         .map(group => ({
-            href: `/app/muscle-groups/${group.id}`,
+            href: `/app/exercises/muscle-groups/${group.id}`,
             image: {
                 alt: group.name,
                 src: group.image_source ?? undefined,
