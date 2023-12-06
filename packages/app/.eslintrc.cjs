@@ -114,6 +114,7 @@ module.exports = defineConfig({
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-extra-semi': 'off', // conflicts with prettier
+        '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/consistent-type-imports': ['error', {prefer: 'type-imports'}],
     },
