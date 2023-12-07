@@ -2,7 +2,7 @@ import {nullable, object, type output, string} from 'zod';
 
 import {createGetResponseParser, createListResponseParser} from '@/parsers/responseParsers';
 
-const simplifiedMuscleSchema = object({
+export const simplifiedMuscleSchema = object({
     id: string(),
     muscle_group: string(),
     name: string(),
