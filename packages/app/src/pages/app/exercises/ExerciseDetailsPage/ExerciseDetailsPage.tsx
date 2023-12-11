@@ -55,11 +55,6 @@ const ExerciseDetailsPage: Component = () => {
                             {muscle => (
                                 <div>
                                     <span>{muscle.name}</span>
-                                    <Show when={muscle.image_source} keyed>
-                                        {source => (
-                                            <img alt={muscle.name} src={source} />
-                                        )}
-                                    </Show>
                                 </div>
                             )}
                         </For>
@@ -84,6 +79,19 @@ const ExerciseDetailsPage: Component = () => {
                                             <img alt={muscle.name} src={source} />
                                         )}
                                     </Show>
+                                </div>
+                            )}
+                        </For>
+                        <Show when={details.instructions.length > 0}>
+                            <span class="text-xl font-medium">
+                                Instructions
+                            </span>
+                        </Show>
+                        <For each={details.instructions}>
+                            {instruction => (
+                                <div class="flex gap-x-2">
+                                    <span>{instruction.sequence_number}.</span>
+                                    <span>{instruction.content}</span>
                                 </div>
                             )}
                         </For>
