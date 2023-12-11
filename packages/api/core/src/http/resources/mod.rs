@@ -1,5 +1,6 @@
 mod exercise;
 mod exercise_equipment;
+mod exercise_instruction;
 mod link;
 mod measurement;
 mod muscle;
@@ -10,6 +11,7 @@ mod user;
 
 pub use exercise::ExerciseResource;
 pub use exercise_equipment::ExerciseEquipmentResource;
+pub use exercise_instruction::ExerciseInstructionResource;
 pub use link::LinkResource;
 pub use measurement::MeasurementResource;
 pub use muscle::MuscleResource;

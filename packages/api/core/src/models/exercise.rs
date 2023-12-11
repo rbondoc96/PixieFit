@@ -1,4 +1,4 @@
-use super::{Error, ExerciseEquipment, ExerciseMuscleMap, Muscle, MuscleGroup, Result};
+use super::{Error, ExerciseEquipment, ExerciseInstruction, ExerciseMuscleMap, Muscle, MuscleGroup, Result};
 use crate::prelude::*;
 use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement};
 use async_trait::async_trait;
@@ -256,6 +256,17 @@ impl Exercise {
 
     pub async fn tertiary_muscles(&self, database: &DatabaseManager) -> Result<Vec<Muscle>> {
         self.muscles(ExerciseMuscleTarget::Tertiary, database).await
+    }
+
+    pub async fn instructions(&self, database: &DatabaseManager) -> Result<Vec<ExerciseInstruction>> {
+        let instructions = ExerciseInstruction::query()
+            .select(&["*"])
+            .and_where("exercise_id", "=", self.id)
+            .order_by("sequence_number", true)
+            .all(database.connection())
+            .await?;
+
+        Ok(instructions)
     }
 
     // endregion

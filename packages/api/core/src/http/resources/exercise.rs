@@ -1,5 +1,6 @@
 use super::{
     ExerciseEquipmentResource,
+    ExerciseInstructionResource,
     MeasurementResource,
     ModelResource,
     MuscleResource,
@@ -24,12 +25,12 @@ pub struct ExerciseResource {
     mechanic: Option<ExerciseMechanic>,
     force: Option<ExerciseForce>,
     measurement: Option<MeasurementResource>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    primary_muscles: Option<Vec<MuscleResource>>,
+    primary_muscles: Vec<MuscleResource>,
     #[serde(skip_serializing_if = "Option::is_none")]
     secondary_muscles: Option<Vec<MuscleResource>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     tertiary_muscles: Option<Vec<MuscleResource>>,
+    instructions: Option<Vec<ExerciseInstructionResource>>,
 }
 
 #[async_trait]
@@ -42,6 +43,7 @@ impl ModelResource for ExerciseResource {
         let primary_muscles = exercise.primary_muscles(database).await.unwrap();
         let secondary_muscles = exercise.secondary_muscles(database).await.unwrap();
         let tertiary_muscles = exercise.tertiary_muscles(database).await.unwrap();
+        let instructions = exercise.instructions(database).await.unwrap();
 
         Self {
             id: exercise.ulid,
@@ -63,15 +65,17 @@ impl ModelResource for ExerciseResource {
                 Some(measurement) => Some(MeasurementResource::new(measurement)),
                 None => None,
             },
-            primary_muscles: Some(MuscleResource::list(primary_muscles, database).await),
+            primary_muscles: MuscleResource::list(primary_muscles, database).await,
             secondary_muscles: Some(MuscleResource::list(secondary_muscles, database).await),
             tertiary_muscles: Some(MuscleResource::list(tertiary_muscles, database).await),
+            instructions: Some(ExerciseInstructionResource::list(instructions, database).await),
         }
     }
 
     async fn simple(exercise: Exercise, database: &DatabaseManager) -> Self {
         let equipment = exercise.equipment(database).await.unwrap_or(None);
         let muscle_group = exercise.target_muscle_group(database).await.unwrap();
+        let primary_muscles = exercise.primary_muscles(database).await.unwrap();
 
         Self {
             id: exercise.ulid,
@@ -93,9 +97,10 @@ impl ModelResource for ExerciseResource {
                 Some(measurement) => Some(MeasurementResource::new(measurement)),
                 None => None,
             },
-            primary_muscles: None,
+            primary_muscles: MuscleResource::list(primary_muscles, database).await,
             secondary_muscles: None,
             tertiary_muscles: None,
+            instructions: None,
         }
     }
 }
