@@ -8,18 +8,20 @@ import {type Route} from '@/lib/Route';
 import styles from './styles.module.scss';
 
 const TabButton: Component<{
+    'class'?: string;
     icon: IconDefinition;
-    label: string;
     route: Route;
 }> = props => {
     return (
         <Link
             href={props.route.href}
             activeClass={styles.tabButtonActive}
-            class={styles.tabButton}
+            classList={{
+                [styles.tabButton]: true,
+                [props.class ?? '']: true,
+            }}
         >
-            <FontAwesomeIcon icon={props.icon} size="1x" />
-            <span>{props.label}</span>
+            <FontAwesomeIcon icon={props.icon} size="lg" />
         </Link>
     );
 };
