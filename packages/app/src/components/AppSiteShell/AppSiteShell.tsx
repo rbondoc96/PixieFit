@@ -16,15 +16,13 @@ import CollapsibleSideBar from '@/components/navigation/CollapsibleSideBar';
 import TabBar from '@/components/navigation/TabBar';
 import SuspensefulErrorBoundary from '@/components/SuspensefulErrorBoundary';
 import {
-    Exercises,
+    ExerciseHomePage,
     UserDashboard,
     UserProgress,
     UserTracker,
 } from '@/constants/Routes';
 import {type Route} from '@/lib/Route';
 import GeneralErrorPage from '@/pages/GeneralErrorPage';
-
-import styles from './styles.module.scss';
 
 function NavigationLink(label: string, route: Route, icon: IconDefinition) {
     return {
@@ -38,21 +36,21 @@ export type NavLink = ReturnType<typeof NavigationLink>;
 
 const navigationLinks: NavLink[] = [
     NavigationLink('Dashboard', UserDashboard, faHome),
-    NavigationLink('Exercises', Exercises, faDumbbell),
+    NavigationLink('Exercises', ExerciseHomePage, faDumbbell),
     NavigationLink('Tracker', UserTracker, faStopwatch),
     NavigationLink('Activities', UserProgress, faList),
 ];
 
 const AppSiteShell: Component = () => {
-    const [isSidebarExpanded, setIsSidebarExpanded] = createSignal(false);
+    const [isSidebarExpanded, setIsSidebarExpanded] = createSignal(true);
 
     const toggleSidebar = () => setIsSidebarExpanded(currentState => !currentState);
 
     return (
         <>
             <Helmet title="PixieFit" />
-            <div class={styles.app}>
-                <div class="hidden md:block">
+            <div class="flex flex-col h-screen md:flex-row">
+                <div>
                     <CollapsibleSideBar
                         isExpanded={isSidebarExpanded()}
                         links={navigationLinks}
@@ -65,16 +63,19 @@ const AppSiteShell: Component = () => {
                         }}
                     />
                 </div>
-                <div class={styles.appContainer}>
+                <div class="flex-grow flex flex-col overflow-y-auto">
                     <header class="flex px-6 py-4 shadow-md">
-                        <AppSiteHeader />
+                        <AppSiteHeader
+                            isSidebarExpanded={isSidebarExpanded()}
+                            onSidebarToggle={toggleSidebar}
+                        />
                     </header>
                     <SuspensefulErrorBoundary
                         error={GeneralErrorPage}
                         loading={LoadingView}
                     >
                         <AuthenticatedView>
-                            <main class={styles.main}>
+                            <main class="relative flex-1 flex flex-col overflow-y-auto">
                                 <Outlet />
                             </main>
                         </AuthenticatedView>
