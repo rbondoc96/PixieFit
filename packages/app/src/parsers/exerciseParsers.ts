@@ -4,9 +4,10 @@ import ExerciseForce from '@/enums/ExerciseForce';
 import ExerciseMechanic from '@/enums/ExerciseMechanic';
 import ExerciseType from '@/enums/ExerciseType';
 import {exerciseEquipmentSchema} from '@/parsers/exerciseEquipmentParser';
+import {exerciseInstructionSchema} from '@/parsers/exerciseInstructionParser';
 import {measurementSchema} from '@/parsers/measurementParser';
-import {simplifiedMuscleSchema} from '@/parsers/muscleParser';
 import {muscleGroupSchema} from '@/parsers/muscleGroupParser';
+import {simplifiedMuscleSchema} from '@/parsers/muscleParser';
 import {createGetResponseParser, createListResponseParser} from '@/parsers/responseParsers';
 
 const simplifiedExerciseSchema = object({
@@ -20,12 +21,13 @@ const simplifiedExerciseSchema = object({
     mechanic: nullable(nativeEnum(ExerciseMechanic)),
     force: nullable(nativeEnum(ExerciseForce)),
     measurement: nullable(measurementSchema),
+    primary_muscles: array(simplifiedMuscleSchema),
 });
 
 const exerciseSchema = simplifiedExerciseSchema.extend({
-    primary_muscles: array(simplifiedMuscleSchema),
     secondary_muscles: array(simplifiedMuscleSchema),
     tertiary_muscles: array(simplifiedMuscleSchema),
+    instructions: array(exerciseInstructionSchema),
 });
 
 export const exerciseListParser = createListResponseParser(simplifiedExerciseSchema);
