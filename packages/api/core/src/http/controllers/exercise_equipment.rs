@@ -6,7 +6,7 @@ use crate::models::ExerciseEquipment;
 use axum::extract::{Path, State};
 use axum::response::Json;
 use axum::routing::{get, Router};
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Deserialize;
 
 #[derive(Deserialize)]

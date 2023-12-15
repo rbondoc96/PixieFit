@@ -8,7 +8,7 @@ use crate::models::{Exercise, ExerciseMuscleMap};
 use axum::extract::{Path, State, Query};
 use axum::response::Json;
 use axum::routing::{get, post, Router};
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
