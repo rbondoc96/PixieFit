@@ -1,4 +1,4 @@
-use crate::__tests__::actions::health as actions;
+use crate::tests::actions::health as actions;
 use crate::prelude::*;
 
 #[sqlx::test]

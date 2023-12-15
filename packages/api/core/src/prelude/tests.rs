@@ -1,5 +1,5 @@
 use super::DynError;
-use crate::__tests__::actions::auth::{login, login_as_admin};
+use crate::tests::actions::auth::{login, login_as_admin};
 use crate::http::router;
 use crate::models::User;
 

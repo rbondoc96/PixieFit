@@ -1,4 +1,4 @@
-use crate::__tests__::actions::auth as actions;
+use crate::tests::actions::auth as actions;
 use crate::enums::Gender;
 use crate::models::{Profile, User};
 use crate::prelude::*;

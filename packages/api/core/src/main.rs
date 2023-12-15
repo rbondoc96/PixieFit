@@ -20,7 +20,7 @@ mod types;
 mod utils;
 
 #[cfg(test)]
-mod __tests__;
+mod tests;
 
 use database::DatabaseManager;
 use sys::config;

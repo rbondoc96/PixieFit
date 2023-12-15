@@ -1,4 +1,4 @@
-use crate::__tests__::actions::exercise as actions;
+use crate::tests::actions::exercise as actions;
 use crate::enums::{ExerciseType, ExerciseForce, ExerciseMechanic, Measurement};
 use crate::http::resources::{ExerciseResource, ModelResource};
 use crate::models::{Exercise, ExerciseEquipment, MuscleGroup};

@@ -1,4 +1,4 @@
-use crate::__tests__::actions::exercise_equipment as actions;
+use crate::tests::actions::exercise_equipment as actions;
 use crate::http::resources::{ModelResource, ExerciseEquipmentResource};
 use crate::models::ExerciseEquipment;
 use crate::prelude::*;
