@@ -77,7 +77,7 @@ impl ExerciseController {
         }
 
         Ok(JsonResponse::created()
-            .with_data(ExerciseResource::default(exercise, &database).await)
+            .with_data(ExerciseResource::default(exercise, &database).await?)
         )
     }
 
@@ -88,7 +88,7 @@ impl ExerciseController {
         let exercise = Exercise::find_by_route_key(ulid, &database).await?;
 
         Ok(JsonResponse::ok()
-            .with_data(ExerciseResource::default(exercise, &database).await)
+            .with_data(ExerciseResource::default(exercise, &database).await?)
         )
     }
 
@@ -111,7 +111,7 @@ impl ExerciseController {
             .await?;
 
         Ok(JsonResponse::ok()
-            .with_data(ExerciseResource::list(exercises, &database).await)
+            .with_data(ExerciseResource::list(exercises, &database).await?)
         )
     }
 }

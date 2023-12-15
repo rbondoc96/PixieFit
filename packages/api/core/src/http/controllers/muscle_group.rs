@@ -42,7 +42,7 @@ impl MuscleGroupController {
         let group = group_builder.create(&database).await?;
 
         Ok(JsonResponse::created()
-            .with_data(MuscleGroupResource::default(group, &database).await)
+            .with_data(MuscleGroupResource::default(group, &database).await?)
         )
     }
 
@@ -53,7 +53,7 @@ impl MuscleGroupController {
         let group = MuscleGroup::find_by_pk(id, &database).await?;
 
         Ok(JsonResponse::ok()
-            .with_data(MuscleGroupResource::default(group, &database).await)
+            .with_data(MuscleGroupResource::default(group, &database).await?)
         )
     }
 
@@ -67,7 +67,7 @@ impl MuscleGroupController {
             .await?;
 
         Ok(JsonResponse::ok()
-            .with_data(MuscleGroupResource::list(groups, &database).await)
+            .with_data(MuscleGroupResource::list(groups, &database).await?)
         )
     }
 }

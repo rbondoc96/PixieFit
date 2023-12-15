@@ -1,4 +1,4 @@
-use super::{LinkResource, ModelResource};
+use super::{LinkResource, ModelResource, ResourceResult};
 use crate::models::{Link, Muscle};
 use async_trait::async_trait;
 use database::{DatabaseManager, Model};
@@ -22,36 +22,32 @@ pub struct MuscleResource {
 impl ModelResource for MuscleResource {
     type Model = Muscle;
 
-    async fn default(muscle: Muscle, database: &DatabaseManager) -> Self {
-        let links = match muscle.links(database).await {
-            Ok(links) => links,
-            Err(_) => vec![],
+    async fn default(muscle: Muscle, database: &DatabaseManager) -> ResourceResult<Self> {
+        let links = muscle.links(database).await?;
+
+        let group = muscle.muscle_group(database).await?;
+        let parent = match muscle.parent(database).await? {
+            Some(parent) => Some(Box::new(MuscleResource::simple(parent, database).await?)),
+            None => None,
         };
+        let links = Some(LinkResource::list(links, database).await?);
 
-        let group = muscle.muscle_group(database).await.unwrap();
-        let parent = muscle.parent(database).await.unwrap();
-
-        Self {
+        Ok(Self {
             id: muscle.rk(),
             muscle_group: group.name,
             name: muscle.name,
             simple_name: muscle.simple_name,
             description: muscle.description,
             image_source: muscle.image_source,
-            parent: match parent {
-                Some(parent) => Some(
-                    Box::new(MuscleResource::simple(parent, database).await)
-                ),
-                None => None,
-            },
-            links: Some(LinkResource::list(links, database).await),
-        }
+            parent,
+            links,
+        })
     }
 
-    async fn simple(muscle: Muscle, database: &DatabaseManager) -> Self {
-        let group = muscle.muscle_group(database).await.unwrap();
+    async fn simple(muscle: Muscle, database: &DatabaseManager) -> ResourceResult<Self> {
+        let group = muscle.muscle_group(database).await?;
 
-        Self {
+        Ok(Self {
             id: muscle.rk(),
             muscle_group: group.name,
             name: muscle.name,
@@ -60,6 +56,6 @@ impl ModelResource for MuscleResource {
             image_source: muscle.image_source,
             parent: None,
             links: None,
-        }
+        })
     }
 }

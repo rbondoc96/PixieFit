@@ -73,7 +73,7 @@ impl AuthController {
             })?;
 
         Ok(JsonResponse::ok()
-            .with_data(UserResource::default(user, &database).await)
+            .with_data(UserResource::default(user, &database).await?)
         )
     }
 
@@ -98,7 +98,7 @@ impl AuthController {
         session.set("user_id", user.id);
 
         Ok(JsonResponse::ok()
-            .with_data(UserResource::default(user, &database).await)
+            .with_data(UserResource::default(user, &database).await?)
         )
     }
 
@@ -123,7 +123,7 @@ impl AuthController {
         session.set("user_id", user.id);
 
         Ok(JsonResponse::ok()
-            .with_data(UserResource::default(user, &database).await)
+            .with_data(UserResource::default(user, &database).await?)
         )
     }
 
@@ -160,7 +160,7 @@ impl AuthController {
         ).await?;
 
         Ok(JsonResponse::created()
-            .with_data(UserResource::default(user, &database).await)
+            .with_data(UserResource::default(user, &database).await?)
         )
     }
 }

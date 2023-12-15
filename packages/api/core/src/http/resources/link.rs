@@ -1,4 +1,4 @@
-use super::ModelResource;
+use super::{ModelResource, ResourceResult};
 use crate::prelude::*;
 use crate::enums::{LinkFormat, LinkType};
 use crate::models::Link;
@@ -25,8 +25,8 @@ pub struct LinkResource {
 impl ModelResource for LinkResource {
     type Model = Link;
 
-    async fn default(link: Link, database: &DatabaseManager) -> Self {
-        Self {
+    async fn default(link: Link, database: &DatabaseManager) -> ResourceResult<Self> {
+        Ok(Self {
             id: link.rk(),
             link_type: link.link_type,
             format: link.format,
@@ -35,11 +35,11 @@ impl ModelResource for LinkResource {
             src: link.src,
             created_at: Some(link.created_at),
             updated_at: Some(link.updated_at),
-        }
+        })
     }
 
-    async fn simple(link: Link, database: &DatabaseManager) -> Self {
-        Self {
+    async fn simple(link: Link, database: &DatabaseManager) -> ResourceResult<Self> {
+        Ok(Self {
             id: link.rk(),
             link_type: link.link_type,
             format: link.format,
@@ -48,6 +48,6 @@ impl ModelResource for LinkResource {
             src: link.src,
             created_at: None,
             updated_at: None,
-        }
+        })
     }
 }

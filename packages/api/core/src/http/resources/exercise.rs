@@ -5,6 +5,7 @@ use super::{
     ModelResource,
     MuscleResource,
     MuscleGroupResource,
+    ResourceResult,
 };
 use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseType};
 use crate::models::Exercise;
@@ -37,70 +38,84 @@ pub struct ExerciseResource {
 impl ModelResource for ExerciseResource {
     type Model = Exercise;
 
-    async fn default(exercise: Exercise, database: &DatabaseManager) -> Self {
-        let equipment = exercise.equipment(database).await.unwrap();
-        let muscle_group = exercise.target_muscle_group(database).await.unwrap();
-        let primary_muscles = exercise.primary_muscles(database).await.unwrap();
-        let secondary_muscles = exercise.secondary_muscles(database).await.unwrap();
-        let tertiary_muscles = exercise.tertiary_muscles(database).await.unwrap();
-        let instructions = exercise.instructions(database).await.unwrap();
+    async fn default(exercise: Exercise, database: &DatabaseManager) -> ResourceResult<Self> {
+        let equipment = match exercise.equipment(database).await? {
+            Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment, database).await?),
+            None => None,
+        };
+        let target_muscle_group = match exercise.target_muscle_group(database).await? {
+            Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group, database).await?),
+            None => None,
+        };
+        let primary_muscles = MuscleResource::list(
+            exercise.primary_muscles(database).await?,
+            database).await?;
+        let secondary_muscles = MuscleResource::list(
+            exercise.secondary_muscles(database).await?,
+            database).await?;
+        let tertiary_muscles = MuscleResource::list(
+            exercise.tertiary_muscles(database).await?,
+            database).await?;
+        let instructions = ExerciseInstructionResource::list(
+            exercise.instructions(database).await?,
+            database).await?;
 
-        Self {
+        let measurement = match exercise.measurement {
+            Some(measurement) => Some(MeasurementResource::new(measurement)),
+            None => None,
+        };
+
+        Ok(Self {
             id: exercise.ulid,
             exercise_type: exercise.exercise_type,
-            target_muscle_group: match muscle_group {
-                Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group, database).await),
-                None => None,
-            },
+            target_muscle_group,
             name: exercise.name,
             name_alternative: exercise.name_alternative,
             description: exercise.description,
-            equipment: match equipment {
-                Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment, database).await),
-                None => None,
-            },
+            equipment,
             mechanic: exercise.mechanic,
             force: exercise.force,
-            measurement: match exercise.measurement {
-                Some(measurement) => Some(MeasurementResource::new(measurement)),
-                None => None,
-            },
-            primary_muscles: MuscleResource::list(primary_muscles, database).await,
-            secondary_muscles: Some(MuscleResource::list(secondary_muscles, database).await),
-            tertiary_muscles: Some(MuscleResource::list(tertiary_muscles, database).await),
-            instructions: Some(ExerciseInstructionResource::list(instructions, database).await),
-        }
+            measurement,
+            primary_muscles,
+            secondary_muscles: Some(secondary_muscles),
+            tertiary_muscles: Some(tertiary_muscles),
+            instructions: Some(instructions),
+        })
     }
 
-    async fn simple(exercise: Exercise, database: &DatabaseManager) -> Self {
-        let equipment = exercise.equipment(database).await.unwrap_or(None);
-        let muscle_group = exercise.target_muscle_group(database).await.unwrap();
-        let primary_muscles = exercise.primary_muscles(database).await.unwrap();
+    async fn simple(exercise: Exercise, database: &DatabaseManager) -> ResourceResult<Self> {
+        let equipment = match exercise.equipment(database).await? {
+            Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment, database).await?),
+            None => None,
+        };
+        let target_muscle_group = match exercise.target_muscle_group(database).await? {
+            Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group, database).await?),
+            None => None,
+        };
+        let primary_muscles = MuscleResource::list(
+            exercise.primary_muscles(database).await?,
+            database).await?;
 
-        Self {
+        let measurement = match exercise.measurement {
+            Some(measurement) => Some(MeasurementResource::new(measurement)),
+            None => None,
+        };
+
+        Ok(Self {
             id: exercise.ulid,
             exercise_type: exercise.exercise_type,
-            target_muscle_group: match muscle_group {
-                Some(muscle_group) => Some(MuscleGroupResource::simple(muscle_group, database).await),
-                None => None,
-            },
+            target_muscle_group,
             name: exercise.name,
             name_alternative: exercise.name_alternative,
             description: exercise.description,
-            equipment: match equipment {
-                Some(equipment) => Some(ExerciseEquipmentResource::simple(equipment, database).await),
-                None => None,
-            },
+            equipment,
             mechanic: exercise.mechanic,
             force: exercise.force,
-            measurement: match exercise.measurement {
-                Some(measurement) => Some(MeasurementResource::new(measurement)),
-                None => None,
-            },
-            primary_muscles: MuscleResource::list(primary_muscles, database).await,
+            measurement,
+            primary_muscles,
             secondary_muscles: None,
             tertiary_muscles: None,
             instructions: None,
-        }
+        })
     }
 }

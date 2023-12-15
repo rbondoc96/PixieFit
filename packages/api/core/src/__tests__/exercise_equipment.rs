@@ -17,7 +17,7 @@ async fn create_success(pool: PgPool) -> Result<()> {
     // Assert
     response.assert_created();
     let equipment = ExerciseEquipment::find("name", "Test Equipment", server.database()).await?;
-    let resource = ExerciseEquipmentResource::default(equipment, server.database()).await;
+    let resource = ExerciseEquipmentResource::default(equipment, server.database()).await?;
     response.assert_json(json!({
         "success": true,
         "data": resource,
@@ -54,7 +54,7 @@ async fn read_success(pool: PgPool) -> Result<()> {
 
     // Assert
     response.assert_ok();
-    let resource = ExerciseEquipmentResource::default(equipment, server.database()).await;
+    let resource = ExerciseEquipmentResource::default(equipment, server.database()).await?;
     response.assert_json(json!({
         "success": true,
         "data": resource,

@@ -59,7 +59,7 @@ async fn read_success(pool: PgPool) -> Result<()> {
     let response = actions::read_muscle(&server, &muscle).await;
 
     // Assert
-    let resource = MuscleResource::default(muscle, server.database()).await;
+    let resource = MuscleResource::default(muscle, server.database()).await?;
     response.assert_ok();
     response.assert_json(json!({
         "success": true,

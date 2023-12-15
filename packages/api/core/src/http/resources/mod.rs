@@ -22,8 +22,9 @@ pub use user::UserResource;
 
 use async_trait::async_trait;
 use database::DatabaseManager;
-use futures::future::join_all;
 use serde::Serialize;
+
+pub(self) type ResourceResult<T> = Result<T, crate::models::Error>;
 
 pub enum ModelResourceFormat {
     Default,
@@ -117,32 +118,16 @@ where
 {
     type Model: database::Model + Unpin + Send;
 
-    /// Create a new resource from a model
-    async fn default(model: Self::Model, database: &DatabaseManager) -> Self;
-    async fn simple(model: Self::Model, database: &DatabaseManager) -> Self;
+    async fn default(model: Self::Model, database: &DatabaseManager) -> ResourceResult<Self>;
+    async fn simple(model: Self::Model, database: &DatabaseManager) -> ResourceResult<Self>;
 
-    async fn new(model: Self::Model, format: ModelResourceFormat, database: &DatabaseManager) -> Self {
-        match format {
-            ModelResourceFormat::Default => Self::default(model, database).await,
-            ModelResourceFormat::Simple => Self::simple(model, database).await,
+    async fn list(models: Vec<Self::Model>, database: &DatabaseManager) -> ResourceResult<Vec<Self>> {
+        let mut results = Vec::with_capacity(models.len());
+
+        for model in models {
+            results.push(Self::simple(model, database).await?);
         }
-    }
-
-    async fn list(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
-        Self::list_simple(models, database).await
-    }
-
-    async fn list_default(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
-        join_all(models
-            .into_iter()
-            .map(|model| Self::default(model, database))
-        ).await
-    }
-
-    async fn list_simple(models: Vec<Self::Model>, database: &DatabaseManager) -> Vec<Self> {
-        join_all(models
-            .into_iter()
-            .map(|model| Self::simple(model, database))
-        ).await
+        
+        Ok(results)
     }
 }

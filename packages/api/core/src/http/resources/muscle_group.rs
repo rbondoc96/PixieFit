@@ -1,4 +1,4 @@
-use super::ModelResource;
+use super::{ModelResource, ResourceResult};
 use crate::models::MuscleGroup;
 use async_trait::async_trait;
 use database::DatabaseManager;
@@ -15,19 +15,19 @@ pub struct MuscleGroupResource {
 impl ModelResource for MuscleGroupResource {
     type Model = MuscleGroup;
 
-    async fn default(group: MuscleGroup, database: &DatabaseManager) -> Self {
-        Self {
+    async fn default(group: MuscleGroup, database: &DatabaseManager) -> ResourceResult<Self> {
+        Ok(Self {
             id: group.id,
             name: group.name,
             image_source: group.image_source,
-        }
+        })
     }
 
-    async fn simple(group: MuscleGroup, database: &DatabaseManager) -> Self {
-        Self {
+    async fn simple(group: MuscleGroup, database: &DatabaseManager) -> ResourceResult<Self> {
+        Ok(Self {
             id: group.id,
             name: group.name,
             image_source: group.image_source,
-        }
+        })
     }
 }

@@ -1,4 +1,4 @@
-use super::{ModelResource, NameResource, ProfileResource};
+use super::{ModelResource, NameResource, ProfileResource, ResourceResult};
 use crate::prelude::*;
 use crate::enums::Role;
 use crate::models::{Profile, User};
@@ -24,27 +24,32 @@ pub struct UserResource {
 impl ModelResource for UserResource {
     type Model = User;
 
-    async fn default(user: User, database: &DatabaseManager) -> Self {
-        match user.profile(database).await {
-            Ok(profile) => {
-                Self {
+    async fn default(user: User, database: &DatabaseManager) -> ResourceResult<Self> {
+        match user.role {
+            Role::User => {
+                let profile = ProfileResource::default(
+                    user.profile(database).await?,
+                    database,
+                ).await?;
+
+                Ok(Self {
                     name: NameResource::new(user.first_name, user.last_name),
                     email: user.email,
                     role: user.role,
-                    profile: Some(ProfileResource::default(profile, database).await),
+                    profile: Some(profile),
                     last_logged_in_at: user.last_logged_in_at,
                     created_at: user.created_at,
                     updated_at: user.updated_at,
-                }
+                })
             }
-            Err(_) => {
+            Role::Admin => {
                 Self::simple(user, database).await
             }
         }
     }
 
-    async fn simple(user: User, database: &DatabaseManager) -> Self {
-        Self {
+    async fn simple(user: User, database: &DatabaseManager) -> ResourceResult<Self> {
+        Ok(Self {
             name: NameResource::new(user.first_name, user.last_name),
             email: user.email,
             role: user.role,
@@ -52,6 +57,6 @@ impl ModelResource for UserResource {
             last_logged_in_at: user.last_logged_in_at,
             created_at: user.created_at,
             updated_at: user.updated_at,
-        }
+        })
     }
 }

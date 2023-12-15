@@ -34,7 +34,7 @@ async fn create_success(pool: PgPool) -> Result<()> {
 
     // Assert
     let exercise = Exercise::find("name", "Test Exercise", database).await?;
-    let resource = ExerciseResource::default(exercise, database).await;
+    let resource = ExerciseResource::default(exercise, database).await?;
     response.assert_created();
     response.assert_json(json!({
         "success": true,
@@ -88,7 +88,7 @@ async fn read_success(pool: PgPool) -> Result<()> {
     let response = actions::read_exercise(&server, &exercise).await;
 
     // Assert
-    let resource = ExerciseResource::default(exercise, server.database()).await;
+    let resource = ExerciseResource::default(exercise, server.database()).await?;
     response.assert_ok();
     response.assert_json(json!({
         "success": true,

@@ -41,7 +41,7 @@ impl LinkController {
         let links = Link::all(&database).await?;
 
         Ok(JsonResponse::ok()
-            .with_data(LinkResource::list(links, &database).await)
+            .with_data(LinkResource::list(links, &database).await?)
         )
     }
 
@@ -60,7 +60,7 @@ impl LinkController {
             .await?;
 
         Ok(JsonResponse::created()
-            .with_data(LinkResource::default(link, &database).await)
+            .with_data(LinkResource::default(link, &database).await?)
         )
     }
 }

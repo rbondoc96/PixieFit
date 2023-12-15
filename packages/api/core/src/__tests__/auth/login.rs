@@ -13,6 +13,11 @@ async fn standard_login_success(pool: PgPool) -> Result<()> {
         .create(server.database())
         .await?;
 
+    Profile::fake()
+        .user(&user)
+        .create(server.database())
+        .await?;
+
     let payload = json!({
         "email": "test_user@example.com",
         "password": "#TestPassword1234",

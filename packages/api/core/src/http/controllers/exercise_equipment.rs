@@ -36,7 +36,7 @@ impl ExerciseEquipmentController {
             .await?;
 
         Ok(JsonResponse::created()
-            .with_data(ExerciseEquipmentResource::default(equipment, &database).await)
+            .with_data(ExerciseEquipmentResource::default(equipment, &database).await?)
         )
     }
 
@@ -47,7 +47,7 @@ impl ExerciseEquipmentController {
         let equipment = ExerciseEquipment::find_by_route_key(id, &database).await?;
 
         Ok(JsonResponse::ok()
-            .with_data(ExerciseEquipmentResource::default(equipment, &database).await)
+            .with_data(ExerciseEquipmentResource::default(equipment, &database).await?)
         )
     }
 
@@ -55,7 +55,7 @@ impl ExerciseEquipmentController {
         let groups = ExerciseEquipment::all(&database).await?;
 
         Ok(JsonResponse::ok()
-            .with_data(ExerciseEquipmentResource::list(groups, &database).await)
+            .with_data(ExerciseEquipmentResource::list(groups, &database).await?)
         )
     }
 }

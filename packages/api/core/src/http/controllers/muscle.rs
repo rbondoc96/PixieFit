@@ -48,7 +48,7 @@ impl MuscleController {
             .await?;
 
         Ok(JsonResponse::created()
-            .with_data(MuscleResource::default(muscle, &database).await)
+            .with_data(MuscleResource::default(muscle, &database).await?)
         )
     }
 
@@ -62,7 +62,7 @@ impl MuscleController {
         eprintln!("{:?}", context);
 
         Ok(JsonResponse::ok()
-            .with_data(MuscleResource::default(muscle, &database).await)
+            .with_data(MuscleResource::default(muscle, &database).await?)
         )
     }
 
@@ -77,7 +77,7 @@ impl MuscleController {
             .await?;
 
         Ok(JsonResponse::ok()
-            .with_data(MuscleResource::list(muscles, &database).await)
+            .with_data(MuscleResource::list(muscles, &database).await?)
         )
     }
 }
