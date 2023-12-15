@@ -122,12 +122,7 @@ impl Model for ExerciseMuscleMap {
     const TABLE_NAME: &'static str = "exercises_muscles";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
-        self.id
-    }
-
-    type RouteKey = i16;
-    fn rk(&self) -> Self::RouteKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
 }
@@ -157,7 +152,7 @@ impl ExerciseMuscleMap {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (exercise_id, muscle_id, target) = ($1, $2, $3) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.exercise_id)
             .bind(self.muscle_id)

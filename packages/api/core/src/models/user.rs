@@ -1,8 +1,8 @@
 use super::{Error, Profile, Result};
 use crate::enums::Role;
 use crate::prelude::*;
+use database::{DatabaseManager, HasRouteKey, Model};
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgPool, FromRow};
 
@@ -142,12 +142,16 @@ impl Model for User {
     const TABLE_NAME: &'static str = "users";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for User {
+    const ROUTE_KEY: &'static str = "id";
     type RouteKey = i16;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.id
     }
 }
@@ -187,7 +191,7 @@ impl User {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (email, first_name, last_name, password, updated_at) = ($1, $2, $3, $4, $5) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, self.primary_key(),
         ).as_str())
             .bind(self.email.clone())
             .bind(self.first_name.clone())
@@ -211,7 +215,7 @@ impl User {
 
         let result = sqlx::query(format!(
             "UPDATE {} SET last_logged_in_at = $1 WHERE {} = {}",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, self.pk()
+            Self::TABLE_NAME, Self::PRIMARY_KEY, self.primary_key()
         ).as_str())
             .bind(now)
             .execute(database.connection())

@@ -1,6 +1,6 @@
 use super::{Error, Exercise, Result};
 use async_trait::async_trait;
-use database::{DatabaseManager, Model, SqlxAction};
+use database::{DatabaseManager, HasRouteKey, Model, SqlxAction};
 use sqlx::{FromRow, PgPool};
 
 #[cfg(test)]
@@ -67,13 +67,16 @@ impl Model for ExerciseEquipment {
     const TABLE_NAME: &'static str = "exercise_equipment";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for ExerciseEquipment {
     const ROUTE_KEY: &'static str = "id";
     type RouteKey = i16;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.id
     }
 }
@@ -102,7 +105,7 @@ impl ExerciseEquipment {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (name) = ($1) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.name.clone())
             .fetch_one(database.connection())

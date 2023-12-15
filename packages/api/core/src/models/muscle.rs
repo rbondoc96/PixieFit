@@ -1,7 +1,7 @@
 use super::{Error, Link, MuscleGroup, Result};
 use crate::prelude::*;
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
@@ -145,13 +145,16 @@ impl Model for Muscle {
     const TABLE_NAME: &'static str = "muscles";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for Muscle {
     const ROUTE_KEY: &'static str = "ulid";
     type RouteKey = String;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.ulid.clone()
     }
 }
@@ -188,7 +191,7 @@ impl Muscle {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (group_id, parent_id, name, simple_name, description, image_source, updated_at) = ($1, $2, $3, $4, $5, $6, $7) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.group_id)
             .bind(self.parent_id)

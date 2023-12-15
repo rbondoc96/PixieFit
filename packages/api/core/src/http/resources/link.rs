@@ -3,7 +3,7 @@ use crate::prelude::*;
 use crate::enums::{LinkFormat, LinkType};
 use crate::models::Link;
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -27,7 +27,7 @@ impl ModelResource for LinkResource {
 
     async fn default(link: Link, database: &DatabaseManager) -> ResourceResult<Self> {
         Ok(Self {
-            id: link.rk(),
+            id: link.route_key(),
             link_type: link.link_type,
             format: link.format,
             label: link.label,
@@ -40,7 +40,7 @@ impl ModelResource for LinkResource {
 
     async fn simple(link: Link, database: &DatabaseManager) -> ResourceResult<Self> {
         Ok(Self {
-            id: link.rk(),
+            id: link.route_key(),
             link_type: link.link_type,
             format: link.format,
             label: link.label,

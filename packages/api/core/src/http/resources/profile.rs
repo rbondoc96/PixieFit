@@ -2,7 +2,7 @@ use super::{ModelResource, ResourceResult};
 use crate::enums::Gender;
 use crate::models::Profile;
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -18,7 +18,7 @@ impl ModelResource for ProfileResource {
 
     async fn default(profile: Profile, database: &DatabaseManager) -> ResourceResult<Self> {
         Ok(Self {
-            id: profile.rk(),
+            id: profile.route_key(),
             gender: profile.gender,
             birthday: profile.birthday,
         })
@@ -26,7 +26,7 @@ impl ModelResource for ProfileResource {
 
     async fn simple(profile: Profile, database: &DatabaseManager) -> ResourceResult<Self> {
         Ok(Self {
-            id: profile.rk(),
+            id: profile.route_key(),
             gender: profile.gender,
             birthday: profile.birthday,
         })

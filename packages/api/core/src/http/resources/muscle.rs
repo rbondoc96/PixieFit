@@ -1,7 +1,7 @@
 use super::{LinkResource, ModelResource, ResourceResult};
 use crate::models::{Link, Muscle};
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -33,7 +33,7 @@ impl ModelResource for MuscleResource {
         let links = Some(LinkResource::list(links, database).await?);
 
         Ok(Self {
-            id: muscle.rk(),
+            id: muscle.route_key(),
             muscle_group: group.name,
             name: muscle.name,
             simple_name: muscle.simple_name,
@@ -48,7 +48,7 @@ impl ModelResource for MuscleResource {
         let group = muscle.muscle_group(database).await?;
 
         Ok(Self {
-            id: muscle.rk(),
+            id: muscle.route_key(),
             muscle_group: group.name,
             name: muscle.name,
             simple_name: muscle.simple_name,

@@ -2,7 +2,7 @@ use super::{Error, ExerciseEquipment, ExerciseInstruction, ExerciseMuscleMap, Mu
 use crate::prelude::*;
 use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType, Measurement};
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use serde::Deserialize;
 use sqlx::{postgres::PgPool, FromRow};
 
@@ -185,13 +185,16 @@ impl Model for Exercise {
     const TABLE_NAME: &'static str = "exercises";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for Exercise {
     const ROUTE_KEY: &'static str = "ulid";
     type RouteKey = String;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.ulid.clone()
     }
 }
@@ -276,7 +279,7 @@ impl Exercise {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (external_id, type, target_muscle_group_id, name, name_alternative, description, equipment_id, mechanic, force, measurement, updated_at) = ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.external_id)
             .bind(self.exercise_type.clone())

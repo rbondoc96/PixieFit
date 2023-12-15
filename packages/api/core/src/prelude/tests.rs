@@ -5,7 +5,7 @@ use crate::models::User;
 
 pub use axum::http::StatusCode;
 pub use axum_test::{TestResponse, TestServer, TestServerConfig};
-pub use database::{DatabaseManager, Model};
+pub use database::{DatabaseManager, HasRouteKey, Model};
 pub use serde_json::{json, Value};
 pub use sqlx::postgres::PgPool;
 

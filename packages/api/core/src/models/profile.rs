@@ -3,7 +3,7 @@ use crate::prelude::*;
 use crate::enums::Gender;
 use async_trait::async_trait;
 use chrono::NaiveDate;
-use database::{DatabaseManager, Model, SqlxAction};
+use database::{DatabaseManager, HasRouteKey, Model, SqlxAction};
 use serde::{Deserialize, Serialize};
 use sqlx::{FromRow, PgPool};
 
@@ -122,13 +122,16 @@ impl Model for Profile {
     const TABLE_NAME: &'static str = "user_profiles";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for Profile {
     const ROUTE_KEY: &'static str = "ulid";
     type RouteKey = String;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.ulid.clone()
     }
 }
@@ -157,7 +160,7 @@ impl Profile {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (birthday, gender, updated_at) = ($1, $2, $3) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.birthday)
             .bind(self.gender.clone())

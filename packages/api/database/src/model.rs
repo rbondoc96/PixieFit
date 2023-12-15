@@ -2,10 +2,23 @@ use crate::error::Error;
 use crate::manager::DatabaseManager;
 use crate::query::{SqlxAction, SqlxBindable, SqlxQuery};
 use async_trait::async_trait;
-use sqlx::{
-    FromRow,
-    postgres::{PgPool, PgRow},
-};
+use sqlx::FromRow;
+use sqlx::postgres::{PgPool, PgRow};
+
+#[async_trait]
+pub trait HasRouteKey
+where
+    Self: Model
+{
+    const ROUTE_KEY: &'static str;
+    type RouteKey: SqlxBindable + Send + Sync + std::fmt::Display + Clone;
+
+    fn route_key(&self) -> Self::RouteKey;
+
+    async fn find_by_route_key(key: Self::RouteKey, database: &DatabaseManager) -> Result<Self, Error> {
+        Self::find(Self::ROUTE_KEY, key, database).await
+    }
+}
 
 #[async_trait]
 pub trait Model
@@ -17,11 +30,7 @@ where
 
     const PRIMARY_KEY: &'static str = "id";
     type PrimaryKey: SqlxBindable + Send + Sync + std::fmt::Display + Clone;
-    fn pk(&self) -> Self::PrimaryKey;
-
-    const ROUTE_KEY: &'static str = "id";
-    type RouteKey: SqlxBindable + Send + Sync + std::fmt::Display + Clone;
-    fn rk(&self) ->  Self::RouteKey;
+    fn primary_key(&self) -> Self::PrimaryKey;
 
     async fn all(database: &DatabaseManager) -> Result<Vec<Self>, Error> {
         let results = Self::query()
@@ -72,10 +81,6 @@ where
 
     async fn find_by_pk(pk: Self::PrimaryKey, database: &DatabaseManager) -> Result<Self, Error> {
         Self::find(Self::PRIMARY_KEY, pk, database).await
-    }
-
-    async fn find_by_route_key(key: Self::RouteKey, database: &DatabaseManager) -> Result<Self, Error> {
-        Self::find(Self::ROUTE_KEY, key, database).await
     }
 
     async fn has<TKey>(key: &'static str, value: TKey, database: &DatabaseManager) -> Result<bool, Error>

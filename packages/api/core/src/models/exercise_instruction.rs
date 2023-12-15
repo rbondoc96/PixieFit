@@ -2,7 +2,7 @@ use super::{Error, Exercise, Result};
 use crate::prelude::*;
 use crate::enums::{ExerciseForce, ExerciseMechanic, ExerciseMuscleTarget, ExerciseType};
 use async_trait::async_trait;
-use database::{DatabaseManager, Model};
+use database::{DatabaseManager, HasRouteKey, Model};
 use sqlx::{postgres::PgPool, FromRow};
 
 #[cfg(test)]
@@ -158,12 +158,16 @@ impl Model for ExerciseInstruction {
     const TABLE_NAME: &'static str = "exercise_instructions";
 
     type PrimaryKey = i16;
-    fn pk(&self) -> Self::PrimaryKey {
+    fn primary_key(&self) -> Self::PrimaryKey {
         self.id
     }
+}
 
+impl HasRouteKey for ExerciseInstruction {
+    const ROUTE_KEY: &'static str = "id";
     type RouteKey = i16;
-    fn rk(&self) -> Self::RouteKey {
+
+    fn route_key(&self) -> Self::RouteKey {
         self.id
     }
 }
@@ -188,7 +192,7 @@ impl ExerciseInstruction {
     pub async fn save(&mut self, database: &DatabaseManager) -> Result<()> {
         let model = sqlx::query_as::<_, Self>(format!(
             "UPDATE {} SET (exercise_id, sequence_number, content, updated_at) = ($1, $2, $3, $4) WHERE {} = {} RETURNING *",
-            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.pk(),
+            Self::TABLE_NAME, Self::PRIMARY_KEY, &self.primary_key(),
         ).as_str())
             .bind(self.exercise_id)
             .bind(self.sequence_number)

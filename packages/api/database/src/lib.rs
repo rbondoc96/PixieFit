@@ -5,5 +5,5 @@ pub(self) mod error;
 
 pub use error::Error;
 pub use manager::{DatabaseManager, DatabaseManagerBuilder};
-pub use model::Model;
+pub use model::{HasRouteKey, Model};
 pub use query::{SqlxAction, SqlxBindable, SqlxQuery};
