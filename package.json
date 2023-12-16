@@ -15,6 +15,7 @@
     "scripts": {
         "api": "pnpm --filter=\"./packages/api\"",
         "app": "pnpm --filter=\"./packages/app\"",
+        "app:check": "pnpm app check",
         "api:dev": "pnpm api dev",
         "api:dev:fresh": "pnpm api dev:fresh",
         "api:test": "pnpm api test",

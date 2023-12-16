@@ -5,6 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "check": "pnpm check:types && pnpm lint",
         "check:types": "tsc --noEmit --skipLibCheck",
         "dev": "vite --host",
         "lint": "eslint src --ext ts,tsx --max-warnings 0",

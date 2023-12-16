@@ -34,8 +34,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Check Types
-        run: pnpm app check:types
-
-      - name: Check Code Style
-        run: pnpm app lint
+      - name: Check Types and Code Style
+        run: pnpm app check
