@@ -3,13 +3,14 @@ import {Router, useRoutes} from '@solidjs/router';
 import {type Component, onCleanup, onMount} from 'solid-js';
 
 import routes from '@/navigation/routes';
-import {updateScreenSize} from '@/stores/ui.store';
+import {useOnWindowResize} from '@/stores/ui.store';
 
 const App: Component = () => {
     const Routes = useRoutes(routes);
+    const onWindowResize = useOnWindowResize();
 
-    onMount(() => window.addEventListener('resize', updateScreenSize));
-    onCleanup(() => window.removeEventListener('resize', updateScreenSize));
+    onMount(() => window.addEventListener('resize', onWindowResize));
+    onCleanup(() => window.removeEventListener('resize', onWindowResize));
 
     return (
         <MetaProvider>

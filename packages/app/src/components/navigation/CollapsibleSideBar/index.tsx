@@ -36,74 +36,76 @@ const CollapsibleSideBar: Component<{
     );
 
     return (
-        <div
-            classList={{
-                'flex flex-col justify-between bg-gray-900 h-screen relative duration-500': true,
-                'w-72': props.isExpanded,
-                'w-20': !props.isExpanded,
-            }}
-        >
-            <div class="flex flex-col gap-y-12 p-5 pt-8">
-                <div class="absolute top-9 left-full -translate-x-1/2">
-                    <div class="flex rounded-full border border-black w-6 h-6 bg-white">
-                        <button
-                            class="flex-1 flex items-center justify-center"
-                            type="button"
-                            onClick={() => props.onToggle()}
-                        >
-                            <FontAwesomeIcon
-                                icon={props.isExpanded ? faChevronLeft : faChevronRight}
-                                size="xs"
-                            />
-                        </button>
-                    </div>
-                </div>
-                <div class="flex items-center">
-                    <Logo
-                        showText={props.isExpanded}
-                        tagLabel="dev"
-                        theme="dark"
-                    />
-                </div>
-                <nav>
-                    <ul class="flex flex-col gap-y-2">
-                        <For each={props.links}>
-                            {link => (
-                                <li>
-                                    <CollapsibleSideButton
-                                        isExpanded={props.isExpanded}
-                                        icon={link.icon}
-                                        label={link.label}
-                                        routeOrHref={link.route}
-                                    />
-                                </li>
-                            )}
-                        </For>
-                    </ul>
-                </nav>
-            </div>
-            <div>
-                <div class="px-5">
-                    <ul class="flex flex-col gap-y-2">
-                        <li>
-                            <CollapsibleSideButton
-                                isExpanded={props.isExpanded}
-                                icon={faCircleQuestion}
-                                label="Feedback"
-                                routeOrHref="https://github.com"
-                            />
-                        </li>
-                    </ul>
-                </div>
-                <Show when={version()} keyed>
-                    {version => (
-                        <div class="flex justify-center py-2">
-                            <span class="text-primary text-[10px]">
-                                {version}
-                            </span>
+        <div class="relative left-0">
+            <div
+                classList={{
+                    'flex flex-col justify-between bg-gray-900 h-screen relative duration-500': true,
+                    'w-72': props.isExpanded,
+                    'w-20': !props.isExpanded,
+                }}
+            >
+                <div class="flex flex-col gap-y-12 p-5 pt-8">
+                    <div class="hidden md:block absolute top-9 left-full -translate-x-1/2">
+                        <div class="flex rounded-full border border-black w-6 h-6 bg-white">
+                            <button
+                                class="flex-1 flex items-center justify-center"
+                                type="button"
+                                onClick={() => props.onToggle()}
+                            >
+                                <FontAwesomeIcon
+                                    icon={props.isExpanded ? faChevronLeft : faChevronRight}
+                                    size="xs"
+                                />
+                            </button>
                         </div>
-                    )}
-                </Show>
+                    </div>
+                    <div class="flex items-center">
+                        <Logo
+                            showText={props.isExpanded}
+                            tagLabel="dev"
+                            theme="dark"
+                        />
+                    </div>
+                    <nav>
+                        <ul class="flex flex-col gap-y-2">
+                            <For each={props.links}>
+                                {link => (
+                                    <li>
+                                        <CollapsibleSideButton
+                                            isExpanded={props.isExpanded}
+                                            icon={link.icon}
+                                            label={link.label}
+                                            routeOrHref={link.route}
+                                        />
+                                    </li>
+                                )}
+                            </For>
+                        </ul>
+                    </nav>
+                </div>
+                <div>
+                    <div class="px-5">
+                        <ul class="flex flex-col gap-y-2">
+                            <li>
+                                <CollapsibleSideButton
+                                    isExpanded={props.isExpanded}
+                                    icon={faCircleQuestion}
+                                    label="Feedback"
+                                    routeOrHref="https://github.com"
+                                />
+                            </li>
+                        </ul>
+                    </div>
+                    <Show when={version()} keyed>
+                        {version => (
+                            <div class="flex justify-center py-2">
+                                <span class="text-primary text-[10px]">
+                                    {version}
+                                </span>
+                            </div>
+                        )}
+                    </Show>
+                </div>
             </div>
         </div>
     );

@@ -8,11 +8,16 @@
     @apply p-2.5;
 
     @apply text-gray-500;
+    @apply tracking-tighter;
 
     &:hover,
     &.collapsible-side-button--active {
         @apply bg-gray-800;
         @apply text-white;
+    }
+
+    &.collapsible-side-button--active {
+        @apply font-bold;
     }
 
     /** Need to override the default CSS in the `<style>` tag for `FontAwesomeIcon` */

@@ -6,13 +6,14 @@ import {
     type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import {Outlet} from '@solidjs/router';
-import {type Component, createSignal} from 'solid-js';
+import {type Component, createEffect, createSignal, Show} from 'solid-js';
 
 import AppSiteHeader from '@/components/AppSiteShell/AppSiteHeader';
 import AuthenticatedView from '@/components/AuthenticatedView';
 import Helmet from '@/components/Helmet';
 import LoadingView from '@/components/LoadingView';
 import CollapsibleSideBar from '@/components/navigation/CollapsibleSideBar';
+import ExpandedSideBar from '@/components/navigation/ExpandedSideBar';
 import TabBar from '@/components/navigation/TabBar';
 import SuspensefulErrorBoundary from '@/components/SuspensefulErrorBoundary';
 import {
@@ -23,6 +24,7 @@ import {
 } from '@/constants/Routes';
 import {type Route} from '@/lib/Route';
 import GeneralErrorPage from '@/pages/GeneralErrorPage';
+import {useViewportState, ViewportState} from '@/stores/ui.store';
 
 function NavigationLink(label: string, route: Route, icon: IconDefinition) {
     return {
@@ -42,15 +44,27 @@ const navigationLinks: NavLink[] = [
 ];
 
 const AppSiteShell: Component = () => {
-    const [isSidebarExpanded, setIsSidebarExpanded] = createSignal(true);
+    const viewportState = useViewportState();
+
+    const [isSidebarExpanded, setIsSidebarExpanded] = createSignal(false);
+    const [shouldShowMobileSidebar, setShouldShowMobileSidebar] = createSignal(false);
 
     const toggleSidebar = () => setIsSidebarExpanded(currentState => !currentState);
+    const toggleMobileSidebar = () => setShouldShowMobileSidebar(currentState => !currentState);
+
+    createEffect(() => {
+        if (viewportState() === ViewportState.DesktopToMobile) {
+            setIsSidebarExpanded(false);
+        } else if (viewportState() === ViewportState.MobileToDesktop) {
+            setShouldShowMobileSidebar(false);
+        }
+    });
 
     return (
         <>
             <Helmet title="PixieFit" />
             <div class="flex flex-col h-screen md:flex-row">
-                <div>
+                <div class="hidden md:block">
                     <CollapsibleSideBar
                         isExpanded={isSidebarExpanded()}
                         links={navigationLinks}
@@ -63,11 +77,19 @@ const AppSiteShell: Component = () => {
                         }}
                     />
                 </div>
+                <Show
+                    when={viewportState() === ViewportState.Mobile || viewportState() === ViewportState.DesktopToMobile}
+                >
+                    <ExpandedSideBar
+                        showSidebar={shouldShowMobileSidebar()}
+                        onClose={() => setShouldShowMobileSidebar(false)}
+                    />
+                </Show>
                 <div class="flex-grow flex flex-col overflow-y-auto">
                     <header class="flex px-6 py-4 shadow-md">
                         <AppSiteHeader
-                            isSidebarExpanded={isSidebarExpanded()}
-                            onSidebarToggle={toggleSidebar}
+                            isSidebarExpanded={shouldShowMobileSidebar()}
+                            onSidebarToggle={toggleMobileSidebar}
                         />
                     </header>
                     <SuspensefulErrorBoundary
