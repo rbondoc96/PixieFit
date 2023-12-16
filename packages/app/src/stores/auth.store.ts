@@ -11,7 +11,6 @@ export const useUser = (): InitializedResource<User | null> => userResource;
 
 export async function fetchUser(): Promise<User|null> {
     try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
         return await AuthAPI.fetchUser();
     } catch (_error) {
         return null;
