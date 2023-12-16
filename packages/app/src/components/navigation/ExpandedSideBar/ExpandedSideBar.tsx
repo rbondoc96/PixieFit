@@ -32,7 +32,7 @@ const ExpandedSideBar: Component<{
             >
                 <div
                     role="presentation"
-                    class="fixed inset-0 z-navOverlay bg-black/50"
+                    class="fixed inset-0 z-navBackdrop bg-black/50"
                     onClick={() => props.onClose()}
                 />
             </Transition>
@@ -45,7 +45,7 @@ const ExpandedSideBar: Component<{
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full"
             >
-                <div class="fixed left-0 h-screen w-72 z-navContent">
+                <div class="fixed left-0 h-screen w-72 z-nav">
                     <div class="h-full bg-gray-900">
                         <div class="flex flex-col">
                             <span>

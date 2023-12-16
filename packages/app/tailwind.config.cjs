@@ -23,6 +23,14 @@ module.exports = {
             screens: {
                 xs: '480px',
             },
+            zIndex: {
+                modalBackdrop: 99,
+                modal: 100,
+                stickyAction: 200,
+                navBackdrop: 299,
+                nav: 300,
+                alert: 500,
+            },
         },
     },
     plugins: [],
