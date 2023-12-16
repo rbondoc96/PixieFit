@@ -1,6 +1,7 @@
-use crate::prelude::StatusCode;
+use axum::http::StatusCode;
 use axum_test::TestResponse;
-use serde_json::Value;
+use serde_json::{json, Value};
+use std::collections::HashMap;
 
 pub struct MockResponse(pub TestResponse);
 
@@ -43,5 +44,33 @@ impl MockResponse {
 
     pub fn assert_json(&self, json: Value) {
         self.0.assert_json(&json);
+    }
+
+    pub fn assert_json_success(&self, data: Value) {
+        self.0.assert_json(&json!({
+            "success": true,
+            "data": data,
+        }));
+    }
+
+    pub fn assert_json_error(&self, name: String, message: String) {
+        self.0.assert_json(&json!({
+            "success": false,
+            "error": {
+                "name": name,
+                "message": message,
+            },
+        }));
+    }
+
+    pub fn assert_json_error_with_errors(&self, name: String, message: String, errors: HashMap<String, Vec<String>>) {
+        self.0.assert_json(&json!({
+            "success": false,
+            "error": {
+                "name": name,
+                "message": message,
+                "errors": errors,
+            },
+        }));
     }
 }
