@@ -50,25 +50,25 @@ const AlertStyles: Record<
     },
 } as const;
 
-const ZormAlert: Component<ZormAlertProps> = ({message, messages = [], show, title, type}) => {
-    const [showAlert, setShowAlert] = createSignal(show);
+const ZormAlert: Component<ZormAlertProps> = props => {
+    const [showAlert, setShowAlert] = createSignal(false);
 
-    const alertStyles = AlertStyles[type];
+    const alertStyles = () => AlertStyles[props.type];
 
-    const formattedMessages = messages.map(message => `${'\u2022'} ${message}`);
+    const formattedMessages = () => props.messages?.map(message => `${'\u2022'} ${message}`);
 
     return (
-        <Show when={showAlert()}>
-            <div class={alertStyles.componentStyle}>
+        <Show when={showAlert() || props.show}>
+            <div class={alertStyles().componentStyle}>
                 <div class={styles.zormAlertIcon}>
-                    <FontAwesomeIcon icon={alertStyles.icon} />
+                    <FontAwesomeIcon icon={alertStyles().icon} />
                 </div>
                 <div class={styles.zormAlertContent}>
-                    <span class={styles.zormAlertContentTitle}>{title}</span>
-                    <span class={styles.zormAlertContentMessage}>{message}</span>
-                    <Show when={formattedMessages.length > 0}>
+                    <span class={styles.zormAlertContentTitle}>{props.title}</span>
+                    <span class={styles.zormAlertContentMessage}>{props.message}</span>
+                    <Show when={formattedMessages() !== undefined}>
                         <div class={styles.zormAlertContentDetails}>
-                            <For each={formattedMessages}>
+                            <For each={formattedMessages()}>
                                 {message => (
                                     <span class={styles.zormAlertContentDetailsMessage}>
                                         {message}

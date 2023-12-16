@@ -1,5 +1,5 @@
 import {A as Link, useParams, useSearchParams} from '@solidjs/router';
-import {type Component, createResource, For, Show, onMount} from 'solid-js';
+import {type Component, createResource, For, onMount, Show} from 'solid-js';
 
 import {ExerciseAPI} from '@/api';
 
