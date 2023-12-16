@@ -35,7 +35,7 @@ jobs:
         run: pnpm install
 
       - name: Check Types
-        run: pnpm check:types
+        run: pnpm app check:types
 
       - name: Check Code Style
-        run: pnpm lint
+        run: pnpm app lint
