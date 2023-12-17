@@ -31,13 +31,13 @@ impl Default for Pagination {
 }
 
 #[async_trait]
-impl<TState> FromRequestParts<TState> for Pagination
+impl<S> FromRequestParts<S> for Pagination
 where
-    TState: Send + Sync,
+    S: Send + Sync,
 {
     type Rejection = crate::http::Error;
 
-    async fn from_request_parts(parts: &mut Parts, state: &TState) -> core::result::Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, state: &S) -> core::result::Result<Self, Self::Rejection> {
         let Query(pagination) = Query::<Pagination>::from_request_parts(parts, state)
             .await
             .unwrap_or_default();

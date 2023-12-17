@@ -1,7 +1,5 @@
-use sqlx::{
-    Transaction,
-    postgres::{PgConnection, PgPool, PgPoolOptions, Postgres}
-};
+use sqlx::Transaction;
+use sqlx::postgres::{PgConnection, PgPool, PgPoolOptions, Postgres};
 
 #[derive(Clone, Debug)]
 pub struct DatabaseManager {

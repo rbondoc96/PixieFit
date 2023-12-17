@@ -59,44 +59,6 @@ mod builder {
         }
     }
 
-    // impl<S, C> ExerciseInstructionBuilder<NoExerciseId, S, C> {
-    //     pub fn exercise_id(self, id: i16) -> ExerciseInstructionBuilder<ExerciseId, S, C> {
-    //         ExerciseInstructionBuilder {
-    //             exercise_id: ExerciseId(id),
-    //             sequence_number: self.sequence_number,
-    //             content: self.content,
-    //         }
-    //     }
-    //
-    //     pub fn exercise(self, exercise: &Exercise) -> ExerciseInstructionBuilder<ExerciseId, S, C> {
-    //         ExerciseInstructionBuilder {
-    //             exercise_id: ExerciseId(exercise.id),
-    //             sequence_number: self.sequence_number,
-    //             content: self.content,
-    //         }
-    //     }
-    // }
-    //
-    // impl<E, C> ExerciseInstructionBuilder<E, NoSequenceNumber, C> {
-    //     pub fn sequence_number(self, number: i16) -> ExerciseInstructionBuilder<E, SequenceNumber, C> {
-    //         ExerciseInstructionBuilder {
-    //             exercise_id: self.exercise_id,
-    //             sequence_number: SequenceNumber(number),
-    //             content: self.content,
-    //         }
-    //     }
-    // }
-    //
-    // impl<E, S> ExerciseInstructionBuilder<E, S, NoContent> {
-    //     pub fn content(self, content: impl Into<String>) -> ExerciseInstructionBuilder<E, S, Content> {
-    //         ExerciseInstructionBuilder {
-    //             exercise_id: self.exercise_id,
-    //             sequence_number: self.sequence_number,
-    //             content: Content(content.into()),
-    //         }
-    //     }
-    // }
-
     impl<E, S, C,> ExerciseInstructionBuilder<E, S, C> {
         pub fn exercise_id(self, id: i16) -> ExerciseInstructionBuilder<ExerciseId, S, C> {
             ExerciseInstructionBuilder {

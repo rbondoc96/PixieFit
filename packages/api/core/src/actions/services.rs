@@ -8,18 +8,18 @@ use sqlx::{Decode, FromRow, PgPool, Postgres, Type};
 use std::collections::HashMap;
 use std::convert::Infallible;
 
-pub struct IdMap<TKey>
+pub struct IdMap<K>
 where
-    TKey: Type<Postgres> + for<'q> Decode<'q, Postgres> + Send + std::fmt::Display + Clone + Unpin,
+    K: Type<Postgres> + for<'q> Decode<'q, Postgres> + Send + std::fmt::Display + Clone + Unpin,
 {
-    map: HashMap<i64, TKey>,
+    map: HashMap<i64, K>,
     database: DatabaseManager,
     table: &'static str,
 }
 
-impl<TKey> IdMap<TKey>
+impl<K> IdMap<K>
 where
-    TKey: Type<Postgres> + for<'q> Decode<'q, Postgres> + Send + std::fmt::Display + Clone + Unpin,
+    K: Type<Postgres> + for<'q> Decode<'q, Postgres> + Send + std::fmt::Display + Clone + Unpin,
 {
     pub fn new(table: &'static str, database: DatabaseManager) -> Self {
         Self {
@@ -29,12 +29,12 @@ where
         }
     }
 
-    pub fn get(&self, identifier: impl Into<i64>) -> Option<&TKey> {
+    pub fn get(&self, identifier: impl Into<i64>) -> Option<&K> {
         self.map.get(&identifier.into())
     }
 
     pub async fn insert(mut self, identifier: impl Into<i64>, name: impl Into<String> + Clone) -> Self {
-        let id = sqlx::query_as::<_, (TKey,)>(format!(
+        let id = sqlx::query_as::<_, (K,)>(format!(
             "SELECT id FROM {} WHERE name = $1", self.table)
             .as_str())
             .bind(name.clone().into())
@@ -87,8 +87,6 @@ pub async fn init(database: &DatabaseManager) -> Result<(), Infallible> {
 async fn create_equipment_map(database: &DatabaseManager) -> IdMap<i16> {
     let map = IdMap::new("exercise_equipment", database.clone());
 
-    // id of 8 --> stretches
-    // 26 --> vitruvian, and all others map to other
     map.insert(10, "resistance_band").await
         .insert(1, "barbell").await
         .insert(3, "bodyweight").await
@@ -240,7 +238,6 @@ async fn convert_mw_exercise_to_model(
     }
 
     let exercise = exercise.unwrap();
-    // println!("Successfully created exercise: {:?}", exercise.name());
 
     // Create muscle relationships
     join_all(mw_exercise.muscles_primary.iter()
@@ -255,12 +252,12 @@ async fn convert_mw_exercise_to_model(
                 .target(ExerciseMuscleTarget::Primary)
                 .create(&database)
         })
-    ).await;
-    // .iter()
-    // .for_each(|relation| match relation {
-    //     Ok(relation) => println!("Successfully created primary muscle with id: {}", relation.muscle_id()),
-    //     Err(error) => println!("Failed to create primary muscle: {:?}", error),
-    // });
+    ).await
+    .iter()
+    .for_each(|relation| match relation {
+        Err(error) => println!("Failed to create primary muscle: {:?}", error),
+        _ => {},
+    });
 
     join_all(mw_exercise.muscles_secondary.iter()
         .map(|muscle| {
@@ -274,12 +271,12 @@ async fn convert_mw_exercise_to_model(
                 .target(ExerciseMuscleTarget::Secondary)
                 .create(&database)
         })
-    ).await;
-    // .iter()
-    // .for_each(|relation| match relation {
-    //     Ok(relation) => println!("Successfully created secondary muscle with id: {}", relation.muscle_id()),
-    //     Err(error) => println!("Failed to create primary muscle: {:?}", error),
-    // });
+    ).await
+    .iter()
+    .for_each(|relation| match relation {
+        Err(error) => println!("Failed to create primary muscle: {:?}", error),
+        _ => {},
+    });
 
 
     join_all(mw_exercise.muscles_tertiary.iter()
@@ -294,12 +291,12 @@ async fn convert_mw_exercise_to_model(
                 .target(ExerciseMuscleTarget::Tertiary)
                 .create(&database)
         })
-    ).await;
-    // .iter()
-    // .for_each(|relation| match relation {
-    //     Ok(relation) => println!("Successfully created tertiary muscle with id: {}", relation.muscle_id()),
-    //     Err(error) => println!("Failed to create tertiary muscle: {:?}", error),
-    // });
+    ).await
+    .iter()
+    .for_each(|relation| match relation {
+        Err(error) => println!("Failed to create tertiary muscle: {:?}", error),
+        _ => {},
+    });
 
     // Create instruction relationships
     join_all(mw_exercise.correct_steps.iter()
@@ -310,12 +307,12 @@ async fn convert_mw_exercise_to_model(
                 .content(step.text.clone())
                 .create(&database)
         })
-    ).await;
-    // .iter()
-    // .for_each(|instruction| match instruction {
-    //     Ok(instruction) => println!("Successfully created instruction: {}", instruction.content()),
-    //     Err(error) => println!("Failed to create instruction: {:?}", error),
-    // });
+    ).await
+    .iter()
+    .for_each(|instruction| match instruction {
+        Err(error) => println!("Failed to create instruction: {:?}", error),
+        _ => {},
+    });
 
     Ok(())
 }
@@ -439,6 +436,3 @@ pub struct MWDenominator {
 pub struct MWCalculationMode {
     pub name: String,
 }
-
-
-
