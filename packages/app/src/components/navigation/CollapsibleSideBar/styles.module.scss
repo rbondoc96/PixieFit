@@ -1,0 +1,20 @@
+.collapsible-side-bar {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    height: 100vh;
+
+    @apply bg-gray-900;
+    @apply duration-500;
+
+    &.collapsible-side-bar--expanded {
+        @apply w-72;
+    }
+
+    &.collapsible-side-bar--compressed {
+        @apply w-20;
+    }
+}

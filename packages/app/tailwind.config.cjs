@@ -16,10 +16,20 @@ module.exports = {
                     300: '#F9F7F3',
                     500: '#C2C2C2',
                 },
-                primary: '#4CF0C4',
+                primary: {
+                    DEFAULT: '#4CF0C4',
+                },
             },
             screens: {
                 xs: '480px',
+            },
+            zIndex: {
+                modalBackdrop: 99,
+                modal: 100,
+                stickyAction: 200,
+                navBackdrop: 299,
+                nav: 300,
+                alert: 500,
             },
         },
     },

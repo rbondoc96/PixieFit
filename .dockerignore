@@ -1,6 +1,23 @@
-/.vscode
-/docker
-/docs
-/node_modules
+.turbo
+.vscode
+build
+docs
+node_modules
 
+.github/workflows
+.github/CODEOWNERES
+
+packages/app
+packages/common
+packages/server
+
+**/.env
+**/.env.example
+**/.env.test
+**/.eslintignore
+**/.eslintrc.cjs
+
+.prettierignore
+.prettierrc.json
+docker-compose.yml
 npm-debug.log

@@ -12,7 +12,7 @@ export default function useRouter(): Router {
 
     const push = (pathOrRoute: string | Route): void => {
         if (pathOrRoute instanceof Route) {
-            navigate(pathOrRoute.fullPath);
+            navigate(pathOrRoute.href);
         } else {
             navigate(pathOrRoute);
         }
@@ -20,7 +20,7 @@ export default function useRouter(): Router {
 
     const replace = (pathOrRoute: string | Route): void => {
         if (pathOrRoute instanceof Route) {
-            navigate(pathOrRoute.fullPath, {
+            navigate(pathOrRoute.href, {
                 replace: true,
             });
         } else {

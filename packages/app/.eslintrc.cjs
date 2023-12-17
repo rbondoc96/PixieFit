@@ -16,7 +16,7 @@ module.exports = defineConfig({
     plugins: ['@typescript-eslint', 'import', 'simple-import-sort', 'solid'],
     parser: '@typescript-eslint/parser',
     parserOptions: {
-        ecmaVersion: 'latest',
+        ecmaVersion: 2020,
         sourceType: 'module',
     },
     settings: {
@@ -31,7 +31,7 @@ module.exports = defineConfig({
         'indent': ['error', 4, {SwitchCase: 1}],
         'object-curly-newline': ['error', {consistent: true}],
         'object-curly-spacing': ['error', 'never'],
-        'max-len': ['error', 100],
+        'max-len': ['error', 120],
         'no-debugger': 'error',
         'no-empty': 'warn',
         'no-process-exit': 'off',
@@ -106,9 +106,6 @@ module.exports = defineConfig({
             },
         ],
 
-        // Disabled since destructuring is handled by babel-plugin-solid-undestructure
-        'solid/no-destructure': 'off',
-
         '@typescript-eslint/ban-ts-comment': 'error',
         '@typescript-eslint/explicit-module-boundary-types': [
             'error',
@@ -117,6 +114,7 @@ module.exports = defineConfig({
         '@typescript-eslint/no-empty-function': 'off',
         '@typescript-eslint/no-empty-interface': 'off',
         '@typescript-eslint/no-extra-semi': 'off', // conflicts with prettier
+        '@typescript-eslint/no-unused-vars': ['warn', {argsIgnorePattern: '^_'}],
         '@typescript-eslint/no-var-requires': 'off',
         '@typescript-eslint/consistent-type-imports': ['error', {prefer: 'type-imports'}],
     },

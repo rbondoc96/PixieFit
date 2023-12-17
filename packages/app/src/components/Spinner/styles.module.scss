@@ -1,9 +1,7 @@
-.spinner {
-    @apply absolute;
-    @apply top-1/2 left-1/2;
-    @apply transform -translate-x-1/2 -translate-y-1/2;
+.spinner-white > svg {
+    @apply text-white;
+}
 
-    & > svg {
-        @apply text-white;
-    }
+.spinner-primary > svg {
+    @apply text-indigo-500;
 }

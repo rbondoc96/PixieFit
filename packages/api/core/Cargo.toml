@@ -1,0 +1,48 @@
+[package]
+name = "core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Rodrigo Bondoc <https://github.com/rbondoc86>"]
+
+[target.x86_64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=lld"]
+
+[target.aarch64-apple-darwin]
+rustflags = ["-C", "link-arg=-fuse-ld=/opt/homebrew/opt/llvm/bin/ld64.lld"]
+
+[dependencies]
+async-trait.workspace = true
+chrono = { workspace = true, features = ["serde"]}
+futures.workspace = true
+serde.workspace = true
+serde_as.workspace = true
+serde_derive.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+sqlx.workspace = true
+strum.workspace = true
+strum_macros.workspace = true
+thiserror.workspace = true
+
+database = { path = "../database" }
+
+axum = "0.6.20"
+axum_session = { version = "0.5.0", features = [ "postgres-rustls"] }
+bcrypt = "0.15.0"
+dotenvy = "0.15.7"
+dotenvy_macro = "0.15.7"
+log = "0.4.20"
+reqwest = { version = "0.11.22", features = ["json"] }
+rust-i18n = "2.2.1"
+simple_logger = "4.2.0"
+tokio = { version = "1.32.0", features = ["full"] }
+tower-http = { version = "0.4.4", features = ["cors"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"]}
+
+[dev-dependencies]
+httpc-test.workspace = true
+
+anyhow = "1.0.75"
+axum-test = "13.1.1"
+fake = { version = "2.9.1", features = ["chrono", "derive"] }

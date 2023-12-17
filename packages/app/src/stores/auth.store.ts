@@ -1,25 +1,19 @@
-import {type Accessor, createSignal} from 'solid-js';
+import {createResource, type InitializedResource} from 'solid-js';
 
 import {AuthAPI} from '@/api';
-import {type AuthenticatedUser} from '@/parsers/authParsers';
+import {type User} from '@/parsers/authParsers';
 
-interface AuthStore {
-    fetchUser: () => Promise<void>;
-    login: (payload: AuthAPI.LoginUserPayload) => Promise<void>;
-    logout: () => Promise<void>;
-    register: (payload: AuthAPI.RegisterUserPayload) => Promise<void>;
-    user: Accessor<AuthenticatedUser | null>;
-}
+const [userResource, {mutate: setUser}] = createResource(fetchUser, {
+    initialValue: null,
+});
 
-const [user, setUser] = createSignal<AuthenticatedUser | null>(null);
+export const useUser = (): InitializedResource<User | null> => userResource;
 
-export async function fetchUser(): Promise<void> {
+export async function fetchUser(): Promise<User|null> {
     try {
-        const user = await AuthAPI.fetchUser();
-        setUser(user);
-    } catch (error) {
-        setUser(null);
-        throw error;
+        return await AuthAPI.fetchUser();
+    } catch (_error) {
+        return null;
     }
 }
 
@@ -37,21 +31,3 @@ export async function register(payload: AuthAPI.RegisterUserPayload): Promise<vo
     const user = await AuthAPI.register(payload);
     setUser(user);
 }
-
-export function useAuthenticatedUser(): AuthenticatedUser {
-    const authenticatedUser = user();
-
-    if (authenticatedUser === null) {
-        throw new Error('User is not authenticated');
-    }
-
-    return authenticatedUser;
-}
-
-export default {
-    fetchUser,
-    login,
-    logout,
-    register,
-    user,
-} satisfies AuthStore;

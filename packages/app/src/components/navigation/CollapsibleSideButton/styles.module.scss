@@ -1,0 +1,41 @@
+.collapsible-side-button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    @apply gap-x-4;
+
+    @apply rounded-md;
+    @apply p-2.5;
+
+    @apply text-gray-500;
+    @apply tracking-tighter;
+
+    &:hover,
+    &.collapsible-side-button--active {
+        @apply bg-gray-800;
+        @apply text-white;
+    }
+
+    &.collapsible-side-button--active {
+        @apply font-bold;
+    }
+
+    /** Need to override the default CSS in the `<style>` tag for `FontAwesomeIcon` */
+    & > .collapsible-side-button__icon {
+        height: 22px !important;
+        width: 22px !important;
+    }
+}
+
+.collapsible-side-button__label {
+    transform-origin: left;
+    transition-duration: 500ms;
+
+    &.collapsible-side-button__label--visible {
+        transform: scale(1);
+    }
+
+    &.collapsible-side-button__label--invisible {
+        transform: scale(0);
+    }
+}

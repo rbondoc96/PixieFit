@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS sessions (
+    id VARCHAR(128) PRIMARY KEY NOT NULL,
+    expires INTEGER,
+    session TEXT NOT NULL
+)

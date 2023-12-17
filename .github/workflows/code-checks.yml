@@ -10,10 +10,15 @@ on:
       - '**'
     tags-ignore:
       - '**'
+  pull_request:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 
 jobs:
   server_check:
-    name: Code style and type checks on server
+    name: Code style and type checks on app
     runs-on: ubuntu-latest
 
     steps:
@@ -34,8 +39,5 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
-      - name: Check Types
-        run: pnpm check:types
-
-      - name: Check Code Style
-        run: pnpm lint
+      - name: Check Types and Code Style
+        run: pnpm app check

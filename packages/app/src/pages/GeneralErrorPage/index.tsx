@@ -1,11 +1,22 @@
-import {type Component} from 'solid-js';
+import {type Component, createEffect} from 'solid-js';
 
-type GeneralErrorPageProps = {
+import UnauthorizedRequestException from '@/exceptions/UnauthorizedRequestException';
+import useRouter from '@/hooks/useRouter';
+
+const GeneralErrorPage: Component<{
     error: unknown;
     reset: () => void;
-};
+}> = props => {
+    const router = useRouter();
 
-const GeneralErrorPage: Component<GeneralErrorPageProps> = props => {
+    createEffect(
+        () => {
+            if (props.error instanceof UnauthorizedRequestException) {
+                router.replace('/login');
+            }
+        },
+    );
+
     return (
         <div>
             <h1>General Error Page</h1>

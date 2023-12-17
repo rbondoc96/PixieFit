@@ -1,0 +1,17 @@
+[workspace]
+members = ["core", "database"]
+
+[workspace.dependencies]
+async-trait = "0.1.73"
+chrono = { version = "0.4.28" }
+futures = "0.3.28"
+httpc-test = "0.1.5"
+serde = "1.0.188"
+serde_as = "0.0.1"
+serde_derive = "1.0.188"
+serde_json = { version = "1.0.105", features = ["preserve_order"] }
+serde_with = "3.3.0"
+sqlx = { version = "0.7.1", features = ["macros", "runtime-tokio", "tls-rustls", "postgres", "chrono"]}
+strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25"
+thiserror = "1.0.50"

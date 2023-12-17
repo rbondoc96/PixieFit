@@ -1,14 +1,16 @@
 import {MetaProvider} from '@solidjs/meta';
 import {Router, useRoutes} from '@solidjs/router';
-import {type Component, onMount} from 'solid-js';
+import {type Component, onCleanup, onMount} from 'solid-js';
 
 import routes from '@/navigation/routes';
-import {fetchUser} from '@/stores/auth.store';
+import {useOnWindowResize} from '@/stores/ui.store';
 
 const App: Component = () => {
     const Routes = useRoutes(routes);
+    const onWindowResize = useOnWindowResize();
 
-    onMount(() => fetchUser());
+    onMount(() => window.addEventListener('resize', onWindowResize));
+    onCleanup(() => window.removeEventListener('resize', onWindowResize));
 
     return (
         <MetaProvider>

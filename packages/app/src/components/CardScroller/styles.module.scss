@@ -1,0 +1,85 @@
+// region Card
+
+.card {
+    position: relative;
+    flex-shrink: 0;
+
+    height: 14rem;
+}
+
+.card__overlay {
+    position: absolute;
+    inset: 0;
+
+    @apply bg-gray-900/70;
+    @apply rounded-lg;
+}
+
+.card__background {
+    display: flex;
+    height: 100%;
+
+    & > img {
+        aspect-ratio: 4 / 5;
+        inline-size: 100%;
+        object-fit: cover;
+
+        @apply rounded-lg;
+    }
+}
+
+.card__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+
+    @apply rounded-lg;
+
+    & > .card__content-container {
+        flex: 1;
+        display: flex;
+        align-items: flex-end;
+
+        @apply mx-5 my-4;
+    }
+
+    & > .card__content-container > .card__content__title {
+        @apply font-semibold;
+        @apply text-white;
+        @apply text-lg;
+    }
+}
+
+// endregion
+
+// region CardScroller
+
+.card-scroller {
+    display: flex;
+    flex-direction: column;
+
+    @apply gap-y-3;
+}
+
+.card-scroller > .card-scroller__heading {
+    & > h2 {
+        @apply font-bold;
+        @apply text-xl;
+    }
+}
+
+.card-scroller__content {
+    & .card-scroller__content__cards {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 175px;
+
+        @apply gap-x-3;
+        @apply overflow-x-auto;
+        // Y-padding allows the X-scrollbar to be seen
+        @apply py-3;
+    }
+}
+
+// endregion

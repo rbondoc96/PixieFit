@@ -28,7 +28,7 @@ const RegisterPage: Component = () => {
             <Helmet title="Sign up - PixieFit" />
             <main class={styles.main}>
                 <div class={styles.formContainer}>
-                    <Logo size="lg" />
+                    <Logo showText theme="light" />
                     <div class={styles.formHeading}>
                         <h1>Create an Account</h1>
                     </div>
@@ -47,17 +47,35 @@ const RegisterPage: Component = () => {
                                     placeholder="Last name"
                                 />
                             </div>
-                            <Zorm.Input
-                                label="Email Address"
-                                name="email"
-                                placeholder="Email address"
-                            />
-                            <Zorm.Input
-                                label="Birthday"
-                                name="birthday"
-                                placeholder="Birthday"
-                                type="date"
-                            />
+
+                            <div class={styles.formInputRow}>
+                                <Zorm.Input
+                                    label="Email Address"
+                                    name="email"
+                                    placeholder="Email address"
+                                />
+                            </div>
+
+                            <div class={styles.formInputRow}>
+                                <Zorm.Input
+                                    label="Birthday"
+                                    name="birthday"
+                                    placeholder="Birthday"
+                                    type="date"
+                                />
+                                <Zorm.Select
+                                    label="Gender"
+                                    name="gender"
+                                    initialValue="male"
+                                    options={[
+                                        {label: 'Male', value: 'male'},
+                                        {label: 'Female', value: 'female'},
+                                        {label: 'Non-Binary', value: 'non_binary'},
+                                        {label: 'Other', value: 'other'},
+                                    ]}
+                                />
+                            </div>
+
                             <div class={styles.formInputRow}>
                                 <Zorm.Input
                                     label="Password"
@@ -72,9 +90,11 @@ const RegisterPage: Component = () => {
                                     type="password"
                                 />
                             </div>
+
                             <Zorm.Submit label="Register" />
                         </Zorm.Form>
                     </Zorm.Provider>
+
                     <div class={styles.formFooter}>
                         <span>Already have an account?&nbsp;</span>
                         <RouterLink href="/login" label="Log in." />

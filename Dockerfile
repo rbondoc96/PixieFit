@@ -1,13 +1,26 @@
-FROM node:lts-alpine
+FROM node:18-alpine3.17 as base
 
-RUN apk update && apk add --no-cache git
+# Update and install app/system deps
+RUN apk update && apk add --no-cache bash
 
-ARG WORKSPACE
+# Install pnpm
+RUN npm i -g pnpm tsx
 
-WORKDIR /root/code
-COPY ./package*.json .
-COPY ./packages/${WORKSPACE}/package.json ./packages/${WORKSPACE}/package.json
+# Configure pnpm globals
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
 
-RUN npm ci
+WORKDIR /app
+COPY pnpm-lock.yaml .
+COPY pnpm-workspace.yaml .
 
-COPY ./packages/${WORKSPACE} ./packages/${WORKSPACE} 
+FROM base AS api
+WORKDIR /app/packages/api
+COPY ./packages/api .
+
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm migrate
+RUN pnpm build
+
+EXPOSE 8080
+CMD [ "pnpm", "start" ]

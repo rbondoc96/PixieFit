@@ -55,7 +55,7 @@ client.interceptors.response.use(
 
         const parsedErrorResponse = errorResponseParser.safeParse(error.response.data);
 
-        if (parsedErrorResponse.success === false) {
+        if (!parsedErrorResponse.success) {
             return Promise.reject(new UnexpectedError(error));
         }
 
@@ -75,5 +75,3 @@ client.interceptors.response.use(
         return Promise.reject(unexpectedResponseError);
     },
 );
-
-export default client;

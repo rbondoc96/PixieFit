@@ -1,12 +1,13 @@
-import {object, type output, string} from 'zod';
+import {nativeEnum, object, type output, string} from 'zod';
 
 import {client} from '@/api/client';
-import {type AuthenticatedUser, authenticatedUserParser} from '@/parsers/authParsers';
+import Gender from '@/enums/Gender';
+import {type User, userParser} from '@/parsers/authParsers';
 
-export const fetchUser = async (): Promise<AuthenticatedUser> => {
+export const fetchUser = async (): Promise<User> => {
     const {data} = await client.get('/api/auth');
 
-    return authenticatedUserParser.parse(data).data;
+    return userParser.parse(data).data;
 };
 
 export const loginUserPayloadSchema = object({
@@ -20,10 +21,10 @@ export const loginUserPayloadSchema = object({
 
 export type LoginUserPayload = output<typeof loginUserPayloadSchema>;
 
-export const login = async (payload: LoginUserPayload): Promise<AuthenticatedUser> => {
+export const login = async (payload: LoginUserPayload): Promise<User> => {
     const {data} = await client.post('/api/auth', payload);
 
-    return authenticatedUserParser.parse(data).data;
+    return userParser.parse(data).data;
 };
 
 export const logout = async (): Promise<void> => {
@@ -45,11 +46,14 @@ export const registerUserPayloadSchema = object({
     last_name: string({
         required_error: 'This field is required.',
     }),
+    gender: nativeEnum(Gender, {
+        required_error: 'This field is required.',
+    }),
     password: string({
         required_error: 'This field is required.',
     })
         .min(8)
-        .max(72),
+        .max(32),
     password_confirm: string({
         required_error: 'This field is required.',
     }),
@@ -57,8 +61,8 @@ export const registerUserPayloadSchema = object({
 
 export type RegisterUserPayload = output<typeof registerUserPayloadSchema>;
 
-export const register = async (payload: RegisterUserPayload): Promise<AuthenticatedUser> => {
+export const register = async (payload: RegisterUserPayload): Promise<User> => {
     const {data} = await client.post('/api/auth/register', payload);
 
-    return authenticatedUserParser.parse(data).data;
+    return userParser.parse(data).data;
 };

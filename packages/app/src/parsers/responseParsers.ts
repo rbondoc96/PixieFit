@@ -1,4 +1,14 @@
-import {boolean, literal, object, type output, record, string, type ZodType} from 'zod';
+import {
+    array,
+    boolean,
+    literal,
+    object,
+    optional,
+    type output,
+    record,
+    string,
+    type ZodType,
+} from 'zod';
 
 export const errorResponseParser = object({
     success: literal(false),
@@ -13,7 +23,15 @@ export type ErrorResponse = output<typeof errorResponseParser>;
 export function createGetResponseParser<TParser extends ZodType>(parser: TParser): ZodType {
     return object({
         success: boolean(),
-        data: parser.nullable().optional(),
-        message: string().optional(),
+        data: parser,
+        message: optional(string()),
+    });
+}
+
+export function createListResponseParser<TParser extends ZodType>(parser: TParser): ZodType {
+    return object({
+        success: boolean(),
+        data: array(parser),
+        message: optional(string()),
     });
 }

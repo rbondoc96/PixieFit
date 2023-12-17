@@ -1,41 +1,71 @@
 import {type RouteDefinition} from '@solidjs/router';
 import {lazy} from 'solid-js';
 
-import Routes from '@/constants/Routes';
+import AppSiteShell from '@/components/AppSiteShell';
+import * as Routes from '@/constants/Routes';
+import Error404Page from '@/pages/Error404Page';
+import LandingPage from '@/pages/LandingPage';
+import LoginPage from '@/pages/LoginPage';
+import LogoutPage from '@/pages/LogoutPage';
+import RegisterPage from '@/pages/RegisterPage';
 
 export default [
     {
         path: Routes.Landing.path,
-        component: lazy(() => import('@/pages/LandingPage')),
+        component: LandingPage,
     },
     {
         path: Routes.Login.path,
-        component: lazy(() => import('@/pages/LoginPage')),
+        component: LoginPage,
+    },
+    {
+        path: Routes.Logout.path,
+        component: LogoutPage,
     },
     {
         path: Routes.Register.path,
-        component: lazy(() => import('@/pages/RegisterPage')),
+        component: RegisterPage,
     },
     {
         path: '/app',
-        component: lazy(() => import('@/components/AppSiteShell')),
+        component: AppSiteShell,
         children: [
             {
                 path: Routes.UserDashboard.path,
-                component: lazy(() => import('@/pages/DashboardPage')),
+                component: lazy(() => import('@/pages/app/DashboardPage')),
+            },
+            {
+                path: Routes.ExerciseDetailsPage.path,
+                component: lazy(() => import('@/pages/app/exercises/ExerciseDetailsPage')),
+            },
+            {
+                path: Routes.ExerciseHomePage.path,
+                component: lazy(() => import('@/pages/app/exercises/ExerciseHomePage')),
+            },
+            {
+                path: Routes.ExercisesByMuscleGroupPage.path,
+                component: lazy(() => import('@/pages/app/exercises/ExercisesByMuscleGroupPage')),
+            },
+            {
+                path: Routes.UserTracker.path,
+                component: lazy(() => import('@/pages/app/TrackerPage')),
+            },
+            {
+                path: Routes.UserProgress.path,
+                component: lazy(() => import('@/pages/app/ProgressPage')),
             },
             {
                 path: Routes.UserSettings.path,
-                component: lazy(() => import('@/pages/SettingsPage')),
+                component: lazy(() => import('@/pages/app/SettingsPage')),
             },
             {
                 path: '/*',
-                component: lazy(() => import('@/pages/Error404Page')),
+                component: Error404Page,
             },
         ],
     },
     {
         path: '*',
-        component: lazy(() => import('@/pages/Error404Page')),
+        component: Error404Page,
     },
 ] satisfies RouteDefinition[];

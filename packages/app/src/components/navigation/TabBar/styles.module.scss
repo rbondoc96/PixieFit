@@ -1,0 +1,26 @@
+.tab-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    @apply text-gray-500;
+
+    &::after {
+        content: '';
+        position: absolute;
+        border-radius: 9999px;
+        width: 50%;
+        height: 100%;
+    }
+
+    &:hover::after,
+    &.tab-button--active::after {
+        @apply bg-white/10;
+    }
+
+    &:hover,
+    &.tab-button--active {
+        @apply text-primary;
+    }
+}

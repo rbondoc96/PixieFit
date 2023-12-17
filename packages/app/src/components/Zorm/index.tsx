@@ -6,8 +6,10 @@ import {
     createContext,
     createMemo,
     createSignal,
+    For,
     type JSX,
     mergeProps,
+    onMount,
     type ParentComponent,
     type Setter,
     Show,
@@ -50,6 +52,20 @@ type ZormInputProps<TSchema extends ZormSchema> = Omit<
     type?: 'date' | 'password' | 'text';
 };
 
+// FIXME: Not getting type safety for `initialValue` and `options.*.value`
+type ZormSelectProps<TSchema extends ZormSchema> = Omit<
+    JSX.IntrinsicElements['select'],
+    'id' | 'name' | 'value' | 'onChange' | 'onInput'
+> & {
+    initialValue?: ZormValues<TSchema>[keyof ZormValues<TSchema>];
+    label?: string;
+    name: keyof ZormValues<TSchema>;
+    options: ReadonlyArray<{
+        label: string;
+        value: ZormValues<TSchema>[keyof ZormValues<TSchema>];
+    }>;
+};
+
 type ZormSubmitProps = {
     class?: string;
     label: string;
@@ -63,7 +79,13 @@ type ZormContext<TSchema extends ZormSchema> = {
     isValidating: Accessor<boolean>;
     onInputBlur: JSX.IntrinsicElements['input']['onBlur'];
     onInputChange: JSX.IntrinsicElements['input']['onInput'];
+    onSelectBlur: JSX.IntrinsicElements['select']['onBlur'];
+    onSelectChange: JSX.IntrinsicElements['select']['onInput'];
     setErrors: SetStoreFunction<ZormErrors<TSchema>>;
+    setFieldValue: (
+        name: keyof ZormValues<TSchema>,
+        value: ZormValues<TSchema>[keyof ZormValues<TSchema>],
+    ) => void;
     setFormError: Setter<ZormAlertContent | undefined>;
     setIsSubmitting: Setter<boolean>;
     touched: Accessor<boolean>;
@@ -76,6 +98,7 @@ type Zorm<TSchema extends ZormSchema> = {
     Form: ParentComponent<ZormFormProps<TSchema>>;
     Input: Component<ZormInputProps<TSchema>>;
     Provider: ParentComponent;
+    Select: Component<ZormSelectProps<TSchema>>;
     Submit: Component<ZormSubmitProps>;
 };
 
@@ -158,6 +181,22 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
             );
         };
 
+        const onSelectBlur: JSX.IntrinsicElements['select']['onBlur'] = event => {
+            const {name} = event.currentTarget;
+            setTouched(true);
+            validateField(name as keyof ZormValues<TSchema>);
+        };
+
+        const onSelectChange: JSX.IntrinsicElements['select']['onInput'] = event => {
+            const {name, value} = event.currentTarget;
+            setFieldValue(
+                name as keyof ZormValues<TSchema>,
+                (value === ''
+                    ? undefined
+                    : value) as ZormValues<TSchema>[keyof ZormValues<TSchema>],
+            );
+        };
+
         return (
             <Context.Provider
                 value={{
@@ -167,8 +206,11 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
                     isSubmitting,
                     isValidating,
                     onInputBlur,
+                    onSelectBlur,
                     onInputChange,
+                    onSelectChange,
                     setErrors,
+                    setFieldValue,
                     setFormError,
                     setIsSubmitting,
                     touched,
@@ -290,6 +332,58 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
         );
     };
 
+    const Select: Component<ZormSelectProps<TSchema>> = baseProps => {
+        const [split, rest] = splitProps(baseProps, ['initialValue', 'label', 'name', 'options']);
+
+        const zormContext = useContext(Context);
+
+        if (zormContext === undefined) {
+            throw new Error('Zorm.Select must be used within a Zorm.Provider');
+        }
+
+        onMount(() => {
+            if (split.initialValue !== undefined) {
+                zormContext.setFieldValue(
+                    split.name as keyof ZormValues<TSchema>,
+                    split.initialValue,
+                );
+            }
+        });
+
+        const error = createMemo(() => zormContext.errors[split.name as keyof ZormErrors<TSchema>]);
+        const value = createMemo(() => zormContext.values[split.name as keyof ZormValues<TSchema>]);
+
+        return (
+            <div class={styles.zormSelect}>
+                <label for={split.name as string}>
+                    <Show when={split.label} keyed>
+                        {label => <span>{label}</span>}
+                    </Show>
+                    <select
+                        disabled={zormContext.isSubmitting()}
+                        // We can assert this is a string since ZormSchemas
+                        // only allow string keys
+                        id={split.name as string}
+                        name={split.name as string}
+                        // Prevents "undefined" from being displayed in the input box
+                        // if value() is `undefined`
+                        value={value() ?? split.initialValue ?? ''}
+                        onBlur={zormContext.onSelectBlur}
+                        onInput={zormContext.onSelectChange}
+                        {...rest}
+                    >
+                        <For each={split.options}>
+                            {option => <option value={option.value}>{option.label}</option>}
+                        </For>
+                    </select>
+                </label>
+                <Show when={error() !== undefined}>
+                    <div class={styles.zormSelectError}>{error()}</div>
+                </Show>
+            </div>
+        );
+    };
+
     const Submit: Component<ZormSubmitProps> = props => {
         const zormContext = useContext(Context);
 
@@ -330,6 +424,7 @@ export default function createZorm<TSchema extends ZormSchema>(schema: TSchema):
         Form,
         Input,
         Provider,
+        Select,
         Submit,
     };
 }
