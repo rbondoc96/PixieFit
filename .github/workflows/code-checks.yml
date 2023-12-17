@@ -13,7 +13,7 @@ on:
 
 jobs:
   server_check:
-    name: Code style and type checks on server
+    name: Code style and type checks on app
     runs-on: ubuntu-latest
 
     steps:
