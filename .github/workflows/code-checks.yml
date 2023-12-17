@@ -10,6 +10,11 @@ on:
       - '**'
     tags-ignore:
       - '**'
+  pull_request:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
 
 jobs:
   server_check:
